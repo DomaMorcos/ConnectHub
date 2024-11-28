@@ -10,16 +10,16 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class ContentDatabase {
     private static final String POSTS_FILEPATH = "Posts.JSON";
     private static final String STORIES_FILEPATH = "Stories.JSON";
-    private final List<Content> allContent = new ArrayList<>();
+    private final List<Content> contents = new ArrayList<>();
+    private static long counter = 1;
 
     public void saveContent() {
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        for (Content content : allContent) {
+        for (Content content : contents) {
             arrayBuilder.add(content.toJson());
         }
         JsonArray jsonArray = arrayBuilder.build();
@@ -32,19 +32,33 @@ public class ContentDatabase {
         }
     }
 
-    public void loadAllContent() {
-        allContent.clear();
-        loadContent(POSTS_FILEPATH, Post::fromJson);
-        loadContent(STORIES_FILEPATH, Story::fromJson);
+    public void loadContents() {
+        contents.clear();
+        loadPosts();
+        loadStories();
         removeExpiredStories();
     }
 
-    private <T extends Content> void loadContent(String filePath, Function<JsonObject, T> factory) {
-        try (InputStream is = new FileInputStream(filePath);
+    private void loadPosts() {
+        try (InputStream is = new FileInputStream(POSTS_FILEPATH);
              JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
             for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class)) {
-                allContent.add(factory.apply(jsonObject));
+                Post post = Post.fromJson(jsonObject);
+                contents.add(post);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadStories() {
+        try (InputStream is = new FileInputStream(STORIES_FILEPATH);
+             JsonReader jsonReader = Json.createReader(is)) {
+            JsonArray jsonArray = jsonReader.readArray();
+            for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class)) {
+                Story story = Story.fromJson(jsonObject);
+                contents.add(story);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,25 +66,25 @@ public class ContentDatabase {
     }
 
     private void removeExpiredStories() {
-        allContent.removeIf(content -> content instanceof Story && ((Story) content).isExpired());
+        contents.removeIf(content -> content instanceof Story && ((Story) content).isExpired());
         saveContent();
     }
 
     public void createPost(String authorId, String content, String imagePath) {
-        String contentId = generateUniqueId();
+        String contentId = generateId();
         Post post = new Post(contentId, authorId, content, imagePath, LocalDateTime.now().toString());
-        allContent.add(post);
+        contents.add(post);
         saveContent();
     }
 
     public void createStory(String authorId, String content, String imagePath) {
-        String contentId = generateUniqueId();
+        String contentId = generateId();
         Story story = new Story(contentId, authorId, content, imagePath, LocalDateTime.now().toString());
-        allContent.add(story);
+        contents.add(story);
         saveContent();
     }
 
-    private String generateUniqueId() {
-        return "CONTENT-" + System.nanoTime();
+    public static synchronized String generateId() {
+        return String.valueOf(counter++);
     }
 }

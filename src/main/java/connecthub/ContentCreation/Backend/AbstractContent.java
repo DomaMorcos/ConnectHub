@@ -33,7 +33,7 @@ public abstract class AbstractContent implements Content {
         return timestamp;
     }
 
-    protected JsonObject baseJson() {
+    public JsonObject baseJson() {
         return Json.createObjectBuilder()
                 .add("contentId", contentId)
                 .add("authorId", authorId)
