@@ -1,5 +1,6 @@
 package connecthub.UserAccountManagement.Backend;
 
+import static connecthub.UserAccountManagement.Backend.UserDatabase.contains;
 import static connecthub.UserAccountManagement.Backend.UserDatabase.users;
 import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
 import static connecthub.UserAccountManagement.Backend.Validation.isEmailValid;
@@ -13,11 +14,7 @@ public class CreateUser {
     }
 
     public boolean signup(String email, String username, String password, String dateOfBirth) {
-        if (!isEmailValid(email)) {
-            return  false;
-        } else if (!isUsernameValid(username)) {
-            return false;
-        } else if (users.contains(email)) {
+        if (!isEmailValid(email) || !isUsernameValid(username) || contains(email)) {
             return false;
         }
         String hash = hashPassword(password);
