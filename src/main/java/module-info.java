@@ -1,4 +1,4 @@
-module connecthub.connecthub {
+module connecthub {
     requires javafx.controls;
     requires javafx.fxml;
 
