@@ -1,7 +1,5 @@
 package connecthub.UserAccountManagement.Backend;
 
-import connecthub.UserAccountManagement.Backend.User;
-
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -15,12 +13,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 public class UserDatabase {
     public static ArrayList<User> users = new ArrayList<>();
+    public static final String FILEPATH = "User.JSON";
 
-    public static void saveUsersToJsonFile(String filePath) {
+    public static void saveUsersToJsonFile() {
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
         for (User user : users) {
             JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
@@ -33,7 +31,7 @@ public class UserDatabase {
         }
         JsonArray jsonArray = arrayBuilder.build();
 
-        try (OutputStream os = new FileOutputStream(filePath);
+        try (OutputStream os = new FileOutputStream(FILEPATH);
              JsonWriter jsonWriter = Json.createWriter(os)) {
             jsonWriter.writeArray(jsonArray);
         } catch (IOException e) {
@@ -41,10 +39,10 @@ public class UserDatabase {
         }
     }
 
-    public static void readUsersFromJsonFile(String filePath) {
+    public static void readUsersFromJsonFile() {
 
         users.clear();
-        try (InputStream is = new FileInputStream(filePath);
+        try (InputStream is = new FileInputStream(FILEPATH);
              JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
             for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class)) {
@@ -54,8 +52,22 @@ public class UserDatabase {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
+    public static User getUser(String email) {
+        for (User user:users) {
+            if (user.getEmail().equals(email))
+                return  user;
+        }
+        return null;
+    }
 
+    public static boolean contains (String email) {
+        for (User user:users) {
+            if (user.getEmail().equals(email))
+                return  true;
+        }
+        return false;
     }
 
 }
