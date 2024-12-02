@@ -34,7 +34,7 @@ public class LoginPage extends Application {
 
 
         emailValidationLabel = new Label();
-        emailValidationLabel.setTextFill(Color.RED);
+        emailValidationLabel.setTextFill(Color.BLACK);
         emailValidationLabel.setId("EmailValidationLabel");
 
         // Add listener to email field for real-time validation

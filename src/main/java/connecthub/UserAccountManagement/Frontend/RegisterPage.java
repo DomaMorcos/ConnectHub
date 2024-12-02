@@ -35,7 +35,7 @@ public class RegisterPage {
         grid.add(emailTextField, 1, 0);
 
         emailValidationLabel = new Label();
-        emailValidationLabel.setTextFill(Color.RED);
+        emailValidationLabel.setTextFill(Color.BLACK);
         emailValidationLabel.setId("EmailValidationLabel");
         grid.add(emailValidationLabel, 1, 1);
 
