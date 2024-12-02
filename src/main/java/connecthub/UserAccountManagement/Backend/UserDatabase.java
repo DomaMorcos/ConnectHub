@@ -35,22 +35,35 @@ public class UserDatabase {
              JsonWriter jsonWriter = Json.createWriter(os)) {
             jsonWriter.writeArray(jsonArray);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error while saving users to JSON file: " + e.getMessage());
         }
     }
 
     public static void readUsersFromJsonFile() {
-
         users.clear();
         try (InputStream is = new FileInputStream(FILEPATH);
              JsonReader jsonReader = Json.createReader(is)) {
             JsonArray jsonArray = jsonReader.readArray();
             for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class)) {
-                User user = new User(jsonObject.getString("userId"), jsonObject.getString("email"), jsonObject.getString("password"), jsonObject.getString("username"), jsonObject.getString("dateOfBirth"), jsonObject.getString("status"));
-                users.add(user);
+                // Validate JSON structure before creating User object
+                if (jsonObject.containsKey("userId") && jsonObject.containsKey("email") &&
+                        jsonObject.containsKey("username") && jsonObject.containsKey("dateOfBirth") &&
+                        jsonObject.containsKey("status")) {
+                    User user = new User(
+                            jsonObject.getString("userId"),
+                            jsonObject.getString("email"),
+                            jsonObject.getString("username"),
+                            "", // Password should not be stored in plain text
+                            jsonObject.getString("dateOfBirth"),
+                            jsonObject.getString("status")
+                    );
+                    users.add(user);
+                } else {
+                    System.err.println("Invalid user data in JSON file: " + jsonObject);
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error while reading users from JSON file: " + e.getMessage());
         }
     }
 
@@ -59,7 +72,7 @@ public class UserDatabase {
             if (user.getEmail().equals(email))
                 return  user;
         }
-        return null;
+        return null; // User not found
     }
 
     public static boolean contains (String email) {
@@ -67,7 +80,7 @@ public class UserDatabase {
             if (user.getEmail().equals(email))
                 return  true;
         }
-        return false;
+        return false; // Email does not exist
     }
 
 }

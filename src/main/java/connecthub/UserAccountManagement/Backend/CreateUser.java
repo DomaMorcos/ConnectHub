@@ -1,5 +1,6 @@
 package connecthub.UserAccountManagement.Backend;
 
+import static connecthub.UserAccountManagement.Backend.UserDatabase.contains;
 import static connecthub.UserAccountManagement.Backend.UserDatabase.users;
 import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
 import static connecthub.UserAccountManagement.Backend.Validation.isEmailValid;
@@ -17,8 +18,8 @@ public class CreateUser {
             return  false;
         } else if (!isUsernameValid(username)) {
             return false;
-        } else if (users.contains(email)) {
-            return false;
+        } else if (contains(email)) {
+            return false; // Email already exists
         }
         String hash = hashPassword(password);
         User newUser = new User(generateID(), email, username, hash, dateOfBirth, "offline");

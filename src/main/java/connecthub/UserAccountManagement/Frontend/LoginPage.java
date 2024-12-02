@@ -56,6 +56,7 @@ public class LoginPage extends Application {
         registerButton.setOnAction(e ->{
             RegisterPage registerPage = new RegisterPage();
             try {
+                stage.close();
                 registerPage.start();
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
