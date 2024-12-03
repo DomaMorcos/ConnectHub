@@ -4,11 +4,11 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 public abstract class AbstractContent implements Content {
-    protected String contentId;
-    protected String authorId;
-    protected String content;
-    protected String imagePath;
-    protected String timestamp;
+    private String contentId;
+    private String authorId;
+    private String content;
+    private String imagePath;
+    private String timestamp;
 
     public AbstractContent(String contentId, String authorId, String content, String imagePath, String timestamp) {
         this.contentId = contentId;
@@ -18,22 +18,48 @@ public abstract class AbstractContent implements Content {
         this.timestamp = timestamp;
     }
 
-    @Override
     public String getContentId() {
         return contentId;
     }
 
-    @Override
+    public void setContentId(String contentId) {
+        this.contentId = contentId;
+    }
+
     public String getAuthorId() {
         return authorId;
     }
 
-    @Override
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
     public String getTimestamp() {
         return timestamp;
     }
 
-    public JsonObject baseJson() {
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public JsonObject toJson() {
+        //create a json object
         return Json.createObjectBuilder()
                 .add("contentId", contentId)
                 .add("authorId", authorId)

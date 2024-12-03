@@ -11,12 +11,14 @@ public class Post extends AbstractContent {
 
     @Override
     public JsonObject toJson() {
-        return Json.createObjectBuilder(baseJson())
+        //add to the json object the type
+        return Json.createObjectBuilder(super.toJson())
                 .add("type", "post")
                 .build();
     }
 
-    public static Post fromJson(JsonObject jsonObject) {
+    public static Post readFromJson(JsonObject jsonObject) {
+        //make from json a post
         return new Post(
                 jsonObject.getString("contentId"),
                 jsonObject.getString("authorId"),

@@ -13,12 +13,14 @@ public class Story extends AbstractContent {
 
     @Override
     public JsonObject toJson() {
-        return Json.createObjectBuilder(baseJson())
+        //add to the json object the type
+        return Json.createObjectBuilder(super.toJson())
                 .add("type", "story")
                 .build();
     }
 
-    public static Story fromJson(JsonObject jsonObject) {
+    public static Story readFromJson(JsonObject jsonObject) {
+        //make from json a story
         return new Story(
                 jsonObject.getString("contentId"),
                 jsonObject.getString("authorId"),
@@ -29,7 +31,10 @@ public class Story extends AbstractContent {
     }
 
     public boolean isExpired() {
-        LocalDateTime storyTime = LocalDateTime.parse(timestamp);
+        //get the date of creation
+        LocalDateTime storyTime = LocalDateTime.parse(getTimestamp());
+        //make it +24
+        //if it's before now return true
         return storyTime.plusHours(EXPIRATION_HOURS).isBefore(LocalDateTime.now());
     }
 }
