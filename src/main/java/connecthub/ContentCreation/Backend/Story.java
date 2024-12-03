@@ -1,5 +1,7 @@
 package connecthub.ContentCreation.Backend;
 
+import org.json.JSONObject;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ public class Story extends AbstractContent {
                 jsonObject.getString("timestamp")
         );
     }
+
 
     public boolean isExpired() {
         LocalDateTime storyTime = LocalDateTime.parse(timestamp);

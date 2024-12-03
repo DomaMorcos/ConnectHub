@@ -1,17 +1,13 @@
 package connecthub.UserAccountManagement.Backend;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonReader;
-import javax.json.JsonWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class UserDatabase {
@@ -19,34 +15,41 @@ public class UserDatabase {
     public static final String FILEPATH = "User.JSON";
 
     public static void saveUsersToJsonFile() {
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+        JSONArray usersArray = new JSONArray();
         for (User user : users) {
-            JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-            objectBuilder.add("userId", user.getUserId())
-                    .add("email", user.getEmail())
-                    .add("username", user.getUsername())
-                    .add("dateOfBirth", user.getDateOfBirth())
-                    .add("status", user.getStatus());
-            arrayBuilder.add(objectBuilder.build());
+            JSONObject j = new JSONObject();
+            j.put("userId", user.getUserId());
+            j.put("email", user.getEmail());
+            j.put("username", user.getUsername());
+            j.put("dateOfBirth", user.getDateOfBirth());
+            j.put("status", user.getStatus());
+            usersArray.put(j);
         }
-        JsonArray jsonArray = arrayBuilder.build();
-
-        try (OutputStream os = new FileOutputStream(FILEPATH);
-             JsonWriter jsonWriter = Json.createWriter(os)) {
-            jsonWriter.writeArray(jsonArray);
+        try {
+            FileWriter file = new FileWriter(FILEPATH);
+            file.write(usersArray.toString());
+            file.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Error");
         }
     }
 
     public static void readUsersFromJsonFile() {
-
         users.clear();
-        try (InputStream is = new FileInputStream(FILEPATH);
-             JsonReader jsonReader = Json.createReader(is)) {
-            JsonArray jsonArray = jsonReader.readArray();
-            for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class)) {
-                User user = new User(jsonObject.getString("userId"), jsonObject.getString("email"), jsonObject.getString("password"), jsonObject.getString("username"), jsonObject.getString("dateOfBirth"), jsonObject.getString("status"));
+        try {
+            String json = new String(Files.readAllBytes(Paths.get(FILEPATH)));
+            JSONArray usersArray = new JSONArray(json);
+
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+            for (int i = 0; i < usersArray.length(); i++) {
+                JSONObject userJson = usersArray.getJSONObject(i);
+                String email = userJson.getString("email");
+                String userId = userJson.getString("userId");
+                String username = userJson.getString("username");
+                LocalDate dateOfBirth = LocalDate.parse(userJson.getString("dateOfBirth"), formatter);
+                String password = userJson.getString("password");
+                String status = userJson.getString("status");
+                User user = new User(userId, email, username, password, dateOfBirth.toString(), status);
                 users.add(user);
             }
         } catch (IOException e) {
@@ -54,9 +57,16 @@ public class UserDatabase {
         }
     }
 
-    public static User getUser(String email) {
+    public static   User getUser(String email) {
         for (User user:users) {
             if (user.getEmail().equals(email))
+                return  user;
+        }
+        return null;
+    }
+    public User getUserById(String userId) {
+        for (User user:users) {
+            if (user.getUserId().equals(userId))
                 return  user;
         }
         return null;

@@ -18,6 +18,10 @@ public abstract class AbstractContent implements Content {
         this.timestamp = timestamp;
     }
 
+    public String getImagePath() {
+        return imagePath;
+    }
+
     @Override
     public String getContentId() {
         return contentId;
@@ -33,8 +37,9 @@ public abstract class AbstractContent implements Content {
         return timestamp;
     }
 
-    public JsonObject baseJson() {
-        return Json.createObjectBuilder()
+    public  JsonObject baseJson() {
+
+        return  Json.createObjectBuilder()
                 .add("contentId", contentId)
                 .add("authorId", authorId)
                 .add("content", content)

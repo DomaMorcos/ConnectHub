@@ -1,5 +1,8 @@
 package connecthub.ContentCreation.Backend;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -7,6 +10,8 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.JsonWriter;
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +19,12 @@ import java.util.List;
 public class ContentDatabase {
     private static final String POSTS_FILEPATH = "Posts.JSON";
     private static final String STORIES_FILEPATH = "Stories.JSON";
-    private final List<Content> contents = new ArrayList<>();
+    private static final List<Content> contents = new ArrayList<>();
     private static long counter = 1;
+
+    public static List<Content> getContents() {
+        return contents;
+    }
 
     public void saveContent() {
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
@@ -23,7 +32,6 @@ public class ContentDatabase {
             arrayBuilder.add(content.toJson());
         }
         JsonArray jsonArray = arrayBuilder.build();
-
         try (OutputStream os = new FileOutputStream(POSTS_FILEPATH);
              JsonWriter jsonWriter = Json.createWriter(os)) {
             jsonWriter.writeArray(jsonArray);
@@ -83,6 +91,8 @@ public class ContentDatabase {
         contents.add(story);
         saveContent();
     }
+
+
 
     public static synchronized String generateId() {
         return String.valueOf(counter++);

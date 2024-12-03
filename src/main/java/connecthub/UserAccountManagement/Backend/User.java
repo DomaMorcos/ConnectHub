@@ -69,6 +69,7 @@ public class User implements Serializable {
     public String getStatus() {
         return status;
     }
+
 }
 
 

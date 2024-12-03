@@ -2,7 +2,6 @@ package connecthub.UserAccountManagement.Backend;
 
 import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
 import static connecthub.UserAccountManagement.Backend.UserDatabase.getUser;
-import static connecthub.UserAccountManagement.Backend.UserDatabase.users;
 
 public class LogUser {
     public boolean login(String email, String password) {
