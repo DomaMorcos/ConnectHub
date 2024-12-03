@@ -14,14 +14,14 @@ import static connecthub.UserAccountManagement.Backend.Validation.isUsernameVali
 
 public class RegisterPage {
     private GridPane grid;
-    private Label emailLabel , usernameLabel , passwordLabel , dateOfBirthLabel , emailValidationLabel , usernameValidationLabel;
-    private TextField emailTextField , usernameTextField;
+    private Label emailLabel, usernameLabel, passwordLabel, dateOfBirthLabel, emailValidationLabel, usernameValidationLabel;
+    private TextField emailTextField, usernameTextField;
     private PasswordField passwordField;
     private DatePicker dateOfBirthDatePicker;
     private Button registerButton;
 
 
-    public void start() throws Exception{
+    public void start() throws Exception {
         Stage stage = new Stage();
 
         grid = new GridPane();
@@ -44,7 +44,7 @@ public class RegisterPage {
             if (isEmailValid(newValue)) {
                 emailValidationLabel.setText("");
             } else {
-                emailValidationLabel.setText("Invalid email format");
+                emailValidationLabel.setText("Enter a valid email format");
             }
         });
 
@@ -63,7 +63,7 @@ public class RegisterPage {
             if (isUsernameValid(newValue)) {
                 usernameValidationLabel.setText("");
             } else {
-                usernameValidationLabel.setText("Username should start with one character atleast !");
+                usernameValidationLabel.setText("Username should start with a character");
             }
         });
 
@@ -81,7 +81,17 @@ public class RegisterPage {
         grid.add(dateOfBirthDatePicker, 1, 7);
 
         registerButton = new Button("Register");
-        registerButton.setOnAction(e -> handleRegisterAction());
+        registerButton.setOnAction(e -> {
+            handleRegisterAction();
+            stage.close();
+            LoginPage loginPage = new LoginPage();
+            try {
+                loginPage.start(stage);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+
+        });
         grid.add(registerButton, 1, 9);
 
 
@@ -89,24 +99,24 @@ public class RegisterPage {
         scene.getStylesheets().add(getClass().getResource("RegisterPage.css").toExternalForm());
         stage.setScene(scene); // Stage -> Scene - > Grid -> Buttons
         stage.setTitle("Register Window");
-        stage.showAndWait();
+        stage.show();
 
     }
 
-    public void handleRegisterAction(){
+    public void handleRegisterAction() {
         CreateUser createUser = new CreateUser();
         String email = emailTextField.getText();
         String username = usernameTextField.getText();
         String password = passwordField.getText();
         String dateOfBirth = dateOfBirthDatePicker.getValue().toString();
 
-        if(email.isEmpty() || username.isEmpty() || password.isEmpty() ){
+        if (email.isEmpty() || username.isEmpty() || password.isEmpty()) {
             AlertUtils.showErrorMessage("Empty Fields", "Please Fill All The Required Fields!");
-        } else if (!(createUser.signup(email, username, password, dateOfBirth))){
+        } else if (!(createUser.signup(email, username, password, dateOfBirth))) {
             AlertUtils.showWarningMessage("Error", "Email Already in Use!");
-        } else{
+        } else {
             createUser.signup(email, username, password, dateOfBirth);
-            AlertUtils.showConfirmationMessage("Registration Successful","Registration Successful ! ");
+            AlertUtils.showInformationMessage("Registration Successful", "Registration Successful ! ");
         }
     }
 }
