@@ -1,13 +1,13 @@
 package connecthub.UserAccountManagement.Backend;
 
-
 import java.io.Serializable;
+
 public class User implements Serializable {
 
     private String userId;
     private String email;
     private String username;
-    private String password;
+    private String password; // Password should be hashed
     private String dateOfBirth;
     private String status;
 
@@ -15,7 +15,7 @@ public class User implements Serializable {
         this.userId = userId;
         this.email = email;
         this.username = username;
-        this.password = password;
+        this.password = password; // Store the hashed password
         this.dateOfBirth = dateOfBirth;
         this.status = status;
     }

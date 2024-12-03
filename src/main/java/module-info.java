@@ -6,4 +6,5 @@ module connecthub {
 
     opens connecthub to javafx.fxml;
     exports connecthub;
+    exports connecthub.UserAccountManagement.Frontend;
 }
