@@ -2,6 +2,7 @@ package connecthub.UserAccountManagement.Frontend;
 
 import connecthub.AlertUtils;
 import connecthub.UserAccountManagement.Backend.LogUser;
+import connecthub.UserAccountManagement.Backend.UserDatabase;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,11 +13,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 
+import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
 import static connecthub.UserAccountManagement.Backend.Validation.isEmailValid;
 
 public class LoginPage extends Application {
     private VBox root; // VBox containing TextFields and Buttons for Login/Signup
-    private Label titleLabel , emailValidationLabel;
+    private Label titleLabel, emailValidationLabel;
     private TextField email;
     private PasswordField password;
     private Button loginButton, registerButton;
@@ -42,7 +44,7 @@ public class LoginPage extends Application {
             if (isEmailValid(newValue)) {
                 emailValidationLabel.setText("");
             } else {
-                emailValidationLabel.setText("Invalid email format");
+                emailValidationLabel.setText("Enter a valid email format");
             }
         });
 
@@ -50,10 +52,12 @@ public class LoginPage extends Application {
         password.setPromptText("Password");
 
         loginButton = new Button("Login");
-        loginButton.setOnAction(e -> handleLoginAction());
+        loginButton.setOnAction(e -> {
+            handleLoginAction();
+        });
 
         registerButton = new Button("Register");
-        registerButton.setOnAction(e ->{
+        registerButton.setOnAction(e -> {
             RegisterPage registerPage = new RegisterPage();
             try {
                 stage.close();
@@ -83,10 +87,9 @@ public class LoginPage extends Application {
             AlertUtils.showErrorMessage("Login Failed", "Invalid Email or Password!");
         } else {
             logUser.login(emailText, passwordText);
-            AlertUtils.showConfirmationMessage("Login Successful", "Login Successful!");
+            AlertUtils.showInformationMessage("Login Successful", "Login Successful!");
         }
     }
-
 
 
     public static void main(String[] args) {

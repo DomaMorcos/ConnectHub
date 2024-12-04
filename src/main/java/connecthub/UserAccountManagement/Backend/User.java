@@ -69,6 +69,19 @@ public class User implements Serializable {
     public String getStatus() {
         return status;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId='" + userId + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", dateOfBirth='" + dateOfBirth + '\'' +
+                ", status='" + status + '\'' +
+                '}';
+    }
+
 }
 
 

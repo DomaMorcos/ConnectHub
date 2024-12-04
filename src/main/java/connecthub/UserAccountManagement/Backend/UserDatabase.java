@@ -1,86 +1,119 @@
 package connecthub.UserAccountManagement.Backend;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonReader;
-import javax.json.JsonWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class UserDatabase {
-    public static ArrayList<User> users = new ArrayList<>();
+    private static UserDatabase instance; // Singleton instance
+    public ArrayList<User> users = new ArrayList<>();
     public static final String FILEPATH = "User.JSON";
 
-    public static void saveUsersToJsonFile() {
-        JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        for (User user : users) {
-            JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
-            objectBuilder.add("userId", user.getUserId())
-                    .add("email", user.getEmail())
-                    .add("username", user.getUsername())
-                    .add("dateOfBirth", user.getDateOfBirth())
-                    .add("status", user.getStatus());
-            arrayBuilder.add(objectBuilder.build());
-        }
-        JsonArray jsonArray = arrayBuilder.build();
+    // Private constructor to prevent instantiation
+    private UserDatabase() {
+    }
 
-        try (OutputStream os = new FileOutputStream(FILEPATH);
-             JsonWriter jsonWriter = Json.createWriter(os)) {
-            jsonWriter.writeArray(jsonArray);
+    // Public method to provide access to the singleton instance
+    public static synchronized UserDatabase getInstance() {
+        if (instance == null) {
+            instance = new UserDatabase();
+            instance.readUsersFromJsonFile();
+        }
+        return instance;
+    }
+
+    public static void saveUsersToJsonFile() {
+
+        UserDatabase userDB = UserDatabase.getInstance();
+        JSONArray usersArray = new JSONArray();
+        for (User user : userDB.users) {
+            JSONObject j = new JSONObject();
+            j.put("userId", user.getUserId());
+            j.put("email", user.getEmail());
+            j.put("username", user.getUsername());
+            j.put("password", user.getPassword());
+            j.put("dateOfBirth", user.getDateOfBirth());
+            j.put("status", user.getStatus());
+            usersArray.put(j);
+        }
+
+        try {
+            FileWriter file = new FileWriter(FILEPATH);
+            file.write(usersArray.toString());
+            file.close();
         } catch (IOException e) {
-            System.err.println("Error while saving users to JSON file: " + e.getMessage());
+            System.out.println("Error");
         }
     }
 
-    public static void readUsersFromJsonFile() {
-        users.clear();
-        try (InputStream is = new FileInputStream(FILEPATH);
-             JsonReader jsonReader = Json.createReader(is)) {
-            JsonArray jsonArray = jsonReader.readArray();
-            for (JsonObject jsonObject : jsonArray.getValuesAs(JsonObject.class)) {
-                // Validate JSON structure before creating User object
-                if (jsonObject.containsKey("userId") && jsonObject.containsKey("email") &&
-                        jsonObject.containsKey("username") && jsonObject.containsKey("dateOfBirth") &&
-                        jsonObject.containsKey("status")) {
-                    User user = new User(
-                            jsonObject.getString("userId"),
-                            jsonObject.getString("email"),
-                            jsonObject.getString("username"),
-                            "", // Password should not be stored in plain text
-                            jsonObject.getString("dateOfBirth"),
-                            jsonObject.getString("status")
-                    );
-                    users.add(user);
-                } else {
-                    System.err.println("Invalid user data in JSON file: " + jsonObject);
-                }
+
+    public void readUsersFromJsonFile() {
+
+        UserDatabase userDB = UserDatabase.getInstance();
+        userDB.users.clear();
+
+        try {
+            String json = new String(Files.readAllBytes(Paths.get(FILEPATH)));
+            JSONArray usersArray = new JSONArray(json);
+
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+            for (int i = 0; i < usersArray.length(); i++) {
+                JSONObject userJson = usersArray.getJSONObject(i);
+                String email = userJson.getString("email");
+                String userId = userJson.getString("userId");
+                String username = userJson.getString("username");
+                LocalDate dateOfBirth = LocalDate.parse(userJson.getString("dateOfBirth"), formatter);
+                String password = userJson.getString("password");
+                String status = userJson.getString("status");
+                User user = new User(userId, email, username, password, dateOfBirth.toString(), status);
+
+                userDB.users.add(user);
+
             }
         } catch (IOException e) {
-            System.err.println("Error while reading users from JSON file: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    public static User getUser(String email) {
-        for (User user:users) {
+
+    public User getUser(String email) {
+        UserDatabase userDB = UserDatabase.getInstance();
+        for (User user : userDB.users) {
+
             if (user.getEmail().equals(email))
-                return  user;
+                return user;
         }
         return null; // User not found
     }
-
-    public static boolean contains (String email) {
+    public User getUserById(String userId) {
         for (User user:users) {
+            if (user.getUserId().equals(userId))
+                return  user;
+        }
+        return null;
+    }
+
+    public boolean contains(String email) {
+
+        UserDatabase userDB = UserDatabase.getInstance();
+        for (User user : userDB.users) {
             if (user.getEmail().equals(email))
-                return  true;
+                return true;
         }
         return false; // Email does not exist
     }
+    public void printUsers(){
+        UserDatabase userDB = UserDatabase.getInstance();
+        for (User user : userDB.users) {
+            System.out.println(user.toString());
 
+        }
+    }
 }
