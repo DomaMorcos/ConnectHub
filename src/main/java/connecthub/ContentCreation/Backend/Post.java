@@ -19,6 +19,7 @@ public class Post extends AbstractContent {
     }
 
     public static Post readFromJson(JSONObject jsonObject) {
+        // make post from json object
         String contentId = jsonObject.optString("contentId", "");
         String authorId = jsonObject.optString("authorId", "unknown");
         String content = jsonObject.optString("content", "");

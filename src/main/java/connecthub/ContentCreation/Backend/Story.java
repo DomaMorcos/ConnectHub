@@ -21,7 +21,7 @@ public class Story extends AbstractContent {
     }
 
     public static Story readFromJson(JSONObject jsonObject) {
-        // Safely parse required and optional fields
+        // make Story from json object
         String contentId = jsonObject.optString("contentId", "");
         String authorId = jsonObject.optString("authorId", "unknown");
         String content = jsonObject.optString("content", "");
