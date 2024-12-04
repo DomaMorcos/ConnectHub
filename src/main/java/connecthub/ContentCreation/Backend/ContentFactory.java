@@ -7,7 +7,9 @@ import static connecthub.ContentCreation.Backend.ContentDatabase.*;
 public class ContentFactory {
     public static Content createContent(String type, String authorId, String content, String imagePath) {
         //make unique id for the content
+
         GetContent getContent = new GetContent();
+
         String time = LocalDateTime.now().toString();
         String contentId = generateId(authorId);
         if (type.equals("Post")) {

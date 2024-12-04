@@ -92,6 +92,8 @@ public class ContentDatabase {
         //the unique id is the place of content
         String time = LocalDateTime.now().toString();
         return authorId + time;
+
+
     }
 
 }
