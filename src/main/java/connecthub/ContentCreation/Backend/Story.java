@@ -1,3 +1,4 @@
+
 package connecthub.ContentCreation.Backend;
 
 import org.json.JSONObject;
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 public class Story extends AbstractContent {
     private static final int EXPIRATION_HOURS = 24;
 
-    public Story(int contentId, String authorId, String content, String imagePath, String timestamp) {
+    public Story(String contentId, String authorId, String content, String imagePath, String timestamp) {
         super(contentId, authorId, content, imagePath, timestamp);
     }
 
@@ -21,8 +22,8 @@ public class Story extends AbstractContent {
     }
 
     public static Story readFromJson(JSONObject jsonObject) {
-        // Safely parse required and optional fields
-        int contentId = jsonObject.optInt("contentId", -1);
+        // make Story from json object
+        String contentId = jsonObject.optString("contentId", "");
         String authorId = jsonObject.optString("authorId", "unknown");
         String content = jsonObject.optString("content", "");
         String imagePath = jsonObject.optString("imagePath", "");

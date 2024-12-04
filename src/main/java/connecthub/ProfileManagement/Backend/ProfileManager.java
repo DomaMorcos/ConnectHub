@@ -20,8 +20,9 @@ import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword
 public class ProfileManager {
     private static String PROFILE_FILEPATH = "Profiles.JSON";
     private static Map<String, UserProfile> profiles = new HashMap<>();
-    private ContentDatabase contentDatabase;
+    private ContentDatabase contentDatabase=ContentDatabase.getInstance();
     private UserDatabase userDatabase = UserDatabase.getInstance();
+    private GetContent getContent = new GetContent();
 
     public ProfileManager(ContentDatabase contentDb, UserDatabase userDb) {
         this.contentDatabase = contentDb;
@@ -49,7 +50,7 @@ public class ProfileManager {
     public List<Post> getOwnPosts(String authorId) {
         contentDatabase.loadContents();
         List<Post> ownPosts = new ArrayList<>();
-        for (Content content : ContentDatabase.getContents()) {
+        for (Content content : getContent.getAllContents()) {
             if (content instanceof Post && ((Post) content).getAuthorId().equals(authorId)) {
                 ownPosts.add((Post) content);
             }

@@ -25,11 +25,11 @@ public class GetContent {
 
     public ArrayList<Story> getAllStories() {
         //load
-        ArrayList<Content> c = loadContents();
+        ArrayList<Content> contents = loadContents();
         //array list empty
         ArrayList<Story> stories = new ArrayList<>();
-        assert c != null;
-        for (Content content : c) {
+        assert contents != null;
+        for (Content content : contents) {
             //if the content is story cast and add
             if (content instanceof Story) {
                 stories.add((Story) content);
@@ -37,14 +37,25 @@ public class GetContent {
         }
         return stories;
     }
+    public ArrayList<Content> getAllContents() {
+        //load
+        ArrayList<Content> contents = loadContents();
+        //array list empty
+        ArrayList<Content> allContents = new ArrayList<>();
+        assert contents != null;
+        for (Content content : contents) {
+            allContents.add(content);
+        }
+        return allContents;
+    }
 
     public ArrayList<Post> getAllPostsForUser(User user) {
         //load
-        ArrayList<Content> c = loadContents();
+        ArrayList<Content> contents = loadContents();
         //array list empty
         ArrayList<Post> posts = new ArrayList<>();
-        assert c != null;
-        for (Content content : c) {
+        assert contents != null;
+        for (Content content : contents) {
             //if the content is post
             if (content instanceof Post) {
                 //if the id = id cast and add
@@ -57,11 +68,11 @@ public class GetContent {
 
     public ArrayList<Story> getAllStoriesForUser(User user) {
         //load
-        ArrayList<Content> c = loadContents();
+        ArrayList<Content> contents = loadContents();
         //array list empty
         ArrayList<Story> stories = new ArrayList<>();
-        assert c != null;
-        for (Content content : c) {
+        assert contents != null;
+        for (Content content : contents) {
             //if the content is story
             if (content instanceof Story) {
                 //if the id = id cast and add
@@ -70,5 +81,19 @@ public class GetContent {
             }
         }
         return stories;
+    }
+    public ArrayList<Content> getAllContentForUser(User user) {
+        //load all contents
+        ArrayList<Content> contents = loadContents();
+        //array list empty
+        ArrayList<Content> contentsForUser = new ArrayList<>();
+        assert contents != null;
+        //loop on contents
+        for (Content content : contents) {
+            if (Objects.equals(((Story) content).getAuthorId(), user.getUserId()) || Objects.equals(((Post) content).getAuthorId(), user.getUserId())) {
+                contentsForUser.add(content);
+            }
+        }
+        return contentsForUser;
     }
 }
