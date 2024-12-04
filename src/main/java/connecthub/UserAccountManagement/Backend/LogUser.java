@@ -17,6 +17,7 @@ public class LogUser {
         return true;
     }
 
+
     public void logout(String email) {
         User user = userDB.getUser(email);
         if (user != null) {

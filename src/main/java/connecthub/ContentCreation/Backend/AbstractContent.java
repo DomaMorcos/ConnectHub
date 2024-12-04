@@ -3,13 +3,13 @@ package connecthub.ContentCreation.Backend;
 import org.json.JSONObject;
 
 public abstract class AbstractContent implements Content {
-    private int contentId;
+    private String contentId;
     private String authorId;
     private String content;
     private String imagePath;
     private String timestamp;
 
-    public AbstractContent(int contentId, String authorId, String content, String imagePath, String timestamp) {
+    public AbstractContent(String contentId, String authorId, String content, String imagePath, String timestamp) {
         this.contentId = contentId;
         this.authorId = authorId;
         this.content = content;
@@ -17,11 +17,11 @@ public abstract class AbstractContent implements Content {
         this.timestamp = timestamp;
     }
 
-    public int getContentId() {
+    public String getContentId() {
         return contentId;
     }
 
-    public void setContentId(int contentId) {
+    public void setContentId(String contentId) {
         this.contentId = contentId;
     }
 

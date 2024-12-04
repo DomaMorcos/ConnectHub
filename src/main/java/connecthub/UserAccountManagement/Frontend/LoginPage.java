@@ -1,7 +1,12 @@
 package connecthub.UserAccountManagement.Frontend;
 
 import connecthub.AlertUtils;
+import connecthub.ContentCreation.Backend.ContentDatabase;
+import connecthub.ProfileManagement.Backend.ProfileDatabase;
+import connecthub.ProfileManagement.Backend.ProfileManager;
+import connecthub.ProfileManagement.Frontend.ProfilePage;
 import connecthub.UserAccountManagement.Backend.LogUser;
+import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -22,6 +27,7 @@ public class LoginPage extends Application {
     private TextField email;
     private PasswordField password;
     private Button loginButton, registerButton;
+    UserDatabase userDatabase = UserDatabase.getInstance();
 
 
     @Override
@@ -53,7 +59,16 @@ public class LoginPage extends Application {
 
         loginButton = new Button("Login");
         loginButton.setOnAction(e -> {
-            handleLoginAction();
+            try {
+                handleLoginAction();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            stage.close();
+            try {
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         });
 
         registerButton = new Button("Register");
@@ -75,7 +90,7 @@ public class LoginPage extends Application {
         stage.show();
     }
 
-    private void handleLoginAction() {
+    private void handleLoginAction() throws Exception {
         String emailText = email.getText();
         String passwordText = password.getText();
         LogUser logUser = new LogUser();
@@ -88,6 +103,10 @@ public class LoginPage extends Application {
         } else {
             logUser.login(emailText, passwordText);
             AlertUtils.showInformationMessage("Login Successful", "Login Successful!");
+            User user = userDatabase.getUser(emailText);
+            ProfilePage profilePage = new ProfilePage();
+            profilePage.start(user.getUserId());
+
         }
     }
 

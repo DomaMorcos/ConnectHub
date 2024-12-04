@@ -1,6 +1,5 @@
 package connecthub.ProfileManagement.Backend;
 
-import javax.json.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -38,7 +37,7 @@ public class ProfileManager {
         saveProfilesToJsonFile();
     }
 
-    public void updatePassword(String userId, String newPassword) {
+    public void updatePassword(String userId ,String newPassword) {
         User user = userDatabase.getUserById(userId);
         if (user != null) {
             user.setPassword(hashPassword(newPassword));

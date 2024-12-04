@@ -92,6 +92,7 @@ public class UserDatabase {
         }
         return null; // User not found
     }
+
     public User getUserById(String userId) {
         for (User user:users) {
             if (user.getUserId().equals(userId))

@@ -1,6 +1,8 @@
 package connecthub.UserAccountManagement.Frontend;
 
 import connecthub.AlertUtils;
+import connecthub.ProfileManagement.Backend.ProfileDatabase;
+import connecthub.ProfileManagement.Backend.UserProfile;
 import connecthub.UserAccountManagement.Backend.CreateUser;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -117,6 +119,7 @@ public class RegisterPage {
         } else {
             createUser.signup(email, username, password, dateOfBirth);
             AlertUtils.showInformationMessage("Registration Successful", "Registration Successful ! ");
+
         }
     }
 }

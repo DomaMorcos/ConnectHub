@@ -1,6 +1,9 @@
 package connecthub.UserAccountManagement.Backend;
 
 
+import connecthub.ProfileManagement.Backend.ProfileDatabase;
+import connecthub.ProfileManagement.Backend.UserProfile;
+
 import java.util.ArrayList;
 
 import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
@@ -23,7 +26,11 @@ public class CreateUser {
             return false;
         }
         String hash = hashPassword(password);
-        User newUser = new User(generateID(), email, username, hash, dateOfBirth, "offline");
+        String generatedID = generateID();
+        User newUser = new User(generatedID, email, username, hash, dateOfBirth, "offline");
+        UserProfile userProfile = new UserProfile(generatedID, "DefaultProfilePhoto.jpg","DefaultProfilePhoto.jpg","Click on Edit to edit Bio",new ArrayList<>());
+        ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
+        profileDatabase.updateProfile(userProfile);
         userDB.users.add(newUser);
         userDB.saveUsersToJsonFile();
         return true;
