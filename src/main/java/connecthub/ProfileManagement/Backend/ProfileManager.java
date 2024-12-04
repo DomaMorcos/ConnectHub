@@ -4,8 +4,6 @@ import javax.json.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.json.JSONArray;
@@ -150,6 +148,4 @@ public class ProfileManager {
             e.printStackTrace();
         }
     }
-
-
 }
