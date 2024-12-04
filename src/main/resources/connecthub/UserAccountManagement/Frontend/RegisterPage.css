@@ -1,0 +1,19 @@
+.root {
+    -fx-background-color: #fd5a00;
+    -fx-alignment: center;
+    -fx-spacing: 40px;
+}
+#Components {
+    -fx-vgap: 20px;
+    -fx-hgap: 50px;
+}
+DatePicker{
+    -fx-min-width: 100px;
+}
+Button{
+    -fx-text-fill: White;
+    -fx-background-color: Red;
+    -fx-background-radius: 20px;
+    -fx-min-width: 100px;
+}
+
