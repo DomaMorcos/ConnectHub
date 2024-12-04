@@ -3,13 +3,7 @@ package connecthub.UserAccountManagement.Backend;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonReader;
-import javax.json.JsonWriter;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -49,6 +43,7 @@ public class UserDatabase {
             j.put("status", user.getStatus());
             usersArray.put(j);
         }
+
         try {
             FileWriter file = new FileWriter(FILEPATH);
             file.write(usersArray.toString());
@@ -58,10 +53,12 @@ public class UserDatabase {
         }
     }
 
+
     public void readUsersFromJsonFile() {
 
         UserDatabase userDB = UserDatabase.getInstance();
         userDB.users.clear();
+
         try {
             String json = new String(Files.readAllBytes(Paths.get(FILEPATH)));
             JSONArray usersArray = new JSONArray(json);
@@ -76,20 +73,31 @@ public class UserDatabase {
                 String password = userJson.getString("password");
                 String status = userJson.getString("status");
                 User user = new User(userId, email, username, password, dateOfBirth.toString(), status);
+
                 userDB.users.add(user);
+
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+
     public User getUser(String email) {
         UserDatabase userDB = UserDatabase.getInstance();
         for (User user : userDB.users) {
+
             if (user.getEmail().equals(email))
                 return user;
         }
         return null; // User not found
+    }
+    public User getUserById(String userId) {
+        for (User user:users) {
+            if (user.getUserId().equals(userId))
+                return  user;
+        }
+        return null;
     }
 
     public boolean contains(String email) {
