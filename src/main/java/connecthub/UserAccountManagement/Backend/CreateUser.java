@@ -11,15 +11,12 @@ public class CreateUser {
     public static synchronized String generateID() {
         return String.valueOf(counter++);
     }
+
     UserDatabase userDB = UserDatabase.getInstance();
 
     public boolean signup(String email, String username, String password, String dateOfBirth) {
-        if (!isEmailValid(email)) {
-            return  false;
-        } else if (!isUsernameValid(username)) {
+        if (!isEmailValid(email) || !isUsernameValid(username) || userDB.contains(email)) {
             return false;
-        } else if (userDB.contains(email)) {
-            return false; // Email already exists
         }
         String hash = hashPassword(password);
         User newUser = new User(generateID(), email, username, hash, dateOfBirth, "offline");
@@ -29,3 +26,4 @@ public class CreateUser {
         return true;
     }
 }
+
