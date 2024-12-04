@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    private static UserDatabase userDatabase = new UserDatabase();
-    private static ContentDatabase contentDatabase = new ContentDatabase();
+    private static UserDatabase userDatabase = UserDatabase.getInstance();
+    private static ContentDatabase contentDatabase = ContentDatabase.getInstance();
     private static ProfileManager profileManager = new ProfileManager(contentDatabase, userDatabase);
 
     public static void main(String[] args) {

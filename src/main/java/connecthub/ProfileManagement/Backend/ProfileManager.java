@@ -14,14 +14,14 @@ import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
 
 import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
-import static connecthub.UserAccountManagement.Backend.UserDatabase.getUser;
+
 
 
 public class ProfileManager {
     private static String PROFILE_FILEPATH = "Profiles.JSON";
     private static Map<String, UserProfile> profiles = new HashMap<>();
     private ContentDatabase contentDatabase;
-    private UserDatabase userDatabase;
+    private UserDatabase userDatabase = UserDatabase.getInstance();
 
     public ProfileManager(ContentDatabase contentDb, UserDatabase userDb) {
         this.contentDatabase = contentDb;
@@ -50,7 +50,7 @@ public class ProfileManager {
         contentDatabase.loadContents();
         List<Post> ownPosts = new ArrayList<>();
         for (Content content : ContentDatabase.getContents()) {
-            if (content instanceof Post && content.getAuthorId().equals(authorId)) {
+            if (content instanceof Post && ((Post) content).getAuthorId().equals(authorId)) {
                 ownPosts.add((Post) content);
             }
         }
@@ -58,13 +58,13 @@ public class ProfileManager {
     }
 
     public List<JsonObject> getFriendsWithStatus(String email) {
-        User user = getUser(email);
+        User user = userDatabase.getUser(email);
         if (user == null) {
             return new ArrayList<>();
         }
         List<JsonObject> friendsWithStatus = new ArrayList<>();
         for (String friendEmail : UserProfile.getFriends()) {
-            User friend = getUser(friendEmail);
+            User friend = userDatabase.getUser(friendEmail);
             if (friend != null) {
                 JsonObject friendInfo = Json.createObjectBuilder()
                         .add("email", friend.getEmail())

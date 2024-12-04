@@ -1,16 +1,15 @@
 package connecthub.ContentCreation.Backend;
 
-import javax.json.Json;
-import javax.json.JsonObject;
+import org.json.JSONObject;
 
 public abstract class AbstractContent implements Content {
-    protected String contentId;
-    protected String authorId;
-    protected String content;
-    protected String imagePath;
-    protected String timestamp;
+    private int contentId;
+    private String authorId;
+    private String content;
+    private String imagePath;
+    private String timestamp;
 
-    public AbstractContent(String contentId, String authorId, String content, String imagePath, String timestamp) {
+    public AbstractContent(int contentId, String authorId, String content, String imagePath, String timestamp) {
         this.contentId = contentId;
         this.authorId = authorId;
         this.content = content;
@@ -18,33 +17,55 @@ public abstract class AbstractContent implements Content {
         this.timestamp = timestamp;
     }
 
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    @Override
-    public String getContentId() {
+    public int getContentId() {
         return contentId;
     }
 
-    @Override
+    public void setContentId(int contentId) {
+        this.contentId = contentId;
+    }
+
     public String getAuthorId() {
         return authorId;
     }
 
-    @Override
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
     public String getTimestamp() {
         return timestamp;
     }
 
-    public  JsonObject baseJson() {
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
 
-        return  Json.createObjectBuilder()
-                .add("contentId", contentId)
-                .add("authorId", authorId)
-                .add("content", content)
-                .add("imagePath", imagePath != null ? imagePath : "")
-                .add("timestamp", timestamp)
-                .build();
+    public JSONObject toJson() {
+        //create a json object
+        JSONObject jsonObject = new JSONObject();
+        jsonObject
+                .put("contentId", contentId)
+                .put("authorId", authorId)
+                .put("content", content)
+                .put("imagePath", imagePath != null ? imagePath : "")
+                .put("timestamp", timestamp);
+        return jsonObject;
     }
 }
