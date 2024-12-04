@@ -1,6 +1,5 @@
 package connecthub.ProfileManagement.Backend;
 
-import javax.json.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,71 +8,24 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import connecthub.ContentCreation.Backend.*;
-import connecthub.UserAccountManagement.Backend.User;
-import connecthub.UserAccountManagement.Backend.UserDatabase;
-
-import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
-
-
-
-public class ProfileManager {
+public class ProfileDatabase {
     private static String PROFILE_FILEPATH = "Profiles.JSON";
     private static Map<String, UserProfile> profiles = new HashMap<>();
-    private ContentDatabase contentDatabase;
-    private UserDatabase userDatabase = UserDatabase.getInstance();
+    private static ProfileDatabase profileDatabase = null;
 
-    public ProfileManager(ContentDatabase contentDb, UserDatabase userDb) {
-        this.contentDatabase = contentDb;
-        this.userDatabase = userDb;
-        loadProfiles();
+    public ProfileDatabase() {
     }
-
-    public UserProfile getProfile(String userId) {
-        return profiles.get(userId);
+    public static ProfileDatabase getInstance() {
+        //only one instance
+        if (profileDatabase == null) {
+            profileDatabase = new ProfileDatabase();
+        }
+        return profileDatabase;
     }
 
     public void updateProfile(UserProfile profile) {
         profiles.put(profile.getUserId(), profile);
         saveProfilesToJsonFile();
-    }
-
-    public void updatePassword(String userId, String newPassword) {
-        User user = userDatabase.getUserById(userId);
-        if (user != null) {
-            user.setPassword(hashPassword(newPassword));
-            UserDatabase.saveUsersToJsonFile();
-        }
-    }
-
-    public List<Post> getOwnPosts(String authorId) {
-        contentDatabase.loadContents();
-        List<Post> ownPosts = new ArrayList<>();
-        for (Content content : ContentDatabase.getContents()) {
-            if (content instanceof Post && ((Post) content).getAuthorId().equals(authorId)) {
-                ownPosts.add((Post) content);
-            }
-        }
-        return ownPosts;
-    }
-
-    public List<JSONObject> getFriendsWithStatus(String email) {
-        User user = userDatabase.getUser(email);
-        if (user == null) {
-            return new ArrayList<>();
-        }
-        List<JSONObject> friendsWithStatus = new ArrayList<>();
-        for (String friendEmail : UserProfile.getFriends()) {
-            User friend = userDatabase.getUser(friendEmail);
-            if (friend != null) {
-                JSONObject friendInfo = new JSONObject();
-                friendInfo.put("email", friend.getEmail());
-                friendInfo.put("username", friend.getUsername());
-                friendInfo.put("status", friend.getStatus());
-                friendsWithStatus.add(friendInfo);
-            }
-        }
-        return friendsWithStatus;
     }
 
     public static void saveProfilesToJsonFile() {
@@ -108,7 +60,7 @@ public class ProfileManager {
     }
 
 
-    private void loadProfiles() {
+    void loadProfiles() {
         File file = new File(PROFILE_FILEPATH);
         if (!file.exists()) {
             System.out.println("Profiles file not found. Creating a new file.");
