@@ -92,8 +92,4 @@ public class ContentDatabase {
         return contents.size() + 1;
     }
 
-    public static List<Content> getContents() {
-        return contents;
-    }
-
 }
