@@ -7,17 +7,20 @@ import static connecthub.ContentCreation.Backend.ContentDatabase.*;
 public class ContentFactory {
     public static Content createContent(String type, String authorId, String content, String imagePath) {
         //make unique id for the content
-        int contentId = generateId();
+        String time = LocalDateTime.now().toString();
+        String contentId = generateId(authorId);
         if (type.equals("Post")) {
             //make a post
-            Post post = new Post(contentId, authorId, content, imagePath, LocalDateTime.now().toString());
+            contentId = "P" + contentId;
+            Post post = new Post(contentId, authorId, content, imagePath, time);
             //add it th the contents and save
             getContents().add(post);
             saveContents();
             return post;
         } else if (type.equals("Story")) {
             //make a story
-            Story story = new Story(contentId, authorId, content, imagePath, LocalDateTime.now().toString());
+            contentId = "S" + contentId;
+            Story story = new Story(contentId, authorId, content, imagePath, time);
             //add it th the contents and save
             getContents().add(story);
             saveContents();

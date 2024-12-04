@@ -16,7 +16,7 @@ public class CreateUser {
         }
         return Integer.toString(userDB.users.size() + 1);
     }
-    
+
     public boolean signup(String email, String username, String password, String dateOfBirth) {
 
         if (!isEmailValid(email) || !isUsernameValid(username) || userDB.contains(email)) {
