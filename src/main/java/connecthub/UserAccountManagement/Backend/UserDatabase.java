@@ -46,7 +46,7 @@ public class UserDatabase {
 
         try {
             FileWriter file = new FileWriter(FILEPATH);
-            file.write(usersArray.toString());
+            file.write(usersArray.toString(4));
             file.close();
         } catch (IOException e) {
             System.out.println("Error");
