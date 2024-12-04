@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,12 +85,10 @@ public class ContentDatabase {
         saveContents();
     }
 
-    public static synchronized int generateId() {
+    public static String generateId(String authorId) {
         //the unique id is the place of content
-        if (contents == null) {
-            contents = new ArrayList<>();
-        }
-        return contents.size() + 1;
+        String time = LocalDateTime.now().toString();
+        return authorId + time;
     }
 
     public static List<Content> getContents() {

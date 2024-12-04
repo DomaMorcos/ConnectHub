@@ -6,7 +6,7 @@ import javax.json.JsonObject;
 
 public class Post extends AbstractContent {
 
-    public Post(int contentId, String authorId, String content, String imagePath, String timestamp) {
+    public Post(String contentId, String authorId, String content, String imagePath, String timestamp) {
         super(contentId, authorId, content, imagePath, timestamp);
     }
 
@@ -19,7 +19,7 @@ public class Post extends AbstractContent {
     }
 
     public static Post readFromJson(JSONObject jsonObject) {
-        int contentId = jsonObject.optInt("contentId", -1);
+        String contentId = jsonObject.optString("contentId", "");
         String authorId = jsonObject.optString("authorId", "unknown");
         String content = jsonObject.optString("content", "");
         String imagePath = jsonObject.optString("imagePath", "");
