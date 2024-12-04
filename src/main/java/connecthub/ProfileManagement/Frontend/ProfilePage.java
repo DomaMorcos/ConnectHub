@@ -41,18 +41,19 @@ public class ProfilePage {
     ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
     ProfileManager profileManager = new ProfileManager(contentDatabase, userDatabase);
 
-    public void start(String userID) throws Exception {
 
+    public void start(String userID) throws Exception {
         Stage stage = new Stage();
 
         UserProfile userProfile = profileManager.getProfile(userID);
+
         // Cover Photo
-        coverPhoto = new ImageView(new Image(userProfile.getCoverPhotoPath()));
+        coverPhoto = new ImageView(new Image(getClass().getResource("/images/DefaultProfilePhoto.jpg").toExternalForm()));
         coverPhoto.setFitHeight(200);
         coverPhoto.setFitWidth(800);
 
         // Profile Photo
-        profilePhoto = new ImageView(new Image(userProfile.getProfilePhotoPath()));
+        profilePhoto = new ImageView(new Image(getClass().getResource("/images/DefaultProfilePhoto.jpg").toExternalForm()));
         profilePhoto.setFitHeight(200);
         profilePhoto.setFitWidth(200);
 
@@ -62,7 +63,6 @@ public class ProfilePage {
         photos.setSpacing(10);
         photos.getChildren().addAll(coverPhoto, profilePhoto);
 
-
         User user = userDatabase.getUserById(userID);
         // Profile Info
         profileName = new Label(user.getUsername());
@@ -70,7 +70,10 @@ public class ProfilePage {
         editBio = new Button("Edit Bio");
         editBio.setOnAction(e -> {
             Optional<String> result = handleEditBio();
-            result.ifPresent(newBio -> userProfile.setBio(newBio));
+            result.ifPresent(newBio -> {
+                userProfile.setBio(newBio);
+                profileManager.updateProfile(userProfile);
+            });
         });
 
         profileInfo = new VBox();
@@ -78,15 +81,15 @@ public class ProfilePage {
         profileInfo.setSpacing(10);
         profileInfo.getChildren().addAll(photos, profileName, bio, editBio);
 
-        // Posts
-        VBox posts = new VBox();
-        for (Pane postPane : loadPosts(user)) {
-            posts.getChildren().add(postPane);
-        }
+        // Initialize the class-level `posts`
+        posts = new VBox();
+//        for (Pane postPane : loadPosts(user)) {
+//            posts.getChildren().add(postPane);
+//        }
         posts.setPadding(new Insets(10));
         posts.setSpacing(10);
 
-        //Scrollable Posts
+        // Scrollable Posts
         scrollPane = new ScrollPane(posts);
         scrollPane.setFitToWidth(true);
 
@@ -100,7 +103,6 @@ public class ProfilePage {
         root.getChildren().addAll(mainLayout);
 
         // Menu
-
         settingMenuBar = new MenuBar();
         Menu settingsMenu = new Menu("Settings");
         friends = new MenuItem("Friends");
@@ -119,7 +121,6 @@ public class ProfilePage {
         editProfilePhoto.setOnAction(event -> {
             File file = fileChooser.showOpenDialog(stage);
             if (file != null) {
-//                System.out.println("Selected file for profile photo: " + file.getAbsolutePath());
                 userProfile.setProfilePhotoPath(file.getAbsolutePath());
             }
         });
@@ -128,14 +129,13 @@ public class ProfilePage {
         editCoverPhoto.setOnAction(event -> {
             File file = fileChooser.showOpenDialog(stage);
             if (file != null) {
-//                System.out.println("Selected file for cover photo: " + file.getAbsolutePath());
                 userProfile.setCoverPhotoPath(file.getAbsolutePath());
             }
         });
 
-        changePassword.setOnAction(e->{
+        changePassword.setOnAction(e -> {
             Optional<String> result = handleChangePassword();
-            result.ifPresent(newPassword -> profileManager.updatePassword(userID,newPassword));
+            result.ifPresent(newPassword -> profileManager.updatePassword(userID, newPassword));
         });
 
         settingsMenu.getItems().addAll(friends, editProfilePhoto, editCoverPhoto, changePassword, logout);
@@ -150,11 +150,19 @@ public class ProfilePage {
         stage.show();
     }
 
+
     private ArrayList<Pane> loadPosts(User user) {
         posts.getChildren().clear();
         ArrayList<Pane> userPosts = new ArrayList<>();
         GetContent getContent = new GetContent();
         ArrayList<Post> postsList = getContent.getAllPostsForUser(user);
+        if (postsList.isEmpty()) {
+            Label contentString = new Label("No posts yet!");
+            Pane postPane = new Pane();
+            postPane.getChildren().add(contentString);
+            userPosts.add(postPane);
+            return userPosts;
+        }
         for (Post post : postsList) {
             Label username = new Label(user.getUsername());
             Label time = new Label(post.getTimestamp());
@@ -181,23 +189,20 @@ public class ProfilePage {
         return dialog.showAndWait();
     }
 
-    public Optional<String> handleChangePassword() {
+    private Optional<String> handleChangePassword() {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Change Password");
-        dialog.setHeaderText("Changer Password");
-        dialog.setContentText("Please enter your New Password:");
+        dialog.setHeaderText("Change Password");
+        dialog.setContentText("Please enter your new password:");
 
-        // Validation loop
-        Optional<String> result;
-        do {
-            result = dialog.showAndWait();
+        while (true) {
+            Optional<String> result = dialog.showAndWait();
             if (result.isEmpty() || result.get().trim().isEmpty()) {
-                dialog.setHeaderText("Input is required. Please try again.");
+                dialog.setHeaderText("Password cannot be empty. Please try again.");
             } else {
-                break; // Valid input
+                return result;
             }
-        } while (true);
-
-        return result;
+        }
     }
+
 }

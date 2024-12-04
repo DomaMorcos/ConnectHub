@@ -1,9 +1,16 @@
 [
-  {
-    "profilePhotoPath": "DefaultProfilePhoto.jpg",
-    "bio": "Click on Edit to edit Bio",
-    "coverPhotoPath": "DefaultProfilePhoto.jpg",
-    "userId": "2",
-    "friends": []
-  }
+    {
+        "profilePhotoPath": "DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "DefaultProfilePhoto.jpg",
+        "userId": "2",
+        "friends": []
+    },
+    {
+        "profilePhotoPath": "DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "DefaultProfilePhoto.jpg",
+        "userId": "3",
+        "friends": []
+    }
 ]

@@ -60,11 +60,11 @@ public class LoginPage extends Application {
         loginButton = new Button("Login");
         loginButton.setOnAction(e -> {
             try {
-                handleLoginAction();
+                handleLoginAction(stage);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
+
             try {
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
@@ -90,7 +90,7 @@ public class LoginPage extends Application {
         stage.show();
     }
 
-    private void handleLoginAction() throws Exception {
+    private void handleLoginAction(Stage stage) throws Exception {
         String emailText = email.getText();
         String passwordText = password.getText();
         LogUser logUser = new LogUser();
@@ -106,7 +106,7 @@ public class LoginPage extends Application {
             User user = userDatabase.getUser(emailText);
             ProfilePage profilePage = new ProfilePage();
             profilePage.start(user.getUserId());
-
+            stage.close();
         }
     }
 
