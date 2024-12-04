@@ -1,16 +1,15 @@
 package connecthub.ContentCreation.Backend;
 
-import javax.json.Json;
-import javax.json.JsonObject;
+import org.json.JSONObject;
 
 public abstract class AbstractContent implements Content {
-    private String contentId;
+    private int contentId;
     private String authorId;
     private String content;
     private String imagePath;
     private String timestamp;
 
-    public AbstractContent(String contentId, String authorId, String content, String imagePath, String timestamp) {
+    public AbstractContent(int contentId, String authorId, String content, String imagePath, String timestamp) {
         this.contentId = contentId;
         this.authorId = authorId;
         this.content = content;
@@ -18,11 +17,11 @@ public abstract class AbstractContent implements Content {
         this.timestamp = timestamp;
     }
 
-    public String getContentId() {
+    public int getContentId() {
         return contentId;
     }
 
-    public void setContentId(String contentId) {
+    public void setContentId(int contentId) {
         this.contentId = contentId;
     }
 
@@ -58,14 +57,15 @@ public abstract class AbstractContent implements Content {
         this.timestamp = timestamp;
     }
 
-    public JsonObject toJson() {
+    public JSONObject toJson() {
         //create a json object
-        return Json.createObjectBuilder()
-                .add("contentId", contentId)
-                .add("authorId", authorId)
-                .add("content", content)
-                .add("imagePath", imagePath != null ? imagePath : "")
-                .add("timestamp", timestamp)
-                .build();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject
+                .put("contentId", contentId)
+                .put("authorId", authorId)
+                .put("content", content)
+                .put("imagePath", imagePath != null ? imagePath : "")
+                .put("timestamp", timestamp);
+        return jsonObject;
     }
 }

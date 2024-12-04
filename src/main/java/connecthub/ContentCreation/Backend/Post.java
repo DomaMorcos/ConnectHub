@@ -1,30 +1,29 @@
 package connecthub.ContentCreation.Backend;
 
-import javax.json.Json;
+import org.json.JSONObject;
+
 import javax.json.JsonObject;
 
 public class Post extends AbstractContent {
 
-    public Post(String contentId, String authorId, String content, String imagePath, String timestamp) {
+    public Post(int contentId, String authorId, String content, String imagePath, String timestamp) {
         super(contentId, authorId, content, imagePath, timestamp);
     }
 
     @Override
-    public JsonObject toJson() {
+    public JSONObject toJson() {
         //add to the json object the type
-        return Json.createObjectBuilder(super.toJson())
-                .add("type", "post")
-                .build();
+        JSONObject obj = super.toJson();
+        obj.put("type", "post");
+        return obj;
     }
 
-    public static Post readFromJson(JsonObject jsonObject) {
-        //make from json a post
-        return new Post(
-                jsonObject.getString("contentId"),
-                jsonObject.getString("authorId"),
-                jsonObject.getString("content"),
-                jsonObject.getString("imagePath", ""),
-                jsonObject.getString("timestamp")
-        );
+    public static Post readFromJson(JSONObject jsonObject) {
+        int contentId = jsonObject.optInt("contentId", -1);
+        String authorId = jsonObject.optString("authorId", "unknown");
+        String content = jsonObject.optString("content", "");
+        String imagePath = jsonObject.optString("imagePath", "");
+        String timestamp = jsonObject.optString("timestamp", "");
+        return new Post(contentId, authorId, content, imagePath, timestamp);
     }
 }

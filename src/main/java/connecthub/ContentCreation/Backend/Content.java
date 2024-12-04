@@ -1,7 +1,7 @@
 package connecthub.ContentCreation.Backend;
 
-import javax.json.JsonObject;
+import org.json.JSONObject;
 
 public interface Content {
-    JsonObject toJson();
+    JSONObject toJson();
 }

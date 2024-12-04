@@ -1,33 +1,33 @@
 package connecthub.ContentCreation.Backend;
 
-import javax.json.Json;
+import org.json.JSONObject;
+
 import javax.json.JsonObject;
 import java.time.LocalDateTime;
 
 public class Story extends AbstractContent {
     private static final int EXPIRATION_HOURS = 24;
 
-    public Story(String contentId, String authorId, String content, String imagePath, String timestamp) {
+    public Story(int contentId, String authorId, String content, String imagePath, String timestamp) {
         super(contentId, authorId, content, imagePath, timestamp);
     }
 
     @Override
-    public JsonObject toJson() {
+    public JSONObject toJson() {
         //add to the json object the type
-        return Json.createObjectBuilder(super.toJson())
-                .add("type", "story")
-                .build();
+        JSONObject obj = super.toJson();
+        obj.put("type", "story");
+        return obj;
     }
 
-    public static Story readFromJson(JsonObject jsonObject) {
-        //make from json a story
-        return new Story(
-                jsonObject.getString("contentId"),
-                jsonObject.getString("authorId"),
-                jsonObject.getString("content"),
-                jsonObject.getString("imagePath", ""),
-                jsonObject.getString("timestamp")
-        );
+    public static Story readFromJson(JSONObject jsonObject) {
+        // Safely parse required and optional fields
+        int contentId = jsonObject.optInt("contentId", -1);
+        String authorId = jsonObject.optString("authorId", "unknown");
+        String content = jsonObject.optString("content", "");
+        String imagePath = jsonObject.optString("imagePath", "");
+        String timestamp = jsonObject.optString("timestamp", "");
+        return new Story(contentId, authorId, content, imagePath, timestamp);
     }
 
     public boolean isExpired() {
