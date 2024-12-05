@@ -25,4 +25,9 @@ public class Post extends AbstractContent {
         String timestamp = jsonObject.optString("timestamp", "");
         return new Post(contentId, authorId, content, imagePath, timestamp);
     }
+
+    @Override
+    public String toString() {
+        return "Post{contentId='" + getContentId() + "', content='" + getContent() + "', authorId='" + getAuthorId() + "', imagePath='" + getImagePath() + "', timestamp='" + getTimestamp() + "'}";
+    }
 }

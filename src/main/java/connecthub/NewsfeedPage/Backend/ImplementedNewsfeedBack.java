@@ -16,16 +16,14 @@ public class ImplementedNewsfeedBack implements NewsfeedBack {
     private final FriendManager friendManager = connecthub.FriendManagement.Backend.FriendManager.getInstance();
 
     public ArrayList<Post> getFriendsPosts(String userId) {
-        //empty array to return
         ArrayList<Post> friendsPosts = new ArrayList<>();
         try {
-            //get list of friends
-            ArrayList<User> friends = (ArrayList<User>) friendManager.getFriendsList(userId);
-            if (friends == null) {
+            // get list of friends
+            List<User> friends = friendManager.getFriendsList(userId);
+            if (friends.isEmpty()) {
                 return friendsPosts;
             }
             for (User friend : friends) {
-                //get all posts for every friend
                 ArrayList<Post> posts = getContent.getAllPostsForUser(friend);
                 if (posts != null)
                     friendsPosts.addAll(posts);
@@ -38,16 +36,14 @@ public class ImplementedNewsfeedBack implements NewsfeedBack {
     }
 
     public ArrayList<Story> getFriendsStories(String userId) {
-        //empty array to return
         ArrayList<Story> friendsStories = new ArrayList<>();
         try {
-            //get list of friends
-            ArrayList<User> friends = (ArrayList<User>) friendManager.getFriendsList(userId);
-            if (friends == null) {
+            // get list of friends
+            List<User> friends = friendManager.getFriendsList(userId);
+            if (friends.isEmpty()) {
                 return friendsStories;
             }
             for (User friend : friends) {
-                //get all stories for every friend
                 ArrayList<Story> stories = getContent.getAllStoriesForUser(friend);
                 if (stories != null)
                     friendsStories.addAll(stories);
@@ -61,18 +57,15 @@ public class ImplementedNewsfeedBack implements NewsfeedBack {
 
     @Override
     public ArrayList<Content> getFriendsContents(String userId) {
-        //empty array to return
         ArrayList<Content> friendsContents = new ArrayList<>();
         try {
-            //get list of friends
             List<User> friends = friendManager.getFriendsList(userId);
-            if (friends == null) {
+            if (friends.isEmpty()) {
                 return friendsContents;
             }
             for (User friend : friends) {
-                //get all stories and posts for every friend
-                ArrayList<? extends Content> posts = getContent.getAllPostsForUser(friend);
-                ArrayList<? extends Content> stories = getContent.getAllStoriesForUser(friend);
+                List<Post> posts = getContent.getAllPostsForUser(friend);
+                List<Story> stories = getContent.getAllStoriesForUser(friend);
                 if (posts != null)
                     friendsContents.addAll(posts);
                 if (stories != null)
@@ -86,12 +79,12 @@ public class ImplementedNewsfeedBack implements NewsfeedBack {
     }
 
     @Override
-    public ArrayList<User> getFriendsList(String userId) {
-        return (ArrayList<User>) friendManager.getFriendsList(userId);
+    public List<User> getFriendsList(String userId) {
+        return friendManager.getFriendsList(userId);
     }
 
     @Override
-    public ArrayList<User> getFriendSuggestions(String userId) {
-        return (ArrayList<User>) friendManager.suggestFriends(userId);
+    public List<User> getFriendSuggestions(String userId) {
+        return friendManager.suggestFriends(userId);
     }
 }
