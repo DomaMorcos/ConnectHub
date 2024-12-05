@@ -7,13 +7,17 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ContentDatabase {
-    private static final String CONTENT_FILEPATH = "content.json";
-    private static ArrayList<Content> contents = new ArrayList<>();
+    private static final String CONTENT_FILEPATH = "content.Json";
+    private ArrayList<Content> contents = new ArrayList<>();
     private static ContentDatabase contentDatabase = null;
+
+    public ArrayList<Content> getContents() {
+        return contents;
+    }
 
     private ContentDatabase() {
 
@@ -29,8 +33,9 @@ public class ContentDatabase {
 
     public static void saveContents() {
         //loop on contents and make them json object
+        ContentDatabase contentDB = getInstance();
         JSONArray jsonArray = new JSONArray();
-        for (Content content : contents) {
+        for (Content content : contentDB.contents) {
             jsonArray.put(content.toJson());
         }
         //write in json file
@@ -45,13 +50,14 @@ public class ContentDatabase {
 
     public static ArrayList<Content> loadContents() {
         // Clear the old one
-        contents.clear();
+        ContentDatabase contentDB = getInstance();
+        contentDB.contents.clear();
         try {
             Path pathFile = Paths.get(CONTENT_FILEPATH);
             // check the file exist
             if (!Files.exists(pathFile)) {
                 Files.createFile(pathFile);
-                return contents;
+                return contentDB.contents;
             }
             // read the file
             String json = new String(Files.readAllBytes(pathFile));
@@ -62,38 +68,33 @@ public class ContentDatabase {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 // If post add to the contents a new post
                 if (jsonObject.getString("type").equals("post")) {
-                    contents.add(Post.readFromJson(jsonObject));
+                    contentDB.contents.add(Post.readFromJson(jsonObject));
                     // If story add to the contents a new story
                 } else if (jsonObject.getString("type").equals("story")) {
-                    contents.add(Story.readFromJson(jsonObject));
+                    contentDB.contents.add(Story.readFromJson(jsonObject));
                 }
             }
             // After loading all remove expired
             removeExpiredStories();
-            return contents;
+            return contentDB.contents;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return contents;
+        return contentDB.contents;
     }
 
     public static void removeExpiredStories() {
         //remove if the content is story & if it's expired
-        contents.removeIf(content -> content instanceof Story && ((Story) content).isExpired());
+        ContentDatabase contentDB = getInstance();
+        contentDB.contents.removeIf(content -> content instanceof Story && ((Story) content).isExpired());
         saveContents();
     }
 
-    public static synchronized int generateId() {
+    public static String generateId(String authorId) {
         //the unique id is the place of content
-        if (contents == null) {
-            contents = new ArrayList<>();
-        }
-        return contents.size() + 1;
-    }
-
-    public static List<Content> getContents() {
-        return contents;
+        String time = LocalDateTime.now().toString();
+        return authorId + "_" + time;
     }
 
 }

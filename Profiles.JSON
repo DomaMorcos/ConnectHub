@@ -1,1 +1,23 @@
-[]
+[
+    {
+        "profilePhotoPath": "null",
+        "bio": "Default bio",
+        "coverPhotoPath": "null",
+        "userId": "1",
+        "friends": []
+    },
+    {
+        "profilePhotoPath": "null",
+        "bio": "Default bio",
+        "coverPhotoPath": "null",
+        "userId": "2",
+        "friends": []
+    },
+    {
+        "profilePhotoPath": "null",
+        "bio": "Default bio",
+        "coverPhotoPath": "null",
+        "userId": "3",
+        "friends": []
+    }
+]
