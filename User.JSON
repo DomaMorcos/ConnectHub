@@ -1,1 +1,10 @@
-[{"password":"ced6f3c05e1dfefa8455fa60aacdd2d76ffd79489b631c2dbde22a74e927544b","dateOfBirth":"1996-12-12","userId":"1","email":"doma@yahoo.com","username":"Dama","status":"online"},{"password":"ced6f3c05e1dfefa8455fa60aacdd2d76ffd79489b631c2dbde22a74e927544b","dateOfBirth":"1996-12-02","userId":"2","email":"doma@outlook.com","username":"Dama12","status":"online"},{"password":"03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4","dateOfBirth":"2024-12-02","userId":"3","email":"mado@yahoo.com","username":"Mado1","status":"online"}]
+[
+  {
+    "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+    "dateOfBirth": "2024-12-05",
+    "userId": "1",
+    "email": "mado@yahoo.com",
+    "username": "Dama1",
+    "status": "online"
+  }
+]

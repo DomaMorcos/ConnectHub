@@ -34,11 +34,7 @@ public class CreateUser {
         userDB.users.add(newUser);
         userDB.saveUsersToJsonFile();
         // Initialize friends for the new user
-        FriendManager.getInstance().initializeFriends(generatedId, null);
-        // Initialize and save the profile for the new user
-        ProfileDatabase profileDB = ProfileDatabase.getInstance();
-        UserProfile profile = new UserProfile(generatedId, "null", "null", "Default bio", new ArrayList<>());
-        profileDB.updateProfile(profile);
+        FriendManager.getInstance().initializeFriends(generatedID, null);
         return true;
     }
 }
