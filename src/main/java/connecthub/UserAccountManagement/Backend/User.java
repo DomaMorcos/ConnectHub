@@ -3,7 +3,6 @@ package connecthub.UserAccountManagement.Backend;
 import java.io.Serializable;
 
 public class User implements Serializable {
-
     private String userId;
     private String email;
     private String username;
@@ -23,7 +22,6 @@ public class User implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
-
 
     public String getUserId() {
         return userId;
@@ -57,7 +55,6 @@ public class User implements Serializable {
         this.dateOfBirth = dateOfBirth;
     }
 
-    // PUBLIC ????
     public String getPassword() {
         return password;
     }
@@ -81,8 +78,4 @@ public class User implements Serializable {
                 ", status='" + status + '\'' +
                 '}';
     }
-
 }
-
-
-

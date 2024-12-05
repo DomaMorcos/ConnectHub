@@ -1,9 +1,7 @@
-
 package connecthub.ContentCreation.Backend;
 
 import org.json.JSONObject;
 
-import javax.json.JsonObject;
 import java.time.LocalDateTime;
 
 public class Story extends AbstractContent {

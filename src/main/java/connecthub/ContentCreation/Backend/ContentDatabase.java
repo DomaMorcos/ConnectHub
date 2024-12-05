@@ -9,12 +9,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ContentDatabase {
-    private static final String CONTENT_FILEPATH = "content.json";
+    private static final String CONTENT_FILEPATH = "content.Json";
     private ArrayList<Content> contents = new ArrayList<>();
     private static ContentDatabase contentDatabase = null;
+
+    public ArrayList<Content> getContents() {
+        return contents;
+    }
 
     private ContentDatabase() {
 
@@ -91,7 +94,7 @@ public class ContentDatabase {
     public static String generateId(String authorId) {
         //the unique id is the place of content
         String time = LocalDateTime.now().toString();
-        return authorId + time;
+        return authorId + "_" + time;
     }
 
 }

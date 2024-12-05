@@ -3,6 +3,7 @@ module connecthub {
     requires javafx.fxml;
     requires java.json;
     requires org.json;
+    requires java.desktop;
 
 
     opens connecthub to javafx.fxml;
