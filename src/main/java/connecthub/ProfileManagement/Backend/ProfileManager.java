@@ -50,9 +50,8 @@ public class ProfileManager {
 
     public List<Post> getOwnPosts(String authorId) {
         contentDatabase.loadContents();
-        GetContent gd = GetContent.getInstance();
         List<Post> ownPosts = new ArrayList<>();
-        for (Content content : gd.getAllContents()) {
+        for (Content content : ContentDatabase.getContents()) {
             if (content instanceof Post && ((Post) content).getAuthorId().equals(authorId)) {
                 ownPosts.add((Post) content);
             }

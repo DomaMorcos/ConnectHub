@@ -2,8 +2,6 @@ package connecthub.UserAccountManagement.Backend;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -30,7 +28,6 @@ public class UserDatabase {
     }
 
     public static void saveUsersToJsonFile() {
-
         UserDatabase userDB = UserDatabase.getInstance();
         JSONArray usersArray = new JSONArray();
         for (User user : userDB.users) {
@@ -43,26 +40,26 @@ public class UserDatabase {
             j.put("status", user.getStatus());
             usersArray.put(j);
         }
-
         try {
             FileWriter file = new FileWriter(FILEPATH);
-            file.write(usersArray.toString());
+            file.write(usersArray.toString(4));
             file.close();
         } catch (IOException e) {
             System.out.println("Error");
         }
     }
-
-
     public void readUsersFromJsonFile() {
-
+        File file = new File(FILEPATH);
+        if (!file.exists()) {
+            System.out.println("User.JSON file not found. Creating a new file.");
+            saveUsersToJsonFile(); // Save an empty user list to create the file
+            return;
+        }
         UserDatabase userDB = UserDatabase.getInstance();
         userDB.users.clear();
-
         try {
             String json = new String(Files.readAllBytes(Paths.get(FILEPATH)));
             JSONArray usersArray = new JSONArray(json);
-
             DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
             for (int i = 0; i < usersArray.length(); i++) {
                 JSONObject userJson = usersArray.getJSONObject(i);
@@ -73,20 +70,16 @@ public class UserDatabase {
                 String password = userJson.getString("password");
                 String status = userJson.getString("status");
                 User user = new User(userId, email, username, password, dateOfBirth.toString(), status);
-
                 userDB.users.add(user);
-
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-
     public User getUser(String email) {
         UserDatabase userDB = UserDatabase.getInstance();
         for (User user : userDB.users) {
-
             if (user.getEmail().equals(email))
                 return user;
         }
@@ -101,7 +94,6 @@ public class UserDatabase {
     }
 
     public boolean contains(String email) {
-
         UserDatabase userDB = UserDatabase.getInstance();
         for (User user : userDB.users) {
             if (user.getEmail().equals(email))
@@ -113,7 +105,6 @@ public class UserDatabase {
         UserDatabase userDB = UserDatabase.getInstance();
         for (User user : userDB.users) {
             System.out.println(user.toString());
-
         }
     }
 }
