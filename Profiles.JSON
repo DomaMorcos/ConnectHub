@@ -1,61 +1,7 @@
-[
-    {
-        "profilePhotoPath": "/profile/john.jpg",
-        "bio": "Hello, I'm John!",
-        "coverPhotoPath": "/cover/john.jpg",
-        "userId": "1",
-        "friends": [
-            "User{userId='2', email='jane.smith@example.com', username='janeS', password='bc47c7a7fd6ecb8611634bb3c7db0e5f3a165878b7410d2aec124a6431f96b7e', dateOfBirth='1992-08-25', status='offline'}",
-            "User{userId='3', email='alice.wonderland@example.com', username='aliceW', password='7ae09cbe43b292651c7568ae36cdfbd75bda40ae103c66c1719dcd9aa9a9f231', dateOfBirth='1995-07-30', status='offline'}",
-            "User{userId='4', email='bob.martin@example.com', username='bobM', password='65868526cf148ae6c44d1aec28fcd15c86312652a38bc130e776500e067c81d6', dateOfBirth='1991-11-20', status='online'}"
-        ]
-    },
-    {
-        "profilePhotoPath": "/profile/jane.jpg",
-        "bio": "Hey, I'm Jane!",
-        "coverPhotoPath": "/cover/jane.jpg",
-        "userId": "2",
-        "friends": [
-            "User{userId='1', email='john.doe@example.com', username='johnnyD', password='ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', dateOfBirth='1990-05-15', status='offline'}",
-            "User{userId='3', email='alice.wonderland@example.com', username='aliceW', password='7ae09cbe43b292651c7568ae36cdfbd75bda40ae103c66c1719dcd9aa9a9f231', dateOfBirth='1995-07-30', status='offline'}"
-        ]
-    },
-    {
-        "profilePhotoPath": "null",
-        "bio": "Default bio",
-        "coverPhotoPath": "null",
-        "userId": "3",
-        "friends": [
-            "User{userId='1', email='john.doe@example.com', username='johnnyD', password='ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', dateOfBirth='1990-05-15', status='offline'}",
-            "User{userId='2', email='jane.smith@example.com', username='janeS', password='bc47c7a7fd6ecb8611634bb3c7db0e5f3a165878b7410d2aec124a6431f96b7e', dateOfBirth='1992-08-25', status='offline'}"
-        ]
-    },
-    {
-        "profilePhotoPath": "null",
-        "bio": "Default bio",
-        "coverPhotoPath": "null",
-        "userId": "4",
-        "friends": ["User{userId='1', email='john.doe@example.com', username='johnnyD', password='ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f', dateOfBirth='1990-05-15', status='offline'}"]
-    },
-    {
-        "profilePhotoPath": "null",
-        "bio": "Default bio",
-        "coverPhotoPath": "null",
-        "userId": "5",
-        "friends": []
-    },
-    {
-        "profilePhotoPath": "null",
-        "bio": "Default bio",
-        "coverPhotoPath": "null",
-        "userId": "6",
-        "friends": []
-    },
-    {
-        "profilePhotoPath": "null",
-        "bio": "Default bio",
-        "coverPhotoPath": "null",
-        "userId": "7",
-        "friends": []
-    }
-]
+[{
+    "profilePhotoPath": "DefaultProfilePhoto.jpg",
+    "bio": "New bio test",
+    "coverPhotoPath": "DefaultCoverPhoto.png",
+    "userId": "1",
+    "friends": []
+}]

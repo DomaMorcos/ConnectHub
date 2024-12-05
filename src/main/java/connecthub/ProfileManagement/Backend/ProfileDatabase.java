@@ -23,6 +23,7 @@ public class ProfileDatabase {
         // Only one instance
         if (profileDatabase == null) {
             profileDatabase = new ProfileDatabase();
+            profileDatabase.loadProfiles();
         }
         return profileDatabase;
     }
