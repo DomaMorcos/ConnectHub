@@ -1,6 +1,6 @@
 package connecthub.NewsfeedPage.Backend;
 
-/*import connecthub.ContentCreation.Backend.Content;
+import connecthub.ContentCreation.Backend.Content;
 import connecthub.ContentCreation.Backend.GetContent;
 import connecthub.ContentCreation.Backend.Post;
 import connecthub.ContentCreation.Backend.Story;
@@ -8,11 +8,11 @@ import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.UserAccountManagement.Backend.User;
 
 import java.util.ArrayList;
-import java.util.List;*/
+import java.util.List;
 
 public class ImplementedNewsfeedBack implements NewsfeedBack {
 
-    /*private final GetContent getContent = GetContent.getInstance();
+    private final GetContent getContent = GetContent.getInstance();
     private final FriendManager friendManager = FriendManager.getInstance();
 
     public ArrayList<Post> getFriendsPosts(String userId) {
@@ -93,5 +93,5 @@ public class ImplementedNewsfeedBack implements NewsfeedBack {
     @Override
     public ArrayList<User> getFriendSuggestions(String userId) {
         return friendManager.getFriendSuggestions(userId);
-    }*/
+    }
 }

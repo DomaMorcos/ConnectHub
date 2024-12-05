@@ -1,0 +1,34 @@
+[
+    {
+        "imagePath": "/images/john_post1.jpg",
+        "contentId": "P1_2024-12-05T20:40:39.464495500",
+        "authorId": "1",
+        "type": "post",
+        "content": "John's first post!",
+        "timestamp": "2024-12-05T20:40:39.464495500"
+    },
+    {
+        "imagePath": "/images/john_story1.jpg",
+        "contentId": "S1_2024-12-05T20:40:39.475453900",
+        "authorId": "1",
+        "type": "story",
+        "content": "John's first story!",
+        "timestamp": "2024-12-05T20:40:39.475453900"
+    },
+    {
+        "imagePath": "/images/jane_post1.jpg",
+        "contentId": "P2_2024-12-05T20:40:39.483846300",
+        "authorId": "2",
+        "type": "post",
+        "content": "Jane's first post!",
+        "timestamp": "2024-12-05T20:40:39.483846300"
+    },
+    {
+        "imagePath": "/images/jane_story1.jpg",
+        "contentId": "S2_2024-12-05T20:40:39.483846300",
+        "authorId": "2",
+        "type": "story",
+        "content": "Jane's first story!",
+        "timestamp": "2024-12-05T20:40:39.483846300"
+    }
+]
