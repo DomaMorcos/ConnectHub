@@ -2,6 +2,7 @@ package connecthub.UserAccountManagement.Backend;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,17 +15,19 @@ public class UserDatabase {
     public ArrayList<User> users = new ArrayList<>();
     public static final String FILEPATH = "User.JSON";
 
+    private static UserDatabase userDatabase = null;
+
     // Private constructor to prevent instantiation
     private UserDatabase() {
     }
 
     // Public method to provide access to the singleton instance
-    public static synchronized UserDatabase getInstance() {
-        if (instance == null) {
-            instance = new UserDatabase();
-            instance.readUsersFromJsonFile();
+    public static UserDatabase getInstance() {
+        // Only one instance
+        if (userDatabase == null) {
+            userDatabase = new UserDatabase();
         }
-        return instance;
+        return userDatabase;
     }
 
     public static void saveUsersToJsonFile() {
@@ -48,6 +51,7 @@ public class UserDatabase {
             System.out.println("Error");
         }
     }
+
     public void readUsersFromJsonFile() {
         File file = new File(FILEPATH);
         if (!file.exists()) {
@@ -85,10 +89,11 @@ public class UserDatabase {
         }
         return null; // User not found
     }
+
     public User getUserById(String userId) {
-        for (User user:users) {
+        for (User user : users) {
             if (user.getUserId().equals(userId))
-                return  user;
+                return user;
         }
         return null;
     }
@@ -101,7 +106,8 @@ public class UserDatabase {
         }
         return false; // Email does not exist
     }
-    public void printUsers(){
+
+    public void printUsers() {
         UserDatabase userDB = UserDatabase.getInstance();
         for (User user : userDB.users) {
             System.out.println(user.toString());
