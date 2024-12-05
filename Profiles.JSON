@@ -1,22 +1,16 @@
 [
     {
-        "profilePhotoPath": "null",
-        "bio": "Default bio",
-        "coverPhotoPath": "null",
-        "userId": "1",
-        "friends": []
-    },
-    {
-        "profilePhotoPath": "null",
-        "bio": "Default bio",
-        "coverPhotoPath": "null",
+
+        "profilePhotoPath": "DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "DefaultProfilePhoto.jpg",
         "userId": "2",
         "friends": []
     },
     {
-        "profilePhotoPath": "null",
-        "bio": "Default bio",
-        "coverPhotoPath": "null",
+        "profilePhotoPath": "DefaultProfilePhoto.jpg",
+        "bio": "This is a bio talking about me",
+        "coverPhotoPath": "DefaultProfilePhoto.jpg",
         "userId": "3",
         "friends": []
     }

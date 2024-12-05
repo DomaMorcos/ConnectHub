@@ -1,0 +1,41 @@
+.root{
+    -fx-background-color: orange;
+    -fx-spacing: 20px;
+}
+#ProfileInfo {
+    -fx-background-color: #342f2f;
+    -fx-text-fill: White;
+    -fx-spacing: 20px;
+    -fx-alignment: Center;
+    -fx-padding: 10px;
+}
+#ProfileName{
+    -fx-text-fill: white;
+    -fx-font-size: 40px;
+    -fx-font-style: bold;
+    -fx-background-color: black;
+    -fx-border-radius: 30px;
+}
+#Bio {
+    -fx-fill-width: 200px;
+    -fx-text-fill: white;
+}
+#PhotosBox{
+    -fx-spacing: 40px;
+    -fx-alignment: center;
+    -fx-padding: 20px;
+}
+
+
+#EditBio {
+    -fx-background-color: black;
+    -fx-text-fill: orange;
+    -fx-min-width: 50px;
+    -fx-min-height:30px;
+
+}
+#BioBox{
+    -fx-padding: 20px;
+    -fx-spacing: 20px;
+    -fx-alignment: center;
+}

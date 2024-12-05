@@ -1,8 +1,10 @@
 package connecthub.UserAccountManagement.Backend;
 
+
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Backend.UserProfile;
+
 import java.util.ArrayList;
 import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
 import static connecthub.UserAccountManagement.Backend.Validation.isEmailValid;
@@ -23,8 +25,12 @@ public class CreateUser {
             return false;
         }
         String hash = hashPassword(password);
-        String generatedId = generateID();
-        User newUser = new User(generatedId, email, username, hash, dateOfBirth, "offline");
+        String generatedID = generateID();
+        User newUser = new User(generatedID, email, username, hash, dateOfBirth, "offline");
+        UserProfile userProfile = new UserProfile(generatedID, "DefaultProfilePhoto.jpg","DefaultCoverPhoto.png","Click on Edit to edit Bio",new ArrayList<>());
+        ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
+        profileDatabase.updateProfile(userProfile);
+
         userDB.users.add(newUser);
         userDB.saveUsersToJsonFile();
         // Initialize friends for the new user
