@@ -36,4 +36,8 @@ public class Story extends AbstractContent {
         //if it's before now return true
         return storyTime.plusHours(EXPIRATION_HOURS).isBefore(LocalDateTime.now());
     }
+    @Override
+    public String toString() {
+        return "Story{contentId='" + getContentId() + "', content='" + getContent() + "', authorId='" + getAuthorId() + "', imagePath='" + getImagePath() + "', timestamp='" + getTimestamp() + "'}";
+    }
 }

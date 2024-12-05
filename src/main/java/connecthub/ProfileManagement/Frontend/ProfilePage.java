@@ -46,16 +46,27 @@ public class ProfilePage {
         Stage stage = new Stage();
 //        System.out.println(getClass().getResource("ProfilePage.css"));
 //        System.out.println(getClass().getResource("DefaultProfilePhoto.jpg"));
+<<<<<<< HEAD
         UserProfile userProfile = profileDatabase.getProfile(userID);
 
         // Cover Photo
         coverPhoto = new ImageView(new Image(getClass().getResource(userProfile.getCoverPhotoPath()).toExternalForm()));
+=======
+        UserProfile userProfile = profileManager.getProfile(userID);
+
+        // Cover Photo
+        coverPhoto = new ImageView(new Image(getClass().getResource("DefaultCoverPhoto.png").toExternalForm()));
+>>>>>>> c99c91949913f660f9b281ba65474e2e12ad716a
         coverPhoto.setId("CoverPhoto");
         coverPhoto.setFitHeight(200);
         coverPhoto.setFitWidth(600);
 
         // Profile Photo
+<<<<<<< HEAD
         profilePhoto = new ImageView(new Image(getClass().getResource(userProfile.getProfilePhotoPath()).toExternalForm()));
+=======
+        profilePhoto = new ImageView(new Image(getClass().getResource("DefaultProfilePhoto.jpg").toExternalForm()));
+>>>>>>> c99c91949913f660f9b281ba65474e2e12ad716a
         profilePhoto.setId("ProfilePhoto");
         profilePhoto.setFitHeight(200);
         profilePhoto.setFitWidth(200);
@@ -79,7 +90,11 @@ public class ProfilePage {
             Optional<String> result = handleEditBio();
             result.ifPresent(newBio -> {
                 userProfile.setBio(newBio);
+<<<<<<< HEAD
                 profileDatabase.updateProfile(userProfile);
+=======
+                profileManager.updateProfile(userProfile);
+>>>>>>> c99c91949913f660f9b281ba65474e2e12ad716a
                 ProfilePage profilePage = new ProfilePage();
                 try {
                     profilePage.start(userID);
