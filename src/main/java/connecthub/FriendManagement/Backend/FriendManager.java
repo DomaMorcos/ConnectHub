@@ -1,9 +1,10 @@
 package connecthub.FriendManagement.Backend;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import connecthub.UserAccountManagement.Backend.User;
+import connecthub.UserAccountManagement.Backend.UserDatabase;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FriendManager {
     private static FriendManager instance;
@@ -26,38 +27,52 @@ public class FriendManager {
         }
     }
 
-    public List<String> getFriendsList(String userId) {
+    public List<User> getFriendsList(String userId) {
+        UserDatabase userDatabase = UserDatabase.getInstance();
+
         // Ensure friendsMap is initialized for the given user
         if (!friendsMap.containsKey(userId)) {
             friendsMap.put(userId, new ArrayList<>());
         }
-        // Return the friends list, excluding blocked users
+
+        // Retrieve the friends list, excluding blocked users
         List<String> friendsList = friendsMap.get(userId);
-        List<String> filteredFriends = new ArrayList<>();
-        for (String friend : friendsList) {
-            if (!isBlocked(userId, friend)) {
-                filteredFriends.add(friend);
+        List<User> filteredFriends = new ArrayList<>();
+
+        for (String friendId : friendsList) {
+            if (!isBlocked(userId, friendId)) {
+                User friend = userDatabase.getUserById(friendId);
+                if (friend != null) {
+                    filteredFriends.add(friend);
+                }
             }
         }
         return filteredFriends;
     }
 
+    public List<User> suggestFriends(String userId) {
+        UserDatabase userDatabase = UserDatabase.getInstance();
 
-    public List<String> suggestFriends(String userId) {
         // Initialize friendsMap for the given user if necessary
         if (!friendsMap.containsKey(userId)) {
             friendsMap.put(userId, new ArrayList<>());
         }
-        List<String> suggestions = new ArrayList<>();
-        List<String> userFriends = getFriendsList(userId);
+
+        List<User> suggestions = new ArrayList<>();
+        List<User> userFriends = getFriendsList(userId);
+        Set<String> userFriendIds = userFriends.stream().map(User::getUserId).collect(Collectors.toSet());
 
         for (String potentialFriendId : friendsMap.keySet()) {
-            if (!userFriends.contains(potentialFriendId) && !potentialFriendId.equals(userId) &&
+            if (!userFriendIds.contains(potentialFriendId) &&
+                    !potentialFriendId.equals(userId) &&
                     !isBlocked(userId, potentialFriendId)) {
-                suggestions.add(potentialFriendId);
+
+                User potentialFriend = userDatabase.getUserById(potentialFriendId);
+                if (potentialFriend != null) {
+                    suggestions.add(potentialFriend);
+                }
             }
         }
-
         return suggestions;
     }
 
