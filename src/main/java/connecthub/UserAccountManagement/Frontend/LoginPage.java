@@ -84,6 +84,8 @@ public class LoginPage extends Application {
 
         root.getChildren().addAll(titleLabel, email, emailValidationLabel, password, loginButton, registerButton);
         Scene scene = new Scene(root, 1280, 720);
+
+
         scene.getStylesheets().add(getClass().getResource("LoginPage.css").toExternalForm());
         stage.setTitle("Login Page");
         stage.setScene(scene);

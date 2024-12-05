@@ -29,7 +29,7 @@ import java.util.Optional;
 
 public class ProfilePage {
     private ScrollPane scrollPane;
-    private HBox photos;
+    private HBox photos,bioBox;
     private VBox posts, profileInfo, mainLayout;
     private ImageView profilePhoto, coverPhoto;
     private Label profileName, bio;
@@ -44,50 +44,70 @@ public class ProfilePage {
 
     public void start(String userID) throws Exception {
         Stage stage = new Stage();
-
+//        System.out.println(getClass().getResource("ProfilePage.css"));
+//        System.out.println(getClass().getResource("DefaultProfilePhoto.jpg"));
         UserProfile userProfile = profileManager.getProfile(userID);
 
         // Cover Photo
-        coverPhoto = new ImageView(new Image(getClass().getResource("/images/DefaultProfilePhoto.jpg").toExternalForm()));
+        coverPhoto = new ImageView(new Image(getClass().getResource("DefaultCoverPhoto.png").toExternalForm()));
+        coverPhoto.setId("CoverPhoto");
         coverPhoto.setFitHeight(200);
-        coverPhoto.setFitWidth(800);
+        coverPhoto.setFitWidth(600);
 
         // Profile Photo
-        profilePhoto = new ImageView(new Image(getClass().getResource("/images/DefaultProfilePhoto.jpg").toExternalForm()));
+        profilePhoto = new ImageView(new Image(getClass().getResource("DefaultProfilePhoto.jpg").toExternalForm()));
+        profilePhoto.setId("ProfilePhoto");
         profilePhoto.setFitHeight(200);
         profilePhoto.setFitWidth(200);
 
         // Cover and Profile Photo in a Horizontal Box;
         photos = new HBox();
-        photos.setPadding(new Insets(10));
-        photos.setSpacing(10);
-        photos.getChildren().addAll(coverPhoto, profilePhoto);
+        photos.setId("PhotosBox");
+//        photos.setPadding(new Insets(10));
+//        photos.setSpacing(10);
+        photos.getChildren().addAll(profilePhoto , coverPhoto);
 
         User user = userDatabase.getUserById(userID);
         // Profile Info
         profileName = new Label(user.getUsername());
+        profileName.setId("ProfileName");
         bio = new Label(userProfile.getBio());
+        bio.setId("Bio");
         editBio = new Button("Edit Bio");
+        editBio.setId("EditBio");
         editBio.setOnAction(e -> {
             Optional<String> result = handleEditBio();
             result.ifPresent(newBio -> {
                 userProfile.setBio(newBio);
                 profileManager.updateProfile(userProfile);
+                ProfilePage profilePage = new ProfilePage();
+                try {
+                    profilePage.start(userID);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+                stage.close();
+
             });
         });
 
+        bioBox = new HBox();
+        bioBox.setId("BioBox");
+        bioBox.getChildren().addAll(bio,editBio);
+
         profileInfo = new VBox();
-        profileInfo.setPadding(new Insets(10));
-        profileInfo.setSpacing(10);
-        profileInfo.getChildren().addAll(photos, profileName, bio, editBio);
+        profileInfo.setId("ProfileInfo");
+//        profileInfo.setPadding(new Insets(10));
+//        profileInfo.setSpacing(10);
+        profileInfo.getChildren().addAll(photos, profileName,bioBox);
 
         // Initialize the class-level `posts`
         posts = new VBox();
 //        for (Pane postPane : loadPosts(user)) {
 //            posts.getChildren().add(postPane);
 //        }
-        posts.setPadding(new Insets(10));
-        posts.setSpacing(10);
+//        posts.setPadding(new Insets(10));
+//        posts.setSpacing(10);
 
         // Scrollable Posts
         scrollPane = new ScrollPane(posts);
@@ -95,8 +115,8 @@ public class ProfilePage {
 
         // Main Layout
         mainLayout = new VBox();
-        mainLayout.setPadding(new Insets(10));
-        mainLayout.setSpacing(20);
+//        mainLayout.setPadding(new Insets(10));
+//        mainLayout.setSpacing(20);
         mainLayout.getChildren().addAll(profileInfo, scrollPane);
 
         VBox root = new VBox();
@@ -122,6 +142,12 @@ public class ProfilePage {
             File file = fileChooser.showOpenDialog(stage);
             if (file != null) {
                 userProfile.setProfilePhotoPath(file.getAbsolutePath());
+                ProfilePage profilePage = new ProfilePage();
+                try {
+                    profilePage.start(userID);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -130,6 +156,12 @@ public class ProfilePage {
             File file = fileChooser.showOpenDialog(stage);
             if (file != null) {
                 userProfile.setCoverPhotoPath(file.getAbsolutePath());
+                ProfilePage profilePage = new ProfilePage();
+                try {
+                    profilePage.start(userID);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -142,9 +174,10 @@ public class ProfilePage {
         settingMenuBar.getMenus().add(settingsMenu);
 
         VBox layout = new VBox(settingMenuBar, root);
-        layout.setSpacing(10);
+//        layout.setSpacing(10);
 
-        Scene scene = new Scene(layout, 800, 600);
+        Scene scene = new Scene(layout, 1280, 720);
+        scene.getStylesheets().add(getClass().getResource("ProfilePage.css").toExternalForm());
         stage.setTitle("Profile Page");
         stage.setScene(scene);
         stage.show();
@@ -162,6 +195,7 @@ public class ProfilePage {
             postPane.getChildren().add(contentString);
             userPosts.add(postPane);
             return userPosts;
+
         }
         for (Post post : postsList) {
             Label username = new Label(user.getUsername());
