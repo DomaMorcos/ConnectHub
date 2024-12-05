@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class ContentDatabase {
-    private static final String CONTENT_FILEPATH = "content.Json";
+
+    private static final String CONTENT_FILEPATH = "content.json";
     private ArrayList<Content> contents = new ArrayList<>();
     private static ContentDatabase contentDatabase = null;
 
@@ -95,6 +96,7 @@ public class ContentDatabase {
         //the unique id is the place of content
         String time = LocalDateTime.now().toString();
         return authorId + "_" + time;
+
     }
 
 }

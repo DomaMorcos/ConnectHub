@@ -1,3 +1,4 @@
+
 package connecthub.ContentCreation.Backend;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ public class ContentFactory {
         }
         return contentFactory;
     }
+
     public static Content createContent(String type, String authorId, String content, String imagePath) {
         //make unique id for the content
         GetContent getContent = GetContent.getInstance();
