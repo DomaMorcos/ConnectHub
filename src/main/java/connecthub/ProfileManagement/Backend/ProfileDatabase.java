@@ -62,8 +62,8 @@ public class ProfileDatabase {
             JSONObject profileObject = new JSONObject(); // Create a JSONObject for each profile
             JSONArray friendsArray = new JSONArray(); // Create a JSONArray for friends
             // Get the friends list for this user from FriendManager
-            List<String> friends = FriendManager.getInstance().getFriendsList(profile.getUserId());
-            for (String friend : friends) {
+            List<User> friends = FriendManager.getInstance().getFriendsList(profile.getUserId());
+            for (User friend : friends) {
                 friendsArray.put(friend);
             }
             // Populate the profileObject
