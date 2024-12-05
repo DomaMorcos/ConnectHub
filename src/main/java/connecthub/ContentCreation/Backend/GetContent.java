@@ -8,6 +8,19 @@ import java.util.Objects;
 import static connecthub.ContentCreation.Backend.ContentDatabase.loadContents;
 
 public class GetContent {
+    private static GetContent getContent = null;
+
+    private GetContent() {
+
+    }
+
+    public static GetContent getInstance() {
+        //only one instance
+        if (getContent == null) {
+            getContent = new GetContent();
+        }
+        return getContent;
+    }
     public ArrayList<Post> getAllPosts() {
         //load
         ArrayList<Content> c = loadContents();
@@ -91,7 +104,11 @@ public class GetContent {
         //loop on contents
         for (Content content : contents) {
             //if the id = id add
-            if (Objects.equals(((Story) content).getAuthorId(), user.getUserId()) || Objects.equals(((Post) content).getAuthorId(), user.getUserId())) {
+
+            if (content instanceof Story && Objects.equals(((Story) content).getAuthorId(), user.getUserId())) {
+                contentsForUser.add(content);
+            } else if (content instanceof Post && Objects.equals(((Post) content).getAuthorId(), user.getUserId())) {
+
                 contentsForUser.add(content);
             }
         }

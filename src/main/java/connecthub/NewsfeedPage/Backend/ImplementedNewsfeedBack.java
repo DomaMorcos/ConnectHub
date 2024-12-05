@@ -12,15 +12,15 @@ import java.util.List;
 
 public class ImplementedNewsfeedBack implements NewsfeedBack {
 
-    private final GetContent getContent = new GetContent();
-    private final FriendManager friendManager = FriendManager.getInstance();
+    private final GetContent getContent = GetContent.getInstance();
+    private final FriendManager friendManager = connecthub.FriendManagement.Backend.FriendManager.getInstance();
 
     public ArrayList<Post> getFriendsPosts(String userId) {
         //empty array to return
         ArrayList<Post> friendsPosts = new ArrayList<>();
         try {
             //get list of friends
-            ArrayList<User> friends = friendManager.getFriendsList(userId);
+            ArrayList<User> friends = (ArrayList<User>) friendManager.getFriendsList(userId);
             if (friends == null) {
                 return friendsPosts;
             }
@@ -36,12 +36,13 @@ public class ImplementedNewsfeedBack implements NewsfeedBack {
         }
         return friendsPosts;
     }
+
     public ArrayList<Story> getFriendsStories(String userId) {
         //empty array to return
         ArrayList<Story> friendsStories = new ArrayList<>();
         try {
             //get list of friends
-            ArrayList<User> friends = friendManager.getFriendsList(userId);
+            ArrayList<User> friends = (ArrayList<User>) friendManager.getFriendsList(userId);
             if (friends == null) {
                 return friendsStories;
             }
@@ -86,11 +87,11 @@ public class ImplementedNewsfeedBack implements NewsfeedBack {
 
     @Override
     public ArrayList<User> getFriendsList(String userId) {
-        return friendManager.getFriendsList(userId);
+        return (ArrayList<User>) friendManager.getFriendsList(userId);
     }
 
     @Override
     public ArrayList<User> getFriendSuggestions(String userId) {
-        return friendManager.getFriendSuggestions(userId);
+        return (ArrayList<User>) friendManager.suggestFriends(userId);
     }
 }
