@@ -46,16 +46,16 @@ public class ProfilePage {
         Stage stage = new Stage();
 //        System.out.println(getClass().getResource("ProfilePage.css"));
 //        System.out.println(getClass().getResource("DefaultProfilePhoto.jpg"));
-        UserProfile userProfile = profileManager.getProfile(userID);
+        UserProfile userProfile = profileDatabase.getProfile(userID);
 
         // Cover Photo
-        coverPhoto = new ImageView(new Image(getClass().getResource("DefaultCoverPhoto.png").toExternalForm()));
+        coverPhoto = new ImageView(new Image(getClass().getResource(userProfile.getCoverPhotoPath()).toExternalForm()));
         coverPhoto.setId("CoverPhoto");
         coverPhoto.setFitHeight(200);
         coverPhoto.setFitWidth(600);
 
         // Profile Photo
-        profilePhoto = new ImageView(new Image(getClass().getResource("DefaultProfilePhoto.jpg").toExternalForm()));
+        profilePhoto = new ImageView(new Image(getClass().getResource(userProfile.getProfilePhotoPath()).toExternalForm()));
         profilePhoto.setId("ProfilePhoto");
         profilePhoto.setFitHeight(200);
         profilePhoto.setFitWidth(200);
@@ -79,7 +79,7 @@ public class ProfilePage {
             Optional<String> result = handleEditBio();
             result.ifPresent(newBio -> {
                 userProfile.setBio(newBio);
-                profileManager.updateProfile(userProfile);
+                profileDatabase.updateProfile(userProfile);
                 ProfilePage profilePage = new ProfilePage();
                 try {
                     profilePage.start(userID);
@@ -187,7 +187,7 @@ public class ProfilePage {
     private ArrayList<Pane> loadPosts(User user) {
         posts.getChildren().clear();
         ArrayList<Pane> userPosts = new ArrayList<>();
-        GetContent getContent = new GetContent();
+        GetContent getContent = GetContent.getInstance();
         ArrayList<Post> postsList = getContent.getAllPostsForUser(user);
         if (postsList.isEmpty()) {
             Label contentString = new Label("No posts yet!");

@@ -12,9 +12,8 @@
 #ProfileName{
     -fx-text-fill: white;
     -fx-font-size: 40px;
-    -fx-font-style: bold;
-    -fx-background-color: black;
     -fx-border-radius: 30px;
+    -fx-translate-x: -300px;
 }
 #Bio {
     -fx-fill-width: 200px;

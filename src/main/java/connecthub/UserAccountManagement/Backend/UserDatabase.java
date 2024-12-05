@@ -27,8 +27,10 @@ public class UserDatabase {
     public static UserDatabase getInstance() {
         // Only one instance
 
-        if (userDatabase  == null) {
-            userDatabase  = new UserDatabase ();
+        if (userDatabase == null) {
+            userDatabase = new UserDatabase();
+            userDatabase.readUsersFromJsonFile();
+
         }
         return userDatabase ;
 

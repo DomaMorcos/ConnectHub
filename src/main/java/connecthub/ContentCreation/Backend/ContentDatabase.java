@@ -28,6 +28,7 @@ public class ContentDatabase {
         //only one instance
         if (contentDatabase == null) {
             contentDatabase = new ContentDatabase();
+            contentDatabase.loadContents();
         }
         return contentDatabase;
     }
