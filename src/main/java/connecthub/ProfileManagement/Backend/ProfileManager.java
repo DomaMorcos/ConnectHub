@@ -11,6 +11,7 @@ import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword
 import java.util.*;
 
 public class ProfileManager {
+
     private static final String PROFILE_FILEPATH = "Profiles.JSON";
     private ContentDatabase contentDatabase = ContentDatabase.getInstance();
     private UserDatabase userDatabase = UserDatabase.getInstance();
@@ -21,6 +22,26 @@ public class ProfileManager {
         this.contentDatabase = contentDb;
         this.userDatabase = userDb;
         profileDatabase.loadProfiles();
+    }
+
+
+    public void updatePassword(String userId, String newPassword) {
+        User user = userDatabase.getUserById(userId);
+        if (user != null) {
+            user.setPassword(hashPassword(newPassword));
+            UserDatabase.saveUsersToJsonFile();
+        }
+    }
+
+    public List<Post> getOwnPosts(String authorId) {
+        contentDatabase.loadContents();
+        List<Post> ownPosts = new ArrayList<>();
+        for (Content content : getContent.getAllContents()) {
+            if (content instanceof Post && ((Post) content).getAuthorId().equals(authorId)) {
+                ownPosts.add((Post) content);
+            }
+        }
+        return ownPosts;
     }
 
 

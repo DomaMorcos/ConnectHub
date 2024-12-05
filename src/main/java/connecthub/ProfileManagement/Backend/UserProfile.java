@@ -47,14 +47,16 @@ public class UserProfile implements Serializable {
 
     // Friend Management Methods
     public List<User> getFriends() {
+
         return FriendManager.getInstance().getFriendsList(userId);
+
     }
     public void addFriend(String friendId) {
-        FriendManager.getInstance().addFriend(userId, friendId);
+        connecthub.FriendManagement.Backend.FriendManager.getInstance().addFriend(userId, friendId);
     }
 
     public void deleteFriend(String friendId) {
-        FriendManager.getInstance().removeFriend(userId, friendId);
+        connecthub.FriendManagement.Backend.FriendManager.getInstance().removeFriend(userId, friendId);
     }
 
     @Override

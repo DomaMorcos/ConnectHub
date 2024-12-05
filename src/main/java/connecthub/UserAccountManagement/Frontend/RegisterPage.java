@@ -1,6 +1,8 @@
 package connecthub.UserAccountManagement.Frontend;
 
 import connecthub.AlertUtils;
+import connecthub.ProfileManagement.Backend.ProfileDatabase;
+import connecthub.ProfileManagement.Backend.UserProfile;
 import connecthub.UserAccountManagement.Backend.CreateUser;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -82,8 +84,7 @@ public class RegisterPage {
 
         registerButton = new Button("Register");
         registerButton.setOnAction(e -> {
-            handleRegisterAction();
-            stage.close();
+            handleRegisterAction(stage);
             LoginPage loginPage = new LoginPage();
             try {
                 loginPage.start(stage);
@@ -103,7 +104,7 @@ public class RegisterPage {
 
     }
 
-    public void handleRegisterAction() {
+    public void handleRegisterAction(Stage stage) {
         CreateUser createUser = new CreateUser();
         String email = emailTextField.getText();
         String username = usernameTextField.getText();
@@ -117,6 +118,7 @@ public class RegisterPage {
         } else {
             createUser.signup(email, username, password, dateOfBirth);
             AlertUtils.showInformationMessage("Registration Successful", "Registration Successful ! ");
+            stage.close();
         }
     }
 }

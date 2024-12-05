@@ -104,9 +104,11 @@ public class GetContent {
         //loop on contents
         for (Content content : contents) {
             //if the id = id add
+
             if (content instanceof Story && Objects.equals(((Story) content).getAuthorId(), user.getUserId())) {
                 contentsForUser.add(content);
             } else if (content instanceof Post && Objects.equals(((Post) content).getAuthorId(), user.getUserId())) {
+
                 contentsForUser.add(content);
             }
         }
