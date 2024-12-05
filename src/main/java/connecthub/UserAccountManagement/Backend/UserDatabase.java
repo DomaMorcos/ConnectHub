@@ -1,5 +1,6 @@
 package connecthub.UserAccountManagement.Backend;
 
+import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.*;
@@ -13,18 +14,19 @@ public class UserDatabase {
     private static UserDatabase instance; // Singleton instance
     public ArrayList<User> users = new ArrayList<>();
     public static final String FILEPATH = "User.JSON";
+    private static UserDatabase userDatabase = null;
 
     // Private constructor to prevent instantiation
     private UserDatabase() {
     }
 
     // Public method to provide access to the singleton instance
-    public static synchronized UserDatabase getInstance() {
-        if (instance == null) {
-            instance = new UserDatabase();
-            instance.readUsersFromJsonFile();
+    public static UserDatabase getInstance() {
+        // Only one instance
+        if (userDatabase  == null) {
+            userDatabase  = new UserDatabase ();
         }
-        return instance;
+        return userDatabase ;
     }
 
     public static void saveUsersToJsonFile() {

@@ -1,11 +1,13 @@
 package connecthub.FriendManagement.Backend;
 
+import connecthub.UserAccountManagement.Backend.User;
+
 public class FriendStatus {
     private String friendId;
     private String status; // online/offline
 
-    public FriendStatus(String friendId, String status) {
-        this.friendId = friendId;
+    public FriendStatus(User friendId, String status) {
+        this.friendId = friendId.getUserId();
         this.status = status;
     }
 

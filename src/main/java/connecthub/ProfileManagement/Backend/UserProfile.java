@@ -1,6 +1,8 @@
 package connecthub.ProfileManagement.Backend;
 
 import connecthub.FriendManagement.Backend.FriendManager;
+import connecthub.UserAccountManagement.Backend.User;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -44,7 +46,7 @@ public class UserProfile implements Serializable {
     }
 
     // Friend Management Methods
-    public List<String> getFriends() {
+    public List<User> getFriends() {
         return FriendManager.getInstance().getFriendsList(userId);
     }
     public void addFriend(String friendId) {
@@ -58,7 +60,7 @@ public class UserProfile implements Serializable {
     @Override
     public String toString() {
         // Get the list of friends using the getFriends method
-        List<String> friendsList = getFriends();
+        List<User> friendsList = getFriends();
 
         return "UserProfile{" +
                 "userId='" + userId + '\'' +

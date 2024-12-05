@@ -153,7 +153,7 @@ public class FriendManager {
     // Display the online/offline status of friends
     public List<FriendStatus> getFriendStatuses(String userId) {
         List<FriendStatus> friendStatuses = new ArrayList<>();
-        for (String friendId : getFriendsList(userId)) {
+        for (User friendId : getFriendsList(userId)) {
             friendStatuses.add(new FriendStatus(friendId, "online")); // Example status, should come from user status management
         }
         return friendStatuses;
