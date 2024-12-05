@@ -12,14 +12,10 @@
 #ProfileName{
     -fx-text-fill: white;
     -fx-font-size: 40px;
-<<<<<<< HEAD
+
     -fx-border-radius: 30px;
     -fx-translate-x: -300px;
-=======
-    -fx-font-style: bold;
-    -fx-background-color: black;
-    -fx-border-radius: 30px;
->>>>>>> c99c91949913f660f9b281ba65474e2e12ad716a
+
 }
 #Bio {
     -fx-fill-width: 200px;

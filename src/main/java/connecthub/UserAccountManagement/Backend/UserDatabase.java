@@ -17,7 +17,7 @@ public class UserDatabase {
     public static final String FILEPATH = "User.JSON";
     private static UserDatabase userDatabase = null;
 
-    private static UserDatabase userDatabase = null;
+
 
     // Private constructor to prevent instantiation
     private UserDatabase() {
