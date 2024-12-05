@@ -2,8 +2,6 @@ package connecthub.ContentCreation.Backend;
 
 import org.json.JSONObject;
 
-import javax.json.JsonObject;
-
 public class Post extends AbstractContent {
 
     public Post(String contentId, String authorId, String content, String imagePath, String timestamp) {
