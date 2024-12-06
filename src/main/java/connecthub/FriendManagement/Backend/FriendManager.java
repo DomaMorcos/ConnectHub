@@ -11,14 +11,16 @@ public class FriendManager {
     private final Map<String, List<String>> friendsMap = new HashMap<>();
     private final Map<String, List<FriendRequest>> friendRequestsMap = new HashMap<>(); // Track pending requests
     private final Map<String, List<String>> blockedMap = new HashMap<>(); // Blocked users map
+    private static FriendManager friendManager = null;
+    private FriendManager() {
 
-    private FriendManager() {}
+    }
 
-    public static synchronized FriendManager getInstance() {
-        if (instance == null) {
-            instance = new FriendManager();
+    public static FriendManager getInstance() {
+        if (friendManager == null) {
+            friendManager = new FriendManager();
         }
-        return instance;
+        return friendManager;
     }
 
     public void initializeFriends(String userId, List<String> friends) {

@@ -3,19 +3,25 @@ package connecthub.ProfileManagement.Backend;
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.UserAccountManagement.Backend.User;
 
+import javax.swing.*;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 public class UserProfile implements Serializable {
     private final String userId;
-    private String profilePhotoPath;
-    private String coverPhotoPath;
+    private ImageIcon profilePhoto;
+    private ImageIcon coverPhoto;
     private String bio;
 
-    public UserProfile(String userId, String profilePhotoPath, String coverPhotoPath, String bio, List<String> friends) {
+    public UserProfile(String userId, ImageIcon profilePhoto, ImageIcon coverPhoto, String bio, List<String> friends) {
         this.userId = userId;
-        this.profilePhotoPath = profilePhotoPath;
-        this.coverPhotoPath = coverPhotoPath;
+        this.profilePhoto = profilePhoto;
+        this.coverPhoto = coverPhoto;
         this.bio = bio;
 
         // Initialize friends in FriendManager
@@ -26,17 +32,39 @@ public class UserProfile implements Serializable {
     public String getUserId() {
         return userId;
     }
-    public String getProfilePhotoPath() {
-        return profilePhotoPath;
+    public ImageIcon getProfilePhotoPath() {
+        return profilePhoto;
     }
     public void setProfilePhotoPath(String profilePhotoPath) {
-        this.profilePhotoPath = profilePhotoPath;
+        Path source = Paths.get(profilePhotoPath);
+        Path destination = Paths.get("imagesDatabase/ProfilePicture/" + userId + ".png");
+        try {
+            if (Files.exists(source)) {
+                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                System.out.println("Profile photo path does not exist: " + profilePhotoPath);
+                this.profilePhoto = new ImageIcon("imagesDatabase/defaultProfile.png"); // Set a default image
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-    public String getCoverPhotoPath() {
-        return coverPhotoPath;
+    public ImageIcon getCoverPhotoPath() {
+        return coverPhoto;
     }
     public void setCoverPhotoPath(String coverPhotoPath) {
-        this.coverPhotoPath = coverPhotoPath;
+        Path source = Paths.get(coverPhotoPath);
+        Path destination = Paths.get("imagesDatabase/CoverPicture/" + userId + ".png");
+        try {
+            if (Files.exists(source)) {
+                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                System.out.println("Cover photo path does not exist: " + coverPhotoPath);
+                this.coverPhoto = new ImageIcon("imagesDatabase/defaultCover.png"); // Set a default image
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public String getBio() {
         return bio;
@@ -64,12 +92,10 @@ public class UserProfile implements Serializable {
 
         return "UserProfile{" +
                 "userId='" + userId + '\'' +
-                ", profilePhotoPath='" + profilePhotoPath + '\'' +
-                ", coverPhotoPath='" + coverPhotoPath + '\'' +
+                ", profilePhotoPath='" + profilePhoto.getDescription() + '\'' +
+                ", coverPhotoPath='" + coverPhoto.getDescription() + '\'' +
                 ", bio='" + bio + '\'' +
                 ", friends=" + friendsList +
                 '}';
     }
-
-
 }

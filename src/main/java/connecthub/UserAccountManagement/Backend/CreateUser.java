@@ -3,6 +3,7 @@ package connecthub.UserAccountManagement.Backend;
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Backend.UserProfile;
+import javax.swing.*;
 import java.util.ArrayList;
 import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
 import static connecthub.UserAccountManagement.Backend.Validation.isEmailValid;
@@ -29,9 +30,15 @@ public class CreateUser {
         userDB.saveUsersToJsonFile();
         // Initialize friends for the new user
         FriendManager.getInstance().initializeFriends(generatedId, null);
-        // Initialize and save the profile for the new user
+        // Initialize and save the profile for the new user with default values
         ProfileDatabase profileDB = ProfileDatabase.getInstance();
-        UserProfile profile = new UserProfile(generatedId, "null", "null", "Default bio", new ArrayList<>());
+        UserProfile profile = new UserProfile(
+                generatedId,
+                new ImageIcon(), // Default empty profile photo
+                new ImageIcon(), // Default empty cover photo
+                "Default bio",
+                new ArrayList<>()
+        );
         profileDB.updateProfile(profile);
         return true;
     }

@@ -1,3 +1,4 @@
+
 package connecthub.ContentCreation.Backend;
 
 import java.time.LocalDateTime;
@@ -18,10 +19,13 @@ public class ContentFactory {
         }
         return contentFactory;
     }
+
     public static Content createContent(String type, String authorId, String content, String imagePath) {
         //make unique id for the content
+
         GetContent getContent = GetContent.getInstance();
         ContentDatabase contentDatabase = ContentDatabase.getInstance();
+
         String time = LocalDateTime.now().toString();
         String contentId = generateId(authorId);
         if (type.equals("Post")) {
@@ -29,7 +33,9 @@ public class ContentFactory {
             contentId = "P" + contentId;
             Post post = new Post(contentId, authorId, content, imagePath, time);
             //add it th the contents and save
+
             contentDatabase.getContents().add(post);
+
             saveContents();
             return post;
         } else if (type.equals("Story")) {
@@ -37,7 +43,9 @@ public class ContentFactory {
             contentId = "S" + contentId;
             Story story = new Story(contentId, authorId, content, imagePath, time);
             //add it th the contents and save
+
             contentDatabase.getContents().add(story);
+
             saveContents();
             return story;
         }

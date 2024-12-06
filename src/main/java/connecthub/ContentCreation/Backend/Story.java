@@ -1,3 +1,4 @@
+
 package connecthub.ContentCreation.Backend;
 
 import org.json.JSONObject;
@@ -35,5 +36,9 @@ public class Story extends AbstractContent {
         //make it +24
         //if it's before now return true
         return storyTime.plusHours(EXPIRATION_HOURS).isBefore(LocalDateTime.now());
+    }
+    @Override
+    public String toString() {
+        return "Story{contentId='" + getContentId() + "', content='" + getContent() + "', authorId='" + getAuthorId() + "', imagePath='" + getImagePath() + "', timestamp='" + getTimestamp() + "'}";
     }
 }
