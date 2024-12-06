@@ -27,8 +27,13 @@
     -fx-padding: 20px;
 }
 
+#Management{
+    -fx-spacing: 50px;
+    -fx-alignment: center;
+    -fx-padding:20px;
+}
 
-#EditBio {
+Button {
     -fx-background-color: black;
     -fx-text-fill: orange;
     -fx-min-width: 50px;

@@ -2,6 +2,7 @@ package connecthub.UserAccountManagement.Frontend;
 
 import connecthub.AlertUtils;
 import connecthub.ContentCreation.Backend.ContentDatabase;
+import connecthub.NewsfeedPage.Frontend.NewsFeedFront;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Backend.ProfileManager;
 import connecthub.ProfileManagement.Frontend.ProfilePage;
@@ -106,8 +107,11 @@ public class LoginPage extends Application {
             logUser.login(emailText, passwordText);
             AlertUtils.showInformationMessage("Login Successful", "Login Successful!");
             User user = userDatabase.getUser(emailText);
-            ProfilePage profilePage = new ProfilePage();
-            profilePage.start(user.getUserId());
+//            ProfilePage profilePage = new ProfilePage();
+//            profilePage.start(user.getUserId());
+//            stage.close();
+            NewsFeedFront newsFeedFront = new NewsFeedFront();
+            newsFeedFront.start(user.getUserId());
             stage.close();
         }
     }
