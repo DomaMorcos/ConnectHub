@@ -1,10 +1,7 @@
 package connecthub.ContentCreation.Backend;
 
-import javax.json.JsonObject;
+import org.json.JSONObject;
 
 public interface Content {
-    String getContentId();
-    String getAuthorId();
-    String getTimestamp();
-    JsonObject toJson();
+    JSONObject toJson();
 }

@@ -1,7 +1,7 @@
 package connecthub.ContentCreation.Backend;
 
-import javax.json.Json;
-import javax.json.JsonObject;
+import org.json.JSONObject;
+
 import java.time.LocalDateTime;
 
 public class Story extends AbstractContent {
@@ -12,24 +12,32 @@ public class Story extends AbstractContent {
     }
 
     @Override
-    public JsonObject toJson() {
-        return Json.createObjectBuilder(baseJson())
-                .add("type", "story")
-                .build();
+    public JSONObject toJson() {
+        //add to the json object the type
+        JSONObject obj = super.toJson();
+        obj.put("type", "story");
+        return obj;
     }
 
-    public static Story fromJson(JsonObject jsonObject) {
-        return new Story(
-                jsonObject.getString("contentId"),
-                jsonObject.getString("authorId"),
-                jsonObject.getString("content"),
-                jsonObject.getString("imagePath", ""),
-                jsonObject.getString("timestamp")
-        );
+    public static Story readFromJson(JSONObject jsonObject) {
+        // make Story from json object
+        String contentId = jsonObject.optString("contentId", "");
+        String authorId = jsonObject.optString("authorId", "unknown");
+        String content = jsonObject.optString("content", "");
+        String imagePath = jsonObject.optString("imagePath", "");
+        String timestamp = jsonObject.optString("timestamp", "");
+        return new Story(contentId, authorId, content, imagePath, timestamp);
     }
 
     public boolean isExpired() {
-        LocalDateTime storyTime = LocalDateTime.parse(timestamp);
+        //get the date of creation
+        LocalDateTime storyTime = LocalDateTime.parse(getTimestamp());
+        //make it +24
+        //if it's before now return true
         return storyTime.plusHours(EXPIRATION_HOURS).isBefore(LocalDateTime.now());
+    }
+    @Override
+    public String toString() {
+        return "Story{contentId='" + getContentId() + "', content='" + getContent() + "', authorId='" + getAuthorId() + "', imagePath='" + getImagePath() + "', timestamp='" + getTimestamp() + "'}";
     }
 }

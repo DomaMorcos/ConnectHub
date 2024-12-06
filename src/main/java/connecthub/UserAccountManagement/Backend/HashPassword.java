@@ -4,8 +4,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class HashPassword {
-
-
     public static String hashPassword(String password) {
         try {
             MessageDigest m = MessageDigest.getInstance("SHA-256"); // Creating a MessageDigest instance for the SHA-256 hashing algorithm
@@ -20,5 +18,4 @@ public class HashPassword {
             return null;
         }
     }
-
 }

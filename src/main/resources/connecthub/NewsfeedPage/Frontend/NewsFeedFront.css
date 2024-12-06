@@ -1,0 +1,153 @@
+/* General Styles */
+* {
+    font-family: Arial, sans-serif;
+}
+
+.root {
+    -fx-background-color: #f0f2f5;
+}
+
+/* Stories Section */
+.hbox {
+    -fx-background-color: #ffffff;
+    -fx-padding: 20;
+    -fx-spacing: 30;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1;
+    -fx-alignment: center-left;
+}
+
+.hbox Label {
+    font-weight: bold;
+    font-size: 16px;
+    -fx-text-fill: #606770;
+}
+
+.image-view {
+    -fx-border-radius: 50%;
+    -fx-border-color: #1877f2;
+    -fx-border-width: 2;
+    -fx-padding: 2;
+    -fx-effect: dropshadow(gaussian, lightgray, 5, 0, 0, 0);
+}
+
+/* Friend List */
+.friend-list {
+    -fx-background-color: #ffffff;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1;
+}
+
+.friend-list Label {
+    font-weight: bold;
+    font-size: 14px;
+    -fx-text-fill: #333333;
+}
+
+.friend-list .label {
+    -fx-padding: 5;
+    -fx-background-color: #e4e6eb;
+    -fx-border-radius: 5;
+    -fx-text-fill: #1c1e21;
+}
+
+/* Posts and Stories */
+.posts-and-stories {
+    -fx-background-color: #ffffff;
+    -fx-padding: 10;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1;
+}
+
+.scroll-pane {
+    -fx-fit-to-width: true;
+}
+
+.text-area {
+    -fx-background-color: #f0f2f5;
+    -fx-border-radius: 10;
+    -fx-padding: 10;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1;
+}
+
+/* Friend Suggestions */
+.friend-suggestions {
+    -fx-background-color: #ffffff;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1;
+}
+
+.friend-suggestions Button {
+    -fx-background-color: #1877f2;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 5 10;
+    -fx-border-radius: 5;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.friend-suggestions Button:hover {
+    -fx-background-color: #145dbf;
+}
+
+/* Content Creation Area */
+.content-creation-area {
+    -fx-background-color: #ffffff;
+    -fx-padding: 10;
+    -fx-spacing: 10;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1;
+}
+
+.text-area {
+    -fx-background-color: #f0f2f5;
+    -fx-border-radius: 10;
+    -fx-padding: 10;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1;
+}
+
+.button {
+    -fx-background-color: #1877f2;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 5 15;
+    -fx-border-radius: 5;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #145dbf;
+}
+
+/* Labels */
+.label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #606770;
+}
+
+.label-heading {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1c1e21;
+}
+
+/* Scrollbars */
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .thumb {
+    -fx-background-color: #c6c6c6;
+    -fx-background-radius: 5;
+}
+
+.scroll-pane .thumb:hover {
+    -fx-background-color: #a8a8a8;
+}
