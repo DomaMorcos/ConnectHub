@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class ContentDatabase {
 
-    private static final String CONTENT_FILEPATH = "content.json";
+    private static final String CONTENT_FILEPATH = "content.JSON";
     private ArrayList<Content> contents = new ArrayList<>();
     private static ContentDatabase contentDatabase = null;
 
@@ -33,7 +33,7 @@ public class ContentDatabase {
         return contentDatabase;
     }
 
-    public static void saveContents() {
+    public void saveContents() {
         //loop on contents and make them json object
         ContentDatabase contentDB = getInstance();
         JSONArray jsonArray = new JSONArray();
@@ -45,8 +45,8 @@ public class ContentDatabase {
             FileWriter file = new FileWriter(CONTENT_FILEPATH);
             file.write(jsonArray.toString(4));
             file.close();
-        } catch (IOException e) {
-            System.out.println("Error while saving contents");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -79,8 +79,8 @@ public class ContentDatabase {
             // After loading all remove expired
             removeExpiredStories();
             return contentDB.contents;
-        } catch (IOException e) {
-            e.printStackTrace();
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
         }
 
         return contentDB.contents;
@@ -88,9 +88,9 @@ public class ContentDatabase {
 
     public static void removeExpiredStories() {
         //remove if the content is story & if it's expired
-        ContentDatabase contentDB = getInstance();
-        contentDB.contents.removeIf(content -> content instanceof Story && ((Story) content).isExpired());
-        saveContents();
+        ContentDatabase contentDatabase = getInstance();
+        contentDatabase.contents.removeIf(content -> content instanceof Story && ((Story) content).isExpired());
+        contentDatabase.saveContents();
     }
 
     public static String generateId(String authorId) {
@@ -99,5 +99,4 @@ public class ContentDatabase {
         return authorId + "_" + time;
 
     }
-
 }

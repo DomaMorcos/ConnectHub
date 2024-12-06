@@ -3,9 +3,11 @@ package connecthub.ProfileManagement.Frontend;
 import connecthub.ContentCreation.Backend.ContentDatabase;
 import connecthub.ContentCreation.Backend.GetContent;
 import connecthub.ContentCreation.Backend.Post;
+import connecthub.NewsfeedPage.Frontend.NewsFeedFront;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Backend.ProfileManager;
 import connecthub.ProfileManagement.Backend.UserProfile;
+import connecthub.TimestampFormatter;
 import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
 import javafx.application.Application;
@@ -27,20 +29,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
+
 public class ProfilePage {
     private ScrollPane scrollPane;
-    private HBox photos,bioBox;
+    private HBox photos,management;
     private VBox posts, profileInfo, mainLayout;
     private ImageView profilePhoto, coverPhoto;
     private Label profileName, bio;
-    private Button editBio, createPost;
+    private Button editBio , newsfeedButton , friendsButton;
     private MenuBar settingMenuBar;
     private MenuItem friends, editProfilePhoto, editCoverPhoto, changePassword, logout;
     ContentDatabase contentDatabase = ContentDatabase.getInstance();
     UserDatabase userDatabase = UserDatabase.getInstance();
     ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
     ProfileManager profileManager = new ProfileManager(contentDatabase, userDatabase);
-
+    GetContent getContent = GetContent.getInstance();
 
     public void start(String userID) throws Exception {
         Stage stage = new Stage();
@@ -97,33 +101,41 @@ public class ProfilePage {
             });
         });
 
-        bioBox = new HBox();
-        bioBox.setId("BioBox");
-        bioBox.getChildren().addAll(bio,editBio);
+
+        management = new HBox();
+        management.setId("Management");
+        newsfeedButton = new Button("NewsFeed");
+        newsfeedButton.setOnAction(e -> {
+            NewsFeedFront newsFeedFront = new NewsFeedFront();
+            try {
+                newsFeedFront.start(userID);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            stage.close();
+        });
+        friendsButton = new Button("Friends");
+
+        management.getChildren().addAll(editBio,newsfeedButton,friendsButton);
 
         profileInfo = new VBox();
         profileInfo.setId("ProfileInfo");
 //        profileInfo.setPadding(new Insets(10));
 //        profileInfo.setSpacing(10);
-        profileInfo.getChildren().addAll(photos, profileName,bioBox);
+        profileInfo.getChildren().addAll(photos, profileName,management,bio);
 
-        // Initialize the class-level `posts`
-        posts = new VBox();
-//        for (Pane postPane : loadPosts(user)) {
-//            posts.getChildren().add(postPane);
-//        }
-//        posts.setPadding(new Insets(10));
-//        posts.setSpacing(10);
+// Initialize the class-level `posts`
+        ScrollPane posts = createPosts(userID);
+// Scrollable Posts
 
-        // Scrollable Posts
-        scrollPane = new ScrollPane(posts);
-        scrollPane.setFitToWidth(true);
+        posts.setFitToWidth(true);
 
-        // Main Layout
+// Main Layout
         mainLayout = new VBox();
 //        mainLayout.setPadding(new Insets(10));
 //        mainLayout.setSpacing(20);
-        mainLayout.getChildren().addAll(profileInfo, scrollPane);
+        mainLayout.getChildren().addAll(profileInfo, posts);
+
 
         VBox root = new VBox();
         root.getChildren().addAll(mainLayout);
@@ -131,7 +143,6 @@ public class ProfilePage {
         // Menu
         settingMenuBar = new MenuBar();
         Menu settingsMenu = new Menu("Settings");
-        friends = new MenuItem("Friends");
         editProfilePhoto = new MenuItem("Edit Profile Photo");
         editCoverPhoto = new MenuItem("Edit Cover Photo");
         changePassword = new MenuItem("Change Password");
@@ -176,7 +187,7 @@ public class ProfilePage {
             result.ifPresent(newPassword -> profileManager.updatePassword(userID, newPassword));
         });
 
-        settingsMenu.getItems().addAll(friends, editProfilePhoto, editCoverPhoto, changePassword, logout);
+        settingsMenu.getItems().addAll(editProfilePhoto, editCoverPhoto, changePassword, logout);
         settingMenuBar.getMenus().add(settingsMenu);
 
         VBox layout = new VBox(settingMenuBar, root);
@@ -190,36 +201,72 @@ public class ProfilePage {
     }
 
 
-    private ArrayList<Pane> loadPosts(User user) {
-        posts.getChildren().clear();
-        ArrayList<Pane> userPosts = new ArrayList<>();
-        GetContent getContent = GetContent.getInstance();
-        ArrayList<Post> postsList = getContent.getAllPostsForUser(user);
-        if (postsList.isEmpty()) {
-            Label contentString = new Label("No posts yet!");
-            Pane postPane = new Pane();
-            postPane.getChildren().add(contentString);
-            userPosts.add(postPane);
-            return userPosts;
+    private ScrollPane createPosts(String userID) {
+        VBox postsBox = new VBox();
+        postsBox.setSpacing(10);
+        postsBox.setPadding(new Insets(10));
 
-        }
-        for (Post post : postsList) {
+        Label postsLabel = new Label("Recent Posts");
+        postsLabel.getStyleClass().add("label-heading");
+        postsBox.getChildren().add(postsLabel);
+
+        User user = userDatabase.getUserById(userID);
+
+        // Populate the posts list
+        for (Post post : getContent.getAllPostsForUser(user)) {
+            VBox singlePost = new VBox();
+            singlePost.setSpacing(5);
+
+            // Author image and username
+            ImageView authorImage = new ImageView(new Image(getClass().getResource(profileDatabase.getProfile(userID).getProfilePhotoPath()).toExternalForm()));
+            authorImage.setFitWidth(30);
+            authorImage.setFitHeight(30);
             Label username = new Label(user.getUsername());
-            Label time = new Label(post.getTimestamp());
-            Label contentString = new Label(post.getContent());
-            if (!post.getImagePath().isEmpty()) {
-                ImageView contentImage = new ImageView(new Image(post.getImagePath()));
-                Pane postPane = new Pane();
-                postPane.getChildren().addAll(username, time, contentString, contentImage);
-                userPosts.add(postPane);
-                continue;
+            Label time = new Label(TimestampFormatter.formatTimestamp(post.getTimestamp()));
+
+
+
+            // Post content (TextArea) with fixed size and scrollable
+            TextArea postText = new TextArea(post.getContent());
+            postText.setEditable(false);
+            postText.setWrapText(true); // Allow text wrapping
+            postText.setPrefHeight(100); // Set fixed height
+            postText.setPrefWidth(400); // Set fixed width
+            postText.setScrollTop(0); // Ensure the content is scrollable
+
+            // Add components to the single post VBox
+            singlePost.getChildren().addAll(authorImage, username, time);
+            // Optional post thumbnail image
+            if (post.getImagePath() != null && !post.getImagePath().isEmpty()) {
+                try {
+                    ImageView postImage = new ImageView(
+                            new Image(getClass().getResource(post.getImagePath()).toExternalForm())
+                    );
+                    postImage.setFitHeight(80);
+                    postImage.setFitWidth(80);
+                    postImage.getStyleClass().add("post-image");
+                    singlePost.getChildren().add(postImage);
+                } catch (Exception e) {
+                    // Log or handle the invalid image path
+                    System.err.println("Invalid image path for post: " + post.getImagePath());
+                }
             }
-            Pane postPane = new Pane();
-            postPane.getChildren().addAll(username, time, contentString);
-            userPosts.add(postPane);
+            singlePost.getChildren().add(postText);
+
+            // Add the single post to the postsBox
+            postsBox.getChildren().add(singlePost);
         }
-        return userPosts;
+
+        // Create a ScrollPane to make posts scrollable
+        ScrollPane scrollPane = new ScrollPane(postsBox);
+        scrollPane.setFitToWidth(true); // Ensure the ScrollPane stretches to fit the width of the postsBox
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Always show vertical scrollbar
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Disable horizontal scrollbar
+        scrollPane.getStyleClass().add("scroll-pane");
+
+        return scrollPane;
     }
+
 
     private Optional<String> handleEditBio() {
         TextInputDialog dialog = new TextInputDialog("Enter Bio");
