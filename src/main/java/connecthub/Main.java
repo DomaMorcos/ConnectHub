@@ -1,63 +1,75 @@
 package connecthub;
 
+import connecthub.ContentCreation.Backend.Content;
+import connecthub.ContentCreation.Backend.ContentFactory;
+import connecthub.ContentCreation.Backend.GetContent;
 import connecthub.FriendManagement.Backend.FriendManager;
-import connecthub.FriendManagement.Backend.FriendRequest;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Backend.UserProfile;
 import connecthub.UserAccountManagement.Backend.CreateUser;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import connecthub.UserAccountManagement.Backend.LogUser;
 
 public class Main {
     public static void main(String[] args) {
-        // Initialize the profile and friend manager
-        ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
+        // User creation and login
+        CreateUser createUser = new CreateUser();
+        System.out.println("Testing user signup for User 1:");
+        if (createUser.signup("user1@example.com", "user1", "password123", "1990-01-01")) {
+            System.out.println("Signup for User 1 successful.");
+        } else {
+            System.out.println("Signup for User 1 failed.");
+        }
+
+        System.out.println("Testing user signup for User 2:");
+        if (createUser.signup("user2@example.com", "user2", "password123", "1992-02-02")) {
+            System.out.println("Signup for User 2 successful.");
+        } else {
+            System.out.println("Signup for User 2 failed.");
+        }
+
+        LogUser logUser = new LogUser();
+        System.out.println("Testing login for User 1:");
+        if (logUser.login("user1@example.com", "password123")) {
+            System.out.println("Login successful for User 1.");
+        } else {
+            System.out.println("Login failed for User 1.");
+        }
+
+        // Create and retrieve content
+        ContentFactory contentFactory = ContentFactory.getInstance();
+        System.out.println("Creating a post:");
+        Content post = contentFactory.createContent("Post", "1", "This is a test post.", null);
+        System.out.println("Post created: " + post);
+
+        System.out.println("Creating a story:");
+        Content story = contentFactory.createContent("Story", "1", "This is a test story.", null);
+        System.out.println("Story created: " + story);
+
+        GetContent getContent = GetContent.getInstance();
+        System.out.println("Retrieving all posts:");
+        getContent.getAllPosts().forEach(System.out::println);
+
+        System.out.println("Retrieving all stories:");
+        getContent.getAllStories().forEach(System.out::println);
+
+        // Friend management
         FriendManager friendManager = FriendManager.getInstance();
-        CreateUser userCreator = new CreateUser();
-
-        // 1. Create Users
-        System.out.println("Creating users...");
-        for (int i = 1; i <= 5; i++) {
-            userCreator.signup(
-                    "user" + i + "@example.com",
-                    "User" + i,
-                    "password" + i,
-                    "1990-01-0" + i
-            );
+        System.out.println("Adding a friend:");
+        if (friendManager.addFriend("1", "2")) {
+            System.out.println("Friend added successfully.");
+        } else {
+            System.out.println("Failed to add friend.");
         }
 
-        // 2. Send Friend Requests
-        System.out.println("\nSending friend requests...");
-        FriendRequest.sendFriendRequest("1", "2");
-        FriendRequest.sendFriendRequest("1", "3");
+        // Profile management
+        ProfileDatabase profileDB = ProfileDatabase.getInstance();
+        UserProfile profile = profileDB.getProfile("1");
+        profile.setBio("Updated bio for user 1.");
+        profileDB.updateProfile(profile);
+        System.out.println("Updated profile: " + profile);
 
-        // 3. Accept Friend Requests
-        System.out.println("\nAccepting friend requests...");
-        FriendRequest.respondToRequest("2", "1", true); // User2 accepts User1's request
-        FriendRequest.respondToRequest("3", "1", true); // User3 accepts User1's request
-
-        // 4. Loop through profiles and verify friends
-        System.out.println("\nVerifying profiles...");
-        for (int i = 1; i <= 5; i++) {
-            UserProfile profile = profileDatabase.getProfile(String.valueOf(i));
-            if (profile != null) {
-                System.out.println("Profile of User" + i + ":");
-                System.out.println("Bio: " + profile.getBio());
-                System.out.println("Friends: " + profile.getFriends());
-            } else {
-                System.out.println("Profile for User" + i + " not found!");
-            }
-        }
-
-        // 5. Check JSON File Directly
-        System.out.println("\nValidating JSON file content...");
-        try {
-            String jsonContent = Files.readString(Paths.get("Profiles.JSON"));
-            System.out.println("Profiles.JSON content:");
-            System.out.println(jsonContent);
-        } catch (Exception e) {
-            System.err.println("Error reading Profiles.JSON: " + e.getMessage());
-        }
+        // Logout
+        logUser.logout("user1@example.com");
+        System.out.println("User 1 logged out successfully.");
     }
 }

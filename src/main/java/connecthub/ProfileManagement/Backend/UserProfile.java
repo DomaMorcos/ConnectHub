@@ -32,8 +32,8 @@ public class UserProfile implements Serializable {
     public String getUserId() {
         return userId;
     }
-    public ImageIcon getProfilePhotoPath() {
-        return profilePhoto;
+    public String getProfilePhotoPath() {
+        return profilePhoto.getDescription();
     }
     public void setProfilePhotoPath(String profilePhotoPath) {
         Path source = Paths.get(profilePhotoPath);
@@ -49,8 +49,8 @@ public class UserProfile implements Serializable {
             e.printStackTrace();
         }
     }
-    public ImageIcon getCoverPhotoPath() {
-        return coverPhoto;
+    public String getCoverPhotoPath() {
+        return coverPhoto.getDescription();
     }
     public void setCoverPhotoPath(String coverPhotoPath) {
         Path source = Paths.get(coverPhotoPath);

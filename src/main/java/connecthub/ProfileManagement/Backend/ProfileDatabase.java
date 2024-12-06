@@ -62,63 +62,34 @@ public class ProfileDatabase {
         profiles.put(profile.getUserId(), profile);
         saveProfilesToJsonFile();
     }
-//
-//    public void saveProfilesToJsonFile() {
-//        JSONArray profilesArray = new JSONArray();
-//        for (UserProfile profile : profiles.values()) {
-//            JSONObject profileObject = new JSONObject();
-//            JSONArray friendsArray = new JSONArray();
-//
-//            List<User> friends = FriendManager.getInstance().getFriendsList(profile.getUserId());
-//            for (User friend : friends) {
-//                friendsArray.put("UserId:" + friend.getUserId());
-//            }
-//
-//            profileObject.put("userId", profile.getUserId());
-//            profileObject.put("profilePhotoPath", profile.getProfilePhotoPath().getDescription());
-//            profileObject.put("coverPhotoPath", profile.getCoverPhotoPath().getDescription());
-//            profileObject.put("bio", profile.getBio());
-//            profileObject.put("friends", friendsArray);
-//
-//            profilesArray.put(profileObject);
-//        }
-//
-//        try (FileWriter file = new FileWriter(PROFILE_FILEPATH)) {
-//            file.write(profilesArray.toString(4));
-//            file.flush();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-public void saveProfilesToJsonFile() {
-    System.out.println("Saving profiles to JSON...");
 
-    JSONArray profilesArray = new JSONArray();
-    for (UserProfile profile : profiles.values()) {
-        JSONObject profileObject = new JSONObject();
-        profileObject.put("userId", profile.getUserId());
-        profileObject.put("profilePhotoPath", profile.getProfilePhotoPath().getDescription());
-        profileObject.put("coverPhotoPath", profile.getCoverPhotoPath().getDescription());
-        profileObject.put("bio", profile.getBio());
+    public void saveProfilesToJsonFile() {
+        JSONArray profilesArray = new JSONArray();
+        for (UserProfile profile : profiles.values()) {
+            JSONObject profileObject = new JSONObject();
+            JSONArray friendsArray = new JSONArray();
 
-        // Add friends list
-        JSONArray friendsArray = new JSONArray();
-        for (User friend : profile.getFriends()) {
-            friendsArray.put("UserId:" + friend.getUserId());
+            List<User> friends = FriendManager.getInstance().getFriendsList(profile.getUserId());
+            for (User friend : friends) {
+                friendsArray.put("UserId:" + friend.getUserId());
+            }
+
+            profileObject.put("userId", profile.getUserId());
+            profileObject.put("profilePhotoPath", profile.getProfilePhotoPath());
+            profileObject.put("coverPhotoPath", profile.getCoverPhotoPath());
+            profileObject.put("bio", profile.getBio());
+            profileObject.put("friends", friendsArray);
+
+            profilesArray.put(profileObject);
         }
-        profileObject.put("friends", friendsArray);
 
-        profilesArray.put(profileObject);
+        try (FileWriter file = new FileWriter(PROFILE_FILEPATH)) {
+            file.write(profilesArray.toString(4));
+            file.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
-    try (FileWriter file = new FileWriter(PROFILE_FILEPATH)) {
-        file.write(profilesArray.toString(4));
-        file.flush();
-        System.out.println("Profiles saved successfully!");
-    } catch (IOException e) {
-        System.err.println("Error saving profiles: " + e.getMessage());
-    }
-}
 
     public void loadProfiles() {
         File file = new File(PROFILE_FILEPATH);
