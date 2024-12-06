@@ -1,7 +1,23 @@
-[{
-    "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
-    "bio": "This Bio for Dama",
-    "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
-    "userId": "1",
-    "friends": []
-}]
+[
+    {
+        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
+        "bio": "This Bio for Dama",
+        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "userId": "1",
+        "friends": []
+    },
+    {
+        "profilePhotoPath": "DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "DefaultCoverPhoto.png",
+        "userId": "2",
+        "friends": []
+    },
+    {
+        "profilePhotoPath": "DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "DefaultCoverPhoto.png",
+        "userId": "3",
+        "friends": []
+    }
+]

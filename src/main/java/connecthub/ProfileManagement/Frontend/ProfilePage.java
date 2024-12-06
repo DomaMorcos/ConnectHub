@@ -3,6 +3,7 @@ package connecthub.ProfileManagement.Frontend;
 import connecthub.ContentCreation.Backend.ContentDatabase;
 import connecthub.ContentCreation.Backend.GetContent;
 import connecthub.ContentCreation.Backend.Post;
+import connecthub.FriendManagement.Frontend.FriendsPage;
 import connecthub.NewsfeedPage.Frontend.NewsFeedFront;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Backend.ProfileManager;
@@ -115,7 +116,15 @@ public class ProfilePage {
             stage.close();
         });
         friendsButton = new Button("Friends");
-
+        friendsButton.setOnAction(e ->{
+            FriendsPage friendsPage = new FriendsPage();
+            try {
+                friendsPage.start(userID);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            stage.close();
+        });
         management.getChildren().addAll(editBio,newsfeedButton,friendsButton);
 
         profileInfo = new VBox();

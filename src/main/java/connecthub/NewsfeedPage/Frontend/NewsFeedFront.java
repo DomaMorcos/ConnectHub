@@ -1,5 +1,6 @@
 package connecthub.NewsfeedPage.Frontend;
 
+import connecthub.AlertUtils;
 import connecthub.ContentCreation.Backend.ContentDatabase;
 import connecthub.ContentCreation.Backend.GetContent;
 import connecthub.ContentCreation.Backend.Post;
@@ -7,6 +8,9 @@ import connecthub.ContentCreation.Backend.Story;
 import connecthub.ContentCreation.Frontend.AddPost;
 import connecthub.ContentCreation.Frontend.AddStory;
 import connecthub.ContentCreation.Frontend.DisplayStory;
+import connecthub.FriendManagement.Backend.FriendManager;
+import connecthub.FriendManagement.Backend.FriendRequest;
+import connecthub.FriendManagement.Frontend.FriendsPage;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Frontend.ProfilePage;
 import connecthub.TimestampFormatter;
@@ -22,6 +26,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class NewsFeedFront {
+    private FriendManager friendManager = FriendManager.getInstance();
     ContentDatabase contentDatabase = ContentDatabase.getInstance();
     UserDatabase userDatabase = UserDatabase.getInstance();
     GetContent getContent = GetContent.getInstance();
@@ -40,7 +45,7 @@ public class NewsFeedFront {
         mainLayout.setTop(storiesSection);
 
         // Left side: Friend List
-        VBox friendList = createFriendList();
+        VBox friendList = createFriendList(primaryStage,userID);
         mainLayout.setLeft(friendList);
 
         // Center: Posts
@@ -48,7 +53,7 @@ public class NewsFeedFront {
         mainLayout.setCenter(posts);
 
         // Right side: Friend Suggestions
-        VBox friendSuggestions = createFriendSuggestions();
+        VBox friendSuggestions = createFriendSuggestions(primaryStage,userID);
         mainLayout.setRight(friendSuggestions);
 
         // Bottom: Content Creation Area
@@ -132,17 +137,42 @@ public class NewsFeedFront {
     }
 
 
-    private VBox createFriendList() {
-        VBox friendList = new VBox();
-        friendList.setPadding(new Insets(10));
-        friendList.setSpacing(5);
+    private VBox createFriendList(Stage stage , String userID) {
+        VBox friendsVBox = new VBox(10);
+        friendsVBox.setPadding(new Insets(10));
 
-        Label friendListLabel = new Label("Friends");
-        friendListLabel.getStyleClass().add("label-heading");
-        friendList.getChildren().add(friendListLabel);
+        Label friendsLabel = new Label("My Friends");
+        friendsVBox.getChildren().add(friendsLabel);
 
-        // Add dynamic loading method (currently empty)
-        return friendList;
+        // Simulate loading friends (in a real app, fetch from backend)
+        for (User friend : friendManager.getFriendsList(userID)) {
+            Label friendName = new Label(friend.getUsername());
+            Button removeButton = new Button("Remove");
+            Button blockButton = new Button("Block");
+
+            removeButton.setOnAction(e -> {
+                // Handle removing friend
+                if (friendManager.removeFriend(userID, friend.getUserId())) {
+                    AlertUtils.showInformationMessage("Friend Removed", friend.getUsername() + "is succesfully removed from the friends list");
+
+                }
+            });
+
+            blockButton.setOnAction(e -> {
+                // Handle blocking friend
+                if (friendManager.blockUser(userID, friend.getUserId())) {
+                    AlertUtils.showInformationMessage("Friend Blocked", friend.getUsername() + "is succesfully block from the friends list");
+
+
+                }
+            });
+
+            HBox friendBox = new HBox(10);
+            friendBox.getChildren().addAll(friendName, removeButton, blockButton);
+            friendsVBox.getChildren().add(friendBox);
+        }
+
+        return friendsVBox;
     }
 
     private ScrollPane createPosts(String userID) {
@@ -214,23 +244,32 @@ public class NewsFeedFront {
 
 
 
-    private VBox createFriendSuggestions() {
-        VBox friendSuggestions = new VBox();
-        friendSuggestions.setPadding(new Insets(10));
-        friendSuggestions.setSpacing(5);
+    private VBox createFriendSuggestions(Stage stage , String userID) {
+        VBox friendSuggestionsVBox = new VBox(10);
+        friendSuggestionsVBox.setPadding(new Insets(10));
 
         Label suggestionsLabel = new Label("Friend Suggestions");
-        suggestionsLabel.getStyleClass().add("label-heading");
-        friendSuggestions.getChildren().add(suggestionsLabel);
+        friendSuggestionsVBox.getChildren().add(suggestionsLabel);
 
-        // Sample suggestions
-        for (int i = 1; i <= 3; i++) {
-            Button suggestButton = new Button("Add Friend " + i);
-            suggestButton.getStyleClass().add("suggestion-button");
-            friendSuggestions.getChildren().add(suggestButton);
+
+        for (User friend : friendManager.suggestFriends(userID)) {
+            VBox friendSuggestion = new VBox();
+            friendSuggestion.setSpacing(10);
+            friendSuggestion.setPadding(new Insets(10));
+            Label username = new Label(friend.getUsername());
+            Button sendFriendRequest = new Button("Send Request");
+            sendFriendRequest.setOnAction(e -> {
+                if (FriendRequest.sendFriendRequest(userID, friend.getUserId())) {
+                    AlertUtils.showInformationMessage("Friend Request", "Friend Request is sent to " + friend.getUsername());
+
+
+                }
+            });
+            friendSuggestion.getChildren().addAll(username, sendFriendRequest);
+            friendSuggestionsVBox.getChildren().add(friendSuggestion);
         }
 
-        return friendSuggestions;
+        return friendSuggestionsVBox;
     }
 
     private HBox createContentCreationArea(Stage stage, String userID) {
