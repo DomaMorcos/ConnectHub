@@ -106,25 +106,54 @@ public class FriendRequest {
                 .filter(req -> req.getStatus().equals("Pending"))
                 .collect(Collectors.toList());
     }
-    // Save only pending friend requests to the JSON file
+//    // Save only pending friend requests to the JSON file
+//    public static void saveRequestsToJson() {
+//        JSONObject data = new JSONObject();
+//
+//        // Save only pending requests to friendRequestsMap
+//        Map<String, List<FriendRequest>> pendingRequests = new HashMap<>();
+//        for (Map.Entry<String, List<FriendRequest>> entry : friendRequestsMap.entrySet()) {
+//            List<FriendRequest> pendingList = entry.getValue().stream()
+//                    .filter(request -> request.getStatus().equals("Pending"))
+//                    .collect(Collectors.toList());
+//
+//            if (!pendingList.isEmpty()) {
+//                pendingRequests.put(entry.getKey(), pendingList);
+//            }
+//        }
+//        data.put("friendRequestsMap", requestsToJson(pendingRequests));
+//
+//        try (FileWriter file = new FileWriter(FRIEND_REQUESTS_FILE)) {
+//            file.write(data.toString(4));
+//        } catch (IOException e) {
+//            System.err.println("Error saving friend requests: " + e.getMessage());
+//        }
+//    }
     public static void saveRequestsToJson() {
         JSONObject data = new JSONObject();
 
-        // Save only pending requests to friendRequestsMap
-        Map<String, List<FriendRequest>> pendingRequests = new HashMap<>();
-        for (Map.Entry<String, List<FriendRequest>> entry : friendRequestsMap.entrySet()) {
-            List<FriendRequest> pendingList = entry.getValue().stream()
-                    .filter(request -> request.getStatus().equals("Pending"))
-                    .collect(Collectors.toList());
+        // Collect only pending friend requests
+        JSONObject friendRequestsJson = new JSONObject();
+        friendRequestsMap.forEach((receiverId, requests) -> {
+            JSONArray pendingRequestsArray = new JSONArray();
 
-            if (!pendingList.isEmpty()) {
-                pendingRequests.put(entry.getKey(), pendingList);
+            // Filter and collect pending requests
+            requests.stream()
+                    .filter(request -> "Pending".equals(request.getStatus())) // Only pending requests
+                    .forEach(request -> pendingRequestsArray.put(request.toJson()));
+
+            // Only add to JSON if there are pending requests for this receiver
+            if (!pendingRequestsArray.isEmpty()) {
+                friendRequestsJson.put(receiverId, pendingRequestsArray);
             }
-        }
-        data.put("friendRequestsMap", requestsToJson(pendingRequests));
+        });
 
+        data.put("friendRequestsMap", friendRequestsJson);
+
+        // Write to the JSON file
         try (FileWriter file = new FileWriter(FRIEND_REQUESTS_FILE)) {
-            file.write(data.toString(4));
+            file.write(data.toString(4)); // Pretty print with indentation
+            System.out.println("Friend requests saved successfully to " + FRIEND_REQUESTS_FILE);
         } catch (IOException e) {
             System.err.println("Error saving friend requests: " + e.getMessage());
         }

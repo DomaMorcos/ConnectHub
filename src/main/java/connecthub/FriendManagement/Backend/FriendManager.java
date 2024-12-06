@@ -1,17 +1,17 @@
 package connecthub.FriendManagement.Backend;
 
-import connecthub.ProfileManagement.Backend.ProfileDatabase;
-import connecthub.ProfileManagement.Backend.UserProfile;
 import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static connecthub.FriendManagement.Backend.FriendRequest.saveRequestsToJson;
+
 public class FriendManager {
     private static FriendManager instance;
     private final Map<String, List<String>> friendsMap = new HashMap<>();
-    private final Map<String, List<FriendRequest>> friendRequestsMap = new HashMap<>(); // Track pending requests
+    private static final Map<String, List<FriendRequest>> friendRequestsMap = new HashMap<>(); // Track pending requests
     private final Map<String, List<String>> blockedMap = new HashMap<>(); // Blocked users map
     private static FriendManager friendManager = null;
     private UserDatabase userDatabase = UserDatabase.getInstance();
@@ -85,64 +85,27 @@ public class FriendManager {
     }
 
     // Add a friend for a user (mutual friendship)
-//    public boolean addFriend(String userId, String friendId) {
-//        // Check if the user is trying to add themselves as a friend
-//        if (userId.equals(friendId)) {
-//            return false;
-//        }
-//
-//        // Check if the user is blocked by the other user
-//        if (isBlocked(userId, friendId)) {
-//            return false;
-//        }
-//
-//        // Check if they are already friends
-//        if (isFriend(userId, friendId)) {
-//           return false;
-//        }
-//
-//        // Add the friend to both users' friend lists (mutual friendship)
-//        friendsMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(friendId);
-//        friendsMap.computeIfAbsent(friendId, k -> new ArrayList<>()).add(userId);
-//
-//        // Save the updated state (optional)
-//        FriendRequest.saveRequestsToJson();
-//        return true;
-//    }
-    // Add a friend for a user (mutual friendship)
     public boolean addFriend(String userId, String friendId) {
-        // Validate inputs
-        if (userId == null || friendId == null || userId.isEmpty() || friendId.isEmpty()) {
-            System.err.println("Invalid user IDs provided.");
-            return false;
-        }
-
         // Check if the user is trying to add themselves as a friend
         if (userId.equals(friendId)) {
-            System.err.println("A user cannot add themselves as a friend.");
             return false;
         }
 
         // Check if the user is blocked by the other user
         if (isBlocked(userId, friendId)) {
-            System.err.println("Cannot add friend. User " + userId + " is blocked by " + friendId);
             return false;
         }
 
         // Check if they are already friends
         if (isFriend(userId, friendId)) {
-            System.err.println("Users " + userId + " and " + friendId + " are already friends.");
-            return false;
+           return false;
         }
 
         // Add the friend to both users' friend lists (mutual friendship)
         friendsMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(friendId);
         friendsMap.computeIfAbsent(friendId, k -> new ArrayList<>()).add(userId);
 
-        // Log the action
-        System.out.println("Friendship established between User " + userId + " and User " + friendId);
-
-        // Save the updated state
+        // Save the updated state (optional)
         FriendRequest.saveRequestsToJson();
         return true;
     }
@@ -165,18 +128,39 @@ public class FriendManager {
         userFriends.remove(friendId);
         friendFriends.remove(userId);
 
-        FriendRequest.saveRequestsToJson(); // Save the updated state
+        saveRequestsToJson(); // Save the updated state
         return true;
     }
 
 
     // Send a friend request (mark as Pending)
-    public boolean sendFriendRequest(String senderId, String receiverId) {
-        if (getFriendsList(senderId).contains(receiverId)) {
+//    public boolean sendFriendRequest(String senderId, String receiverId) {
+//        if (getFriendsList(senderId).contains(receiverId)) {
+//            return false;
+//        }
+//        FriendRequest request = new FriendRequest(senderId, receiverId, "Pending");
+//        friendRequestsMap.computeIfAbsent(receiverId, k -> new ArrayList<>()).add(request);
+//        return true;
+//    }
+    public static boolean sendFriendRequest(String senderId, String receiverId) {
+        // Prevent sending requests to oneself or to an existing friend
+        if (senderId.equals(receiverId) || FriendManager.getInstance().getFriendsList(senderId).contains(receiverId)) {
             return false;
         }
+
+        // Check if a pending request already exists
+        if (friendRequestsMap.getOrDefault(receiverId, Collections.emptyList()).stream()
+                .anyMatch(req -> req.getSenderId().equals(senderId) && req.getStatus().equals("Pending"))) {
+            return false;
+        }
+
+        // Create a new pending friend request
         FriendRequest request = new FriendRequest(senderId, receiverId, "Pending");
         friendRequestsMap.computeIfAbsent(receiverId, k -> new ArrayList<>()).add(request);
+
+        // Save the updated requests map to the JSON file
+        saveRequestsToJson();
+
         return true;
     }
 
@@ -220,7 +204,7 @@ public class FriendManager {
         List<String> friendFriends = friendsMap.getOrDefault(blockId, new ArrayList<>());
         friendFriends.remove(userId);
 
-        FriendRequest.saveRequestsToJson(); // Save the updated data
+        saveRequestsToJson(); // Save the updated data
         return true;
     }
 
@@ -256,5 +240,6 @@ public class FriendManager {
         }
         return friendStatuses;
     }
+
 
 }
