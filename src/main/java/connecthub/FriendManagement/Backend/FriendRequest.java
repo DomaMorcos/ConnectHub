@@ -7,19 +7,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class FriendRequest {
-    private String senderId;
-    private String receiverId;
-    private String status; // Possible values: "Pending", "Accepted", "Declined"
-    private static final String FRIEND_FILEPATH = "Friend.JSON";
-    // In-memory storage for requests and blocked users
+    private static final String FRIEND_REQUESTS_FILE = "FriendRequests.JSON";
     private static Map<String, List<FriendRequest>> friendRequestsMap = new HashMap<>();
-    private static Map<String, List<String>> blockedMap = new HashMap<>();
-    private static FriendManager friendManager = FriendManager.getInstance();
+
+    private final String senderId;
+    private final String receiverId;
+    private String status; // "Pending", "Accepted", "Declined"
 
     public FriendRequest(String senderId, String receiverId, String status) {
         this.senderId = senderId;
@@ -27,6 +24,7 @@ public class FriendRequest {
         this.status = status;
     }
 
+    // Getters and Setters
     public String getSenderId() {
         return senderId;
     }
@@ -43,116 +41,143 @@ public class FriendRequest {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return "FriendRequest{senderId='%s', receiverId='%s', status='%s'}"
-                .formatted(senderId, receiverId, status);
+    // JSON Serialization
+    public JSONObject toJson() {
+        return new JSONObject()
+                .put("senderId", senderId)
+                .put("receiverId", receiverId)
+                .put("status", status);
     }
 
-    // Static methods for saving and loading JSON data
-    public static void saveDataToJson() {
-        JSONObject data = new JSONObject();
-        data.put("friendRequestsMap", requestsToJson(friendRequestsMap));
-        data.put("blockedMap", mapToJson(blockedMap));
+    public static FriendRequest fromJson(JSONObject jsonObject) {
+        return new FriendRequest(
+                jsonObject.getString("senderId"),
+                jsonObject.getString("receiverId"),
+                jsonObject.getString("status")
+        );
+    }
 
-        try (FileWriter file = new FileWriter(FRIEND_FILEPATH)) {
+    // Send a friend request
+    public static boolean sendFriendRequest(String senderId, String receiverId) {
+        // Prevent a user from sending a friend request to themselves
+        if (senderId.equals(receiverId)) {
+        return false;
+        }
+
+        // Check if there is already a pending request from sender to receiver
+        if (friendRequestsMap.getOrDefault(receiverId, Collections.emptyList()).stream()
+                .anyMatch(req -> req.getSenderId().equals(senderId) && req.getStatus().equals("Pending"))) {
+            return false;
+        }
+
+        // Create and add the request to the receiver's list
+        FriendRequest request = new FriendRequest(senderId, receiverId, "Pending");
+        friendRequestsMap.computeIfAbsent(receiverId, k -> new ArrayList<>()).add(request);
+        saveRequestsToJson();  // Save the state after adding the request
+        return true;
+    }
+
+    // Responding to a friend request
+    public static boolean respondToRequest(String receiverId, String senderId, boolean accept) {
+        List<FriendRequest> requests = friendRequestsMap.getOrDefault(receiverId, Collections.emptyList());
+        Optional<FriendRequest> optionalRequest = requests.stream()
+                .filter(req -> req.getSenderId().equals(senderId) && req.getStatus().equals("Pending"))
+                .findFirst();
+
+        if (optionalRequest.isEmpty()) {
+            return false;
+        }
+
+        FriendRequest request = optionalRequest.get();
+        request.setStatus(accept ? "Accepted" : "Declined");
+
+        if (!accept) {
+            requests.remove(request); // Remove declined request
+        }
+
+        saveRequestsToJson();
+        return accept;
+    }
+
+    // Retrieve pending friend requests for a user
+    public static List<FriendRequest> getPendingRequests(String userId) {
+        return friendRequestsMap.getOrDefault(userId, Collections.emptyList())
+                .stream()
+                .filter(req -> req.getStatus().equals("Pending"))
+                .collect(Collectors.toList());
+    }
+
+    // Save only pending friend requests to the JSON file
+    public static void saveRequestsToJson() {
+        JSONObject data = new JSONObject();
+
+        // Save only pending requests to friendRequestsMap
+        Map<String, List<FriendRequest>> pendingRequests = new HashMap<>();
+        for (Map.Entry<String, List<FriendRequest>> entry : friendRequestsMap.entrySet()) {
+            List<FriendRequest> pendingList = entry.getValue().stream()
+                    .filter(request -> request.getStatus().equals("Pending"))
+                    .collect(Collectors.toList());
+
+            if (!pendingList.isEmpty()) {
+                pendingRequests.put(entry.getKey(), pendingList);
+            }
+        }
+        data.put("friendRequestsMap", requestsToJson(pendingRequests));
+
+        try (FileWriter file = new FileWriter(FRIEND_REQUESTS_FILE)) {
             file.write(data.toString(4));
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error saving friend requests: " + e.getMessage());
         }
     }
 
-    public static void loadDataFromJson() {
-        File file = new File(FRIEND_FILEPATH);
+    // Load only pending requests from the JSON file
+    public static void loadRequestsFromJson() {
+        File file = new File(FRIEND_REQUESTS_FILE);
         if (!file.exists()) {
-            saveDataToJson();
+            System.out.println("No previous data found. Creating new data.");
+            saveRequestsToJson(); // Create a new file if it doesn't exist
             return;
         }
 
         try {
-            String content = new String(Files.readAllBytes(Paths.get(FRIEND_FILEPATH)));
+            String content = new String(Files.readAllBytes(file.toPath()));
             JSONObject data = new JSONObject(content);
 
+            // Clear previous data
             friendRequestsMap.clear();
-            blockedMap.clear();
-
             jsonToRequests(data.getJSONObject("friendRequestsMap"), friendRequestsMap);
-            jsonToMap(data.getJSONObject("blockedMap"), blockedMap);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error loading friend requests: " + e.getMessage());
         }
     }
 
-    // Send a friend request (mark as Pending)
-    public void sendFriendRequest(String senderId, String receiverId) {
-        if (friendManager.getFriendsList(senderId).contains(receiverId)) {
-            System.out.println("You are already friends.");
-            return;
-        }
-        FriendRequest request = new FriendRequest(senderId, receiverId, "Pending");
-        friendRequestsMap.computeIfAbsent(receiverId, k -> new ArrayList<>()).add(request);
-        System.out.println("Friend request sent from " + senderId + " to " + receiverId);
-    }
 
-    // Accept or decline friend requests
-    public void respondToRequest(String receiverId, String senderId, boolean accept) {
-        List<FriendRequest> requests = friendRequestsMap.getOrDefault(receiverId, new ArrayList<>());
-        for (FriendRequest request : requests) {
-            if (request.getSenderId().equals(senderId) && request.getStatus().equals("Pending")) {
-                request.setStatus(accept ? "Accepted" : "Declined");
-                if (accept) {
-                    friendManager.addFriend(receiverId, senderId);
-                }
-                break;
-            }
-        }
-    }
-
-    // JSON conversion helpers
+    // Helper: Convert Map<String, List<FriendRequest>> to JSON
     private static JSONObject requestsToJson(Map<String, List<FriendRequest>> map) {
-        JSONObject jsonObject = new JSONObject();
-        map.forEach((key, requests) -> {
+        JSONObject json = new JSONObject();
+        map.forEach((key, list) -> {
             JSONArray array = new JSONArray();
-            for (FriendRequest req : requests) {
-                JSONObject reqObj = new JSONObject();
-                reqObj.put("senderId", req.getSenderId());
-                reqObj.put("receiverId", req.getReceiverId());
-                reqObj.put("status", req.getStatus());
-                array.put(reqObj);
-            }
-            jsonObject.put(key, array);
+            list.forEach(req -> array.put(req.toJson()));
+            json.put(key, array);
         });
-        return jsonObject;
+        return json;
     }
 
+    // Helper: Populate Map<String, List<FriendRequest>> from JSON
     private static void jsonToRequests(JSONObject jsonObject, Map<String, List<FriendRequest>> map) {
         jsonObject.keySet().forEach(key -> {
             JSONArray array = jsonObject.getJSONArray(key);
-            List<FriendRequest> requests = new ArrayList<>();
-            for (int i = 0; i < array.length(); i++) {
-                JSONObject reqObj = array.getJSONObject(i);
-                requests.add(new FriendRequest(
-                        reqObj.getString("senderId"),
-                        reqObj.getString("receiverId"),
-                        reqObj.getString("status")
-                ));
-            }
-            map.put(key, requests);
-        });
-    }
-
-    private static JSONObject mapToJson(Map<String, List<String>> map) {
-        JSONObject jsonObject = new JSONObject();
-        map.forEach(jsonObject::put);
-        return jsonObject;
-    }
-
-    private static void jsonToMap(JSONObject jsonObject, Map<String, List<String>> map) {
-        jsonObject.keySet().forEach(key -> {
-            JSONArray array = jsonObject.getJSONArray(key);
-            List<String> list = array.toList().stream().map(Object::toString).collect(Collectors.toList());
+            List<FriendRequest> list = array.toList().stream()
+                    .map(obj -> FriendRequest.fromJson(new JSONObject((Map<?, ?>) obj)))
+                    .collect(Collectors.toList());
             map.put(key, list);
         });
     }
+    @Override
+    public String toString() {
+        return "FriendRequest{senderId='" + senderId + "', receiverId='" + receiverId + "', status='" + status + "'}";
+    }
+
 }

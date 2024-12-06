@@ -37,13 +37,13 @@ public class UserProfile implements Serializable {
     }
     public void setProfilePhotoPath(String profilePhotoPath) {
         Path source = Paths.get(profilePhotoPath);
-        Path destination = Paths.get("imagesDatabase/ProfilePicture/" + userId + ".png");
+        Path destination = Paths.get("src//main//resources//Images//" + userId + ".png");
         try {
             if (Files.exists(source)) {
                 Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
             } else {
                 System.out.println("Profile photo path does not exist: " + profilePhotoPath);
-                this.profilePhoto = new ImageIcon("imagesDatabase/defaultProfile.png"); // Set a default image
+                this.profilePhoto = new ImageIcon("src//main//resources//Images//defaultProfilePhoto.png"); // Set a default image
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,13 +54,13 @@ public class UserProfile implements Serializable {
     }
     public void setCoverPhotoPath(String coverPhotoPath) {
         Path source = Paths.get(coverPhotoPath);
-        Path destination = Paths.get("imagesDatabase/CoverPicture/" + userId + ".png");
+        Path destination = Paths.get("src//main//resources//Images//" + userId + ".png");
         try {
             if (Files.exists(source)) {
                 Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
             } else {
                 System.out.println("Cover photo path does not exist: " + coverPhotoPath);
-                this.coverPhoto = new ImageIcon("imagesDatabase/defaultCover.png"); // Set a default image
+                this.coverPhoto = new ImageIcon("src//main//resources//Images//defaultCoverPhoto.png"); // Set a default image
             }
         } catch (IOException e) {
             e.printStackTrace();

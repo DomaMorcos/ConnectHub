@@ -1,97 +1,127 @@
 package connecthub;
+
 import connecthub.ContentCreation.Backend.*;
-import connecthub.FriendManagement.Backend.FriendManager;
-import connecthub.ProfileManagement.Backend.ProfileDatabase;
-import connecthub.ProfileManagement.Backend.UserProfile;
+import connecthub.FriendManagement.Backend.*;
+import connecthub.ProfileManagement.Backend.*;
 import connecthub.UserAccountManagement.Backend.*;
 
 import javax.swing.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
-        try {
-            // Initialize Databases
-            UserDatabase userDatabase = UserDatabase.getInstance();
-            ContentDatabase contentDatabase = ContentDatabase.getInstance();
-            FriendManager friendManager = FriendManager.getInstance();
-            ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
+        // Initialize databases
+        UserDatabase userDatabase = UserDatabase.getInstance();
+        ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
+        ContentDatabase contentDatabase = ContentDatabase.getInstance();
+        FriendManager friendManager = FriendManager.getInstance();
+        ContentFactory contentFactory = ContentFactory.getInstance();
+        GetContent getContent = GetContent.getInstance();
 
-            // Formatter for dates
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        CreateUser userCreator = new CreateUser();
+        LogUser logUser = new LogUser();
 
-            // --- User Account Management ---
-            CreateUser userCreator = new CreateUser();
-            System.out.println("Creating users...");
-            for (int i = 1; i <= 100; i++) {
-                String email = "user" + i + "@example.com";
-                String username = "user" + i;
-                String password = "password" + i;
-                String dob = LocalDate.of(1990 + (i % 25), (i % 12) + 1, (i % 28) + 1).format(dateFormatter);
-
-                userCreator.signup(email, username, password, dob);
-            }
-            System.out.println("Total users created: " + userDatabase.users.size());
-
-            // --- Profile Management ---
-            System.out.println("\nSetting up user profiles...");
-            for (User user : userDatabase.users) {
-                UserProfile profile = profileDatabase.getProfile(user.getUserId());
-                profile.setBio("This is the bio for " + user.getUsername());
-                //profile.setProfilePhotoPath("imagesDatabase/ProfilePicture/" + user.getUserId() + ".png");
-                //profile.setCoverPhotoPath("imagesDatabase/CoverPicture/" + user.getUserId() + ".png");
-            }
-            System.out.println("Profiles updated for all users.");
-
-            // --- Content Creation (Posts and Stories) ---
-            ContentFactory contentFactory = ContentFactory.getInstance();
-            System.out.println("\nCreating posts and stories...");
-            for (User user : userDatabase.users) {
-                for (int j = 0; j < 5; j++) { // 5 posts per user
-                    contentFactory.createContent("Post", user.getUserId(), "Post content from " + user.getUsername() + " #" + j, null);
-                }
-                for (int j = 0; j < 3; j++) { // 3 stories per user
-                    contentFactory.createContent("Story", user.getUserId(), "Story content from " + user.getUsername() + " #" + j, null);
-                }
-            }
-            System.out.println("Total contents created: " + contentDatabase.getContents().size());
-
-            // --- Friend Management ---
-            System.out.println("\nManaging friendships...");
-            for (int i = 1; i <= 50; i++) { // Create friendships for half the users
-                friendManager.addFriend(Integer.toString(i), Integer.toString(i + 1));
-            }
-            System.out.println("Friendships created.");
-
-            // --- User Actions ---
-            System.out.println("\nSimulating user actions...");
-            LogUser logUser = new LogUser();
-            for (int i = 1; i <= 10; i++) {
-                String email = "user" + i + "@example.com";
-                logUser.login(email, "password" + i);
-            }
-            System.out.println("10 users logged in.");
-
-            // Save All Changes
-            System.out.println("\nSaving changes...");
-            UserDatabase.saveUsersToJsonFile();
-            ContentDatabase.saveContents();
-            profileDatabase.saveProfilesToJsonFile();
-            System.out.println("All data saved.");
-
-            // Verify Output
-            System.out.println("\n--- Data Summary ---");
-            System.out.println("Total users: " + userDatabase.users.size());
-            System.out.println("Total contents: " + contentDatabase.getContents().size());
-            System.out.println("Total friends for user 1: " + friendManager.getFriendsList("1").size());
-            System.out.println("Posts for user 1: " + GetContent.getInstance().getAllPostsForUser(userDatabase.getUserById("1")).size());
-            System.out.println("Stories for user 1: " + GetContent.getInstance().getAllStoriesForUser(userDatabase.getUserById("1")).size());
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        // 1. Create multiple users
+        System.out.println("Creating Users...");
+        for (int i = 1; i <= 10; i++) {
+            String email = "user" + i + "@example.com";
+            String username = "User" + i;
+            String password = "password" + i;
+            String dob = "1990-0" + (i % 9 + 1) + "-01"; // Random DOB
+            userCreator.signup(email, username, password, dob);
         }
+        userDatabase.printUsers();
+
+        // 2. Login users and test status
+        System.out.println("\nLogging in Users...");
+        for (int i = 1; i <= 10; i++) {
+            String email = "user" + i + "@example.com";
+            if (logUser.login(email, "password" + i)) {
+                System.out.println(email + " logged in successfully.");
+            } else {
+                System.err.println("Failed to log in: " + email);
+            }
+        }
+
+        // 3. Create content (posts & stories) for each user
+        System.out.println("\nCreating Content...");
+        for (int i = 1; i <= 10; i++) {
+            String userId = String.valueOf(i);
+            contentFactory.createContent("Post", userId, "Post content from User" + i, null);
+            contentFactory.createContent("Story", userId, "Story content from User" + i, null);
+        }
+
+        // Display all content
+        System.out.println("\nDisplaying All Content:");
+        List<Content> allContents = getContent.getAllContents();
+        allContents.forEach(System.out::println);
+
+        // 4. Send friend requests between users
+        System.out.println("\nSending Friend Requests...");
+        for (int i = 1; i <= 10; i++) {
+            for (int j = i + 1; j <= 10; j++) {
+                FriendRequest.sendFriendRequest(String.valueOf(i), String.valueOf(j));
+            }
+        }
+
+        // Display pending requests for user 10
+        System.out.println("\nPending Friend Requests for User10:");
+        List<FriendRequest> pendingRequests = FriendRequest.getPendingRequests("10");
+        pendingRequests.forEach(System.out::println);
+
+        // 5. Accept requests for some users
+        System.out.println("\nAccepting Friend Requests...");
+        for (int i = 9; i >= 6; i--) {
+            FriendRequest.respondToRequest("10", String.valueOf(i), true);
+        }
+
+        // Display friends of User10
+        System.out.println("\nFriends of User10:");
+        List<User> friendsOfUser10 = friendManager.getFriendsList("10");
+        friendsOfUser10.forEach(friend -> System.out.println(friend.getUsername()));
+
+        // 6. Block users and validate
+        System.out.println("\nBlocking Users...");
+        friendManager.blockUser("10", "1");
+        friendManager.blockUser("10", "2");
+
+        // Display updated friend list for User10
+        System.out.println("\nFriends of User10 after blocking:");
+        friendsOfUser10 = friendManager.getFriendsList("10");
+        friendsOfUser10.forEach(friend -> System.out.println(friend.getUsername()));
+
+        // 7. Update and view profiles
+        System.out.println("\nUpdating Profiles...");
+        for (int i = 1; i <= 10; i++) {
+            String userId = String.valueOf(i);
+            UserProfile profile = profileDatabase.getProfile(userId);
+            profile.setBio("This is User" + i + "'s bio.");
+            profile.setProfilePhotoPath("path/to/profile" + i + ".jpg");
+            profile.setCoverPhotoPath("path/to/cover" + i + ".jpg");
+            profileDatabase.updateProfile(profile);
+        }
+
+        // Display profiles
+        System.out.println("\nDisplaying Profiles:");
+        for (int i = 1; i <= 10; i++) {
+            UserProfile profile = profileDatabase.getProfile(String.valueOf(i));
+            System.out.println(profile);
+        }
+
+        // 8. Test content expiration
+        System.out.println("\nRemoving Expired Stories...");
+        ContentDatabase.removeExpiredStories();
+        List<Story> remainingStories = getContent.getAllStories();
+        remainingStories.forEach(System.out::println);
+
+        // 9. Logout all users
+        System.out.println("\nLogging out Users...");
+        for (int i = 1; i <= 10; i++) {
+            String email = "user" + i + "@example.com";
+            logUser.logout(email);
+            System.out.println(email + " logged out.");
+        }
+
+        System.out.println("\nAll tests completed.");
     }
 }
