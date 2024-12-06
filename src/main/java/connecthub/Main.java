@@ -1,127 +1,63 @@
 package connecthub;
 
-import connecthub.ContentCreation.Backend.*;
-import connecthub.FriendManagement.Backend.*;
-import connecthub.ProfileManagement.Backend.*;
-import connecthub.UserAccountManagement.Backend.*;
+import connecthub.FriendManagement.Backend.FriendManager;
+import connecthub.FriendManagement.Backend.FriendRequest;
+import connecthub.ProfileManagement.Backend.ProfileDatabase;
+import connecthub.ProfileManagement.Backend.UserProfile;
+import connecthub.UserAccountManagement.Backend.CreateUser;
 
-import javax.swing.*;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Main {
     public static void main(String[] args) {
-        // Initialize databases
-        UserDatabase userDatabase = UserDatabase.getInstance();
+        // Initialize the profile and friend manager
         ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
-        ContentDatabase contentDatabase = ContentDatabase.getInstance();
         FriendManager friendManager = FriendManager.getInstance();
-        ContentFactory contentFactory = ContentFactory.getInstance();
-        GetContent getContent = GetContent.getInstance();
-
         CreateUser userCreator = new CreateUser();
-        LogUser logUser = new LogUser();
 
-        // 1. Create multiple users
-        System.out.println("Creating Users...");
-        for (int i = 1; i <= 10; i++) {
-            String email = "user" + i + "@example.com";
-            String username = "User" + i;
-            String password = "password" + i;
-            String dob = "1990-0" + (i % 9 + 1) + "-01"; // Random DOB
-            userCreator.signup(email, username, password, dob);
-        }
-        userDatabase.printUsers();
-
-        // 2. Login users and test status
-        System.out.println("\nLogging in Users...");
-        for (int i = 1; i <= 10; i++) {
-            String email = "user" + i + "@example.com";
-            if (logUser.login(email, "password" + i)) {
-                System.out.println(email + " logged in successfully.");
-            } else {
-                System.err.println("Failed to log in: " + email);
-            }
+        // 1. Create Users
+        System.out.println("Creating users...");
+        for (int i = 1; i <= 5; i++) {
+            userCreator.signup(
+                    "user" + i + "@example.com",
+                    "User" + i,
+                    "password" + i,
+                    "1990-01-0" + i
+            );
         }
 
-        // 3. Create content (posts & stories) for each user
-        System.out.println("\nCreating Content...");
-        for (int i = 1; i <= 10; i++) {
-            String userId = String.valueOf(i);
-            contentFactory.createContent("Post", userId, "Post content from User" + i, null);
-            contentFactory.createContent("Story", userId, "Story content from User" + i, null);
-        }
+        // 2. Send Friend Requests
+        System.out.println("\nSending friend requests...");
+        FriendRequest.sendFriendRequest("1", "2");
+        FriendRequest.sendFriendRequest("1", "3");
 
-        // Display all content
-        System.out.println("\nDisplaying All Content:");
-        List<Content> allContents = getContent.getAllContents();
-        allContents.forEach(System.out::println);
+        // 3. Accept Friend Requests
+        System.out.println("\nAccepting friend requests...");
+        FriendRequest.respondToRequest("2", "1", true); // User2 accepts User1's request
+        FriendRequest.respondToRequest("3", "1", true); // User3 accepts User1's request
 
-        // 4. Send friend requests between users
-        System.out.println("\nSending Friend Requests...");
-        for (int i = 1; i <= 10; i++) {
-            for (int j = i + 1; j <= 10; j++) {
-                FriendRequest.sendFriendRequest(String.valueOf(i), String.valueOf(j));
-            }
-        }
-
-        // Display pending requests for user 10
-        System.out.println("\nPending Friend Requests for User10:");
-        List<FriendRequest> pendingRequests = FriendRequest.getPendingRequests("10");
-        pendingRequests.forEach(System.out::println);
-
-        // 5. Accept requests for some users
-        System.out.println("\nAccepting Friend Requests...");
-        for (int i = 9; i >= 6; i--) {
-            FriendRequest.respondToRequest("10", String.valueOf(i), true);
-        }
-
-        // Display friends of User10
-        System.out.println("\nFriends of User10:");
-        List<User> friendsOfUser10 = friendManager.getFriendsList("10");
-        friendsOfUser10.forEach(friend -> System.out.println(friend.getUsername()));
-
-        // 6. Block users and validate
-        System.out.println("\nBlocking Users...");
-        friendManager.blockUser("10", "1");
-        friendManager.blockUser("10", "2");
-
-        // Display updated friend list for User10
-        System.out.println("\nFriends of User10 after blocking:");
-        friendsOfUser10 = friendManager.getFriendsList("10");
-        friendsOfUser10.forEach(friend -> System.out.println(friend.getUsername()));
-
-        // 7. Update and view profiles
-        System.out.println("\nUpdating Profiles...");
-        for (int i = 1; i <= 10; i++) {
-            String userId = String.valueOf(i);
-            UserProfile profile = profileDatabase.getProfile(userId);
-            profile.setBio("This is User" + i + "'s bio.");
-            profile.setProfilePhotoPath("path/to/profile" + i + ".jpg");
-            profile.setCoverPhotoPath("path/to/cover" + i + ".jpg");
-            profileDatabase.updateProfile(profile);
-        }
-
-        // Display profiles
-        System.out.println("\nDisplaying Profiles:");
-        for (int i = 1; i <= 10; i++) {
+        // 4. Loop through profiles and verify friends
+        System.out.println("\nVerifying profiles...");
+        for (int i = 1; i <= 5; i++) {
             UserProfile profile = profileDatabase.getProfile(String.valueOf(i));
-            System.out.println(profile);
+            if (profile != null) {
+                System.out.println("Profile of User" + i + ":");
+                System.out.println("Bio: " + profile.getBio());
+                System.out.println("Friends: " + profile.getFriends());
+            } else {
+                System.out.println("Profile for User" + i + " not found!");
+            }
         }
 
-        // 8. Test content expiration
-        System.out.println("\nRemoving Expired Stories...");
-        ContentDatabase.removeExpiredStories();
-        List<Story> remainingStories = getContent.getAllStories();
-        remainingStories.forEach(System.out::println);
-
-        // 9. Logout all users
-        System.out.println("\nLogging out Users...");
-        for (int i = 1; i <= 10; i++) {
-            String email = "user" + i + "@example.com";
-            logUser.logout(email);
-            System.out.println(email + " logged out.");
+        // 5. Check JSON File Directly
+        System.out.println("\nValidating JSON file content...");
+        try {
+            String jsonContent = Files.readString(Paths.get("Profiles.JSON"));
+            System.out.println("Profiles.JSON content:");
+            System.out.println(jsonContent);
+        } catch (Exception e) {
+            System.err.println("Error reading Profiles.JSON: " + e.getMessage());
         }
-
-        System.out.println("\nAll tests completed.");
     }
 }
