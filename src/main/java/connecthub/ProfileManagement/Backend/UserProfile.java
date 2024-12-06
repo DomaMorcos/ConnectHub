@@ -1,3 +1,4 @@
+
 package connecthub.ProfileManagement.Backend;
 
 import connecthub.FriendManagement.Backend.FriendManager;
@@ -14,14 +15,14 @@ import java.util.List;
 
 public class UserProfile implements Serializable {
     private final String userId;
-    private ImageIcon profilePhoto;
-    private ImageIcon coverPhoto;
+    private String profilePhotoPath;
+    private String coverPhotoPath;
     private String bio;
 
-    public UserProfile(String userId, ImageIcon profilePhoto, ImageIcon coverPhoto, String bio, List<String> friends) {
+    public UserProfile(String userId, String profilePhotoPath, String coverPhotoPath, String bio, List<String> friends) {
         this.userId = userId;
-        this.profilePhoto = profilePhoto;
-        this.coverPhoto = coverPhoto;
+        this.profilePhotoPath = profilePhotoPath;
+        this.coverPhotoPath = coverPhotoPath;
         this.bio = bio;
 
         // Initialize friends in FriendManager
@@ -33,34 +34,34 @@ public class UserProfile implements Serializable {
         return userId;
     }
     public String getProfilePhotoPath() {
-        return profilePhoto.getDescription();
+        return profilePhotoPath;
     }
     public void setProfilePhotoPath(String profilePhotoPath) {
         Path source = Paths.get(profilePhotoPath);
-        Path destination = Paths.get("src//main//resources//Images//" + userId + ".png");
+        Path destination = Paths.get("src//main//Images//" + userId + ".png");
         try {
             if (Files.exists(source)) {
                 Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
             } else {
                 System.out.println("Profile photo path does not exist: " + profilePhotoPath);
-                this.profilePhoto = new ImageIcon("src//main//resources//Images//defaultProfilePhoto.png"); // Set a default image
+                this.profilePhotoPath = new ImageIcon("imagesDatabase/defaultProfile.png").getDescription(); // Set a default image
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
+          }
     }
     public String getCoverPhotoPath() {
-        return coverPhoto.getDescription();
+        return coverPhotoPath;
     }
     public void setCoverPhotoPath(String coverPhotoPath) {
-        Path source = Paths.get(coverPhotoPath);
-        Path destination = Paths.get("src//main//resources//Images//" + userId + ".png");
+                Path source = Paths.get(coverPhotoPath);
+        Path destination = Paths.get("src//main//Images//" + userId + ".png");
         try {
             if (Files.exists(source)) {
                 Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
             } else {
                 System.out.println("Cover photo path does not exist: " + coverPhotoPath);
-                this.coverPhoto = new ImageIcon("src//main//resources//Images//defaultCoverPhoto.png"); // Set a default image
+                this.coverPhotoPath = new ImageIcon("imagesDatabase//defaultCover.png").getDescription(); // Set a default image
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,14 +76,16 @@ public class UserProfile implements Serializable {
 
     // Friend Management Methods
     public List<User> getFriends() {
+
         return FriendManager.getInstance().getFriendsList(userId);
+
     }
     public void addFriend(String friendId) {
-        FriendManager.getInstance().addFriend(userId, friendId);
+        connecthub.FriendManagement.Backend.FriendManager.getInstance().addFriend(userId, friendId);
     }
 
     public void deleteFriend(String friendId) {
-        FriendManager.getInstance().removeFriend(userId, friendId);
+        connecthub.FriendManagement.Backend.FriendManager.getInstance().removeFriend(userId, friendId);
     }
 
     @Override
@@ -92,10 +95,12 @@ public class UserProfile implements Serializable {
 
         return "UserProfile{" +
                 "userId='" + userId + '\'' +
-                ", profilePhotoPath='" + profilePhoto.getDescription() + '\'' +
-                ", coverPhotoPath='" + coverPhoto.getDescription() + '\'' +
+                ", profilePhotoPath='" + profilePhotoPath + '\'' +
+                ", coverPhotoPath='" + coverPhotoPath + '\'' +
                 ", bio='" + bio + '\'' +
                 ", friends=" + friendsList +
                 '}';
     }
+
+
 }

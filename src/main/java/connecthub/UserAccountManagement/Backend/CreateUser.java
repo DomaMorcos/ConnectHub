@@ -1,9 +1,10 @@
 package connecthub.UserAccountManagement.Backend;
 
+
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Backend.UserProfile;
-import javax.swing.*;
+
 import java.util.ArrayList;
 import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
 import static connecthub.UserAccountManagement.Backend.Validation.isEmailValid;
@@ -24,22 +25,16 @@ public class CreateUser {
             return false;
         }
         String hash = hashPassword(password);
-        String generatedId = generateID();
-        User newUser = new User(generatedId, email, username, hash, dateOfBirth, "offline");
+        String generatedID = generateID();
+        User newUser = new User(generatedID, email, username, hash, dateOfBirth, "offline");
+        UserProfile userProfile = new UserProfile(generatedID, "DefaultProfilePhoto.jpg","DefaultCoverPhoto.png","Click on Edit to edit Bio",new ArrayList<>());
+        ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
+        profileDatabase.updateProfile(userProfile);
+
         userDB.users.add(newUser);
         userDB.saveUsersToJsonFile();
         // Initialize friends for the new user
-        FriendManager.getInstance().initializeFriends(generatedId, null);
-        // Initialize and save the profile for the new user with default values
-        ProfileDatabase profileDB = ProfileDatabase.getInstance();
-        UserProfile profile = new UserProfile(
-                generatedId,
-                new ImageIcon(), // Default empty profile photo
-                new ImageIcon(), // Default empty cover photo
-                "Default bio",
-                new ArrayList<>()
-        );
-        profileDB.updateProfile(profile);
+        FriendManager.getInstance().initializeFriends(generatedID, null);
         return true;
     }
 }

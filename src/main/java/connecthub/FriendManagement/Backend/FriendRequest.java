@@ -106,7 +106,6 @@ public class FriendRequest {
                 .filter(req -> req.getStatus().equals("Pending"))
                 .collect(Collectors.toList());
     }
-
     // Save only pending friend requests to the JSON file
     public static void saveRequestsToJson() {
         JSONObject data = new JSONObject();
@@ -152,7 +151,6 @@ public class FriendRequest {
             System.err.println("Error loading friend requests: " + e.getMessage());
         }
     }
-
 
     // Helper: Convert Map<String, List<FriendRequest>> to JSON
     private static JSONObject requestsToJson(Map<String, List<FriendRequest>> map) {

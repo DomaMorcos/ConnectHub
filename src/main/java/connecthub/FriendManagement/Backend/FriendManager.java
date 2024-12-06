@@ -84,8 +84,7 @@ public class FriendManager {
         return friendsMap.getOrDefault(userId, new ArrayList<>()).contains(friendId);
     }
 
-//
-//    // Add a friend for a user (mutual friendship)
+    // Add a friend for a user (mutual friendship)
 //    public boolean addFriend(String userId, String friendId) {
 //        // Check if the user is trying to add themselves as a friend
 //        if (userId.equals(friendId)) {
@@ -110,33 +109,44 @@ public class FriendManager {
 //        FriendRequest.saveRequestsToJson();
 //        return true;
 //    }
-public boolean addFriend(String userId, String friendId) {
-    System.out.println("Adding friend: " + userId + " and " + friendId);
+    // Add a friend for a user (mutual friendship)
+    public boolean addFriend(String userId, String friendId) {
+        // Validate inputs
+        if (userId == null || friendId == null || userId.isEmpty() || friendId.isEmpty()) {
+            System.err.println("Invalid user IDs provided.");
+            return false;
+        }
 
-    // Add to FriendManager
-    friendsMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(friendId);
-    friendsMap.computeIfAbsent(friendId, k -> new ArrayList<>()).add(userId);
+        // Check if the user is trying to add themselves as a friend
+        if (userId.equals(friendId)) {
+            System.err.println("A user cannot add themselves as a friend.");
+            return false;
+        }
 
-    // Update ProfileDatabase
-    ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
-    UserProfile userProfile = profileDatabase.getProfile(userId);
-    UserProfile friendProfile = profileDatabase.getProfile(friendId);
+        // Check if the user is blocked by the other user
+        if (isBlocked(userId, friendId)) {
+            System.err.println("Cannot add friend. User " + userId + " is blocked by " + friendId);
+            return false;
+        }
 
-    if (userProfile != null && friendProfile != null) {
-        userProfile.getFriends().add(userDatabase.getUser(friendId));
-        friendProfile.getFriends().add( userDatabase.getUser(userId));
+        // Check if they are already friends
+        if (isFriend(userId, friendId)) {
+            System.err.println("Users " + userId + " and " + friendId + " are already friends.");
+            return false;
+        }
 
-        System.out.println("Updating profile for user: " + userId + " and " + friendId);
-        profileDatabase.updateProfile(userProfile);
-        profileDatabase.updateProfile(friendProfile);
-        profileDatabase.saveProfilesToJsonFile(); // Persist the changes
-    } else {
-        System.out.println("Profile not found for one of the users!");
-        return false;
+        // Add the friend to both users' friend lists (mutual friendship)
+        friendsMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(friendId);
+        friendsMap.computeIfAbsent(friendId, k -> new ArrayList<>()).add(userId);
+
+        // Log the action
+        System.out.println("Friendship established between User " + userId + " and User " + friendId);
+
+        // Save the updated state
+        FriendRequest.saveRequestsToJson();
+        return true;
     }
 
-    return true;
-}
     //Remove a friend from the user's friend list
     public boolean removeFriend(String userId, String friendId) {
         // Ensure both users are friends before removing them
