@@ -22,5 +22,13 @@
         "email": "ahmed@yahoo.com",
         "username": "Ahmed",
         "status": "offline"
+    },
+    {
+        "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+        "dateOfBirth": "2024-12-02",
+        "userId": "4",
+        "email": "dama@yahoo.com",
+        "username": "DaRealDama",
+        "status": "online"
     }
 ]
