@@ -1,9 +1,16 @@
+
 package connecthub.ProfileManagement.Backend;
 
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.UserAccountManagement.Backend.User;
 
+import javax.swing.*;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 public class UserProfile implements Serializable {
@@ -30,13 +37,35 @@ public class UserProfile implements Serializable {
         return profilePhotoPath;
     }
     public void setProfilePhotoPath(String profilePhotoPath) {
-        this.profilePhotoPath = profilePhotoPath;
+        Path source = Paths.get(profilePhotoPath);
+        Path destination = Paths.get("src//main//Images//" + userId + ".png");
+        try {
+            if (Files.exists(source)) {
+                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                System.out.println("Profile photo path does not exist: " + profilePhotoPath);
+                this.profilePhotoPath = new ImageIcon("imagesDatabase/defaultProfile.png").getDescription(); // Set a default image
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public String getCoverPhotoPath() {
         return coverPhotoPath;
     }
     public void setCoverPhotoPath(String coverPhotoPath) {
-        this.coverPhotoPath = coverPhotoPath;
+        Path source = Paths.get(coverPhotoPath);
+        Path destination = Paths.get("src//main//Images//" + userId + ".png");
+        try {
+            if (Files.exists(source)) {
+                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                System.out.println("Cover photo path does not exist: " + coverPhotoPath);
+                this.coverPhotoPath = new ImageIcon("imagesDatabase//defaultCover.png").getDescription(); // Set a default image
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public String getBio() {
         return bio;

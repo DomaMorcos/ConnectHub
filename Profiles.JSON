@@ -1,7 +1,7 @@
 [
     {
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
-        "bio": "Hello World",
+        "bio": "Test",
         "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
         "userId": "1",
         "friends": []

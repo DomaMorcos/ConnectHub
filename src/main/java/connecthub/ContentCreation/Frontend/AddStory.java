@@ -37,7 +37,10 @@ public class AddStory {
         Stage stage = new Stage();
         storyTextArea = new TextArea();
         storyTextArea.setPromptText("Write your story here...");
-        storyTextArea.setPrefHeight(150);
+        storyTextArea.setWrapText(true); // Allow text wrapping
+        storyTextArea.setPrefHeight(100); // Set fixed height
+        storyTextArea.setPrefWidth(300); // Set fixed width
+        storyTextArea.setScrollTop(0); // Ensure the content is scrollable
 
         textLabel = new Label("Story Text:");
         imageLabel = new Label("Add an Image:");
@@ -53,12 +56,13 @@ public class AddStory {
 
         // Layout for the page
         VBox layout = new VBox(10);
-        layout.setPadding(new Insets(20));
+        layout.getStyleClass().add(".add-box");
 
         layout.getChildren().addAll(textLabel, storyTextArea, imageLabel, uploadButton, createStoryButton);
 
         // Scene setup
         Scene scene = new Scene(layout, 400, 400);
+        scene.getStylesheets().add(getClass().getResource("AddWindow.css").toExternalForm());
         stage.setTitle("Add a Story");
         stage.setScene(scene);
         stage.showAndWait();

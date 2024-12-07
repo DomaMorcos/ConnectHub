@@ -23,7 +23,10 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+
+import java.io.File;
 
 import static java.awt.Color.black;
 
@@ -40,11 +43,20 @@ public class NewsFeedFront {
 
         // Main layout
         BorderPane mainLayout = new BorderPane();
-        mainLayout.setPadding(new Insets(10));
+//        mainLayout.setPadding(new Insets(10));
 
         // Top: Stories
         HBox storiesSection = createStoriesSection(userID);
-        mainLayout.setTop(storiesSection);
+
+        // Top Center: Content Creation Area
+        HBox contentCreationArea = createContentCreationArea(primaryStage, userID);
+
+
+        VBox topSection = new VBox(storiesSection,contentCreationArea);
+
+
+        mainLayout.setTop(topSection);
+
 
         // Left side: Friend List
         VBox friendList = createFriendList(primaryStage,userID);
@@ -58,9 +70,7 @@ public class NewsFeedFront {
         VBox friendSuggestions = createFriendSuggestions(primaryStage,userID);
         mainLayout.setRight(friendSuggestions);
 
-        // Bottom: Content Creation Area
-        HBox contentCreationArea = createContentCreationArea(primaryStage, userID);
-        mainLayout.setBottom(contentCreationArea);
+
 
         // Add CSS class names
         storiesSection.getStyleClass().add("stories-section");
@@ -71,7 +81,7 @@ public class NewsFeedFront {
         mainLayout.getStyleClass().add("main-layout");
 
         // Scene setup
-        Scene scene = new Scene(mainLayout, 800, 600);
+        Scene scene = new Scene(mainLayout, 1280, 720);
         scene.getStylesheets().add(getClass().getResource("NewsFeedFront.css").toExternalForm());
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -80,37 +90,43 @@ public class NewsFeedFront {
     private HBox createStoriesSection(String userID) {
         // Container for all stories
         HBox storiesContainer = new HBox();
-        storiesContainer.setPadding(new Insets(10));
-        storiesContainer.setSpacing(10);
+        storiesContainer.getStyleClass().add("stories-container");
+//        storiesContainer.setPadding(new Insets(10));
+//        storiesContainer.setSpacing(10);
 
         // Add a "Stories" label with fixed width
         Label storiesLabel = new Label("Stories");
-        storiesLabel.getStyleClass().add("label-heading");
+        storiesLabel.getStyleClass().add("stories-label");
         storiesLabel.setMinWidth(100); // Fixed width for the "Stories" label
 
         // Create a horizontal list of stories
         HBox storiesList = new HBox();
-        storiesList.setSpacing(15);
-        storiesList.setPadding(new Insets(10));
+        storiesList.getStyleClass().add("stories-list");
+//        storiesList.setSpacing(15);
+//        storiesList.setPadding(new Insets(10));
 
         User user = userDatabase.getUserById(userID);
 
         // Populate the stories list
         for (Story story : getContent.getAllStoriesForUser(user)) {
             VBox singleStory = new VBox();
-            singleStory.setSpacing(5);
-
+//            singleStory.setSpacing(5);
+            singleStory.getStyleClass().add("single-story");
             // Create story thumbnail
             ImageView storyImage = new ImageView(
                     new Image(getClass().getResource(profileDatabase.getProfile(userID).getProfilePhotoPath()).toExternalForm())
             );
             storyImage.setFitHeight(80);
             storyImage.setFitWidth(80);
+            storyImage.setPreserveRatio(true); // Ensures the aspect ratio is maintained
             storyImage.getStyleClass().add("story-image");
+// Create a circular clip
+            Circle clip = new Circle(40, 40, 40); // x, y are the center of the circle, radius is 40 (half of width/height)
+            storyImage.setClip(clip);
 
             // Story label and timestamp
             Label username = new Label("My Story");
-            Label storyDate = new Label(TimestampFormatter.formatTimestamp(story.getTimestamp()));
+            Label storyDate = new Label(TimestampFormatter.formatTimeAgo(story.getTimestamp()));
 
             // Add click event to open the story
             storyImage.setOnMouseClicked(e -> {
@@ -129,7 +145,7 @@ public class NewsFeedFront {
         storiesScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Disable vertical scrolling
         storiesScrollPane.setFitToHeight(true);
         storiesScrollPane.setPannable(true);
-        storiesScrollPane.setPrefWidth(600); // Fixed width for the ScrollPane
+        storiesScrollPane.setMaxWidth(900); // Fixed width for the ScrollPane
         storiesScrollPane.getStyleClass().add("stories-scroll-pane");
 
         // Add the label and scroll pane to the container
@@ -179,11 +195,10 @@ public class NewsFeedFront {
 
     private ScrollPane createPosts(String userID) {
         VBox postsBox = new VBox();
-        postsBox.setSpacing(10);
-        postsBox.setPadding(new Insets(10));
+        postsBox.getStyleClass().add("posts-box");
 
         Label postsLabel = new Label("Recent Posts");
-        postsLabel.getStyleClass().add("label-heading");
+        postsLabel.getStyleClass().add("posts-label");
         postsBox.getChildren().add(postsLabel);
 
         User user = userDatabase.getUserById(userID);
@@ -191,19 +206,23 @@ public class NewsFeedFront {
         // Populate the posts list
         for (Post post : getContent.getAllPostsForUser(user)) {
             VBox singlePost = new VBox();
-            singlePost.setSpacing(5);
+            singlePost.getStyleClass().add("single-post");
 
             // Author image and username
-            ImageView authorImage = new ImageView(new Image(getClass().getResource(profileDatabase.getProfile(userID).getProfilePhotoPath()).toExternalForm()));
-            authorImage.setFitWidth(30);
-            authorImage.setFitHeight(30);
+            File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(userID).getProfilePhotoPath());
+            ImageView authorImage = new ImageView(new Image(authorImageFile.toURI().toString()));
+            authorImage.setFitWidth(35);
+            authorImage.setFitHeight(35);
             Label username = new Label(user.getUsername());
+            username.getStyleClass().add("post-authorname");
             Label time = new Label(TimestampFormatter.formatTimestamp(post.getTimestamp()));
-
-
+            time.getStyleClass().add("post-time");
+            HBox imageAndName = new HBox(authorImage,username);
+            imageAndName.getStyleClass().add("image-and-name");
 
             // Post content (TextArea) with fixed size and scrollable
             TextArea postText = new TextArea(post.getContent());
+            postText.getStyleClass().add("post-text");
             postText.setEditable(false);
             postText.setWrapText(true); // Allow text wrapping
             postText.setPrefHeight(50); // Set fixed height
@@ -211,23 +230,32 @@ public class NewsFeedFront {
             postText.setScrollTop(0); // Ensure the content is scrollable
 
             // Add components to the single post VBox
-            singlePost.getChildren().addAll(authorImage, username, time);
+            singlePost.getChildren().addAll(imageAndName);
+            singlePost.getChildren().add(time);
             // Optional post thumbnail image
             if (post.getImagePath() != null && !post.getImagePath().isEmpty()) {
                 try {
-                    ImageView postImage = new ImageView(
-                            new Image(getClass().getResource(post.getImagePath()).toExternalForm())
-                    );
-
+                    File postImageFile = new File("src/main/resources" + post.getImagePath());
+                    Image postImageContent = new Image(postImageFile.toURI().toString());
+                    ImageView postImage = new ImageView(postImageContent);
                     postImage.getStyleClass().add("post-image");
-                    singlePost.getChildren().add(postImage);
+
+// Check the actual width of the image
+                    if (postImageContent.getWidth() > 300) {
+                        postImage.setFitWidth(300);
+                        postImage.setPreserveRatio(true);
+                    }
+
+                    HBox imageBox = new HBox(postImage);
+                    imageBox.getStyleClass().add("image-box");
+                    singlePost.getChildren().add(imageBox);
                 } catch (Exception e) {
                     // Log or handle the invalid image path
                     System.err.println("Invalid image path for post: " + post.getImagePath());
                 }
             }
+
             singlePost.getChildren().add(postText);
-            singlePost.getStyleClass().add("SinglePost");
             // Add the single post to the postsBox
             postsBox.getChildren().add(singlePost);
         }
@@ -237,10 +265,11 @@ public class NewsFeedFront {
         scrollPane.setFitToWidth(true); // Ensure the ScrollPane stretches to fit the width of the postsBox
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Always show vertical scrollbar
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Disable horizontal scrollbar
-        scrollPane.getStyleClass().add("scroll-pane");
+        scrollPane.getStyleClass().add("post-scroll-pane");
 
         return scrollPane;
     }
+
 
 
 
@@ -276,7 +305,7 @@ public class NewsFeedFront {
     private HBox createContentCreationArea(Stage stage, String userID) {
         HBox contentCreationArea = new HBox();
         contentCreationArea.setPadding(new Insets(10));
-        contentCreationArea.setSpacing(10);
+//        contentCreationArea.setSpacing(10);
         Button storyButton = new Button("Story");
         storyButton.getStyleClass().add("button");
         storyButton.setOnAction(e -> {

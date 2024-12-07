@@ -9,14 +9,6 @@
     },
     {
         "imagePath": "",
-        "contentId": "S1_2024-12-06T21:05:54.775138900",
-        "authorId": "1",
-        "type": "story",
-        "content": "Test Story",
-        "timestamp": "2024-12-06T21:05:54.774139300"
-    },
-    {
-        "imagePath": "",
         "contentId": "P1_2024-12-06T21:06:28.685876900",
         "authorId": "1",
         "type": "post",
@@ -30,5 +22,29 @@
         "type": "post",
         "content": "Explanaition of JavaFx",
         "timestamp": "2024-12-07T14:29:00.559948400"
+    },
+    {
+        "imagePath": "/Images/baguette.png",
+        "contentId": "S1_2024-12-07T15:48:21.626060300",
+        "authorId": "1",
+        "type": "story",
+        "content": "Baguette",
+        "timestamp": "2024-12-07T15:48:21.626060300"
+    },
+    {
+        "imagePath": "/Images/SUPERSTAR.png",
+        "contentId": "P1_2024-12-07T15:52:12.130670900",
+        "authorId": "1",
+        "type": "post",
+        "content": "Testing post",
+        "timestamp": "2024-12-07T15:52:12.130670900"
+    },
+    {
+        "imagePath": "/Images/Half Adder.png",
+        "contentId": "S1_2024-12-07T20:05:09.148031900",
+        "authorId": "1",
+        "type": "story",
+        "content": "New Story Talking About Half Adder Here's more on color code picker\n\nA color code picker is a digital tool used to select and generate colors based on specific color codes. These codes are usually represented in hexadecimal format, consisting of six letters and numbers (e.g., #FF0000 for red). Color code pickers often allow users to enter a code or select a color from a palette, and then display the corresponding RGB values (red, green, blue). Some pickers also support advanced features like opacity, color gradients, and conversion between different color models (e.g., HEX to RGB). This tool is commonly used in web design, graphic design, and digital art.\n\n\n\n\n",
+        "timestamp": "2024-12-07T20:05:09.148031900"
     }
 ]
