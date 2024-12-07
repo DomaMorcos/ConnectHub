@@ -54,11 +54,16 @@
 }
 
 /* Posts and Stories */
-.posts-and-stories {
+.posts{
     -fx-background-color: #ffffff;
     -fx-padding: 10;
     -fx-border-color: lightgray;
     -fx-border-width: 1;
+}
+.SinglePost {
+    -fx-border-color:black;
+    -fx-border-width:1;
+    -fx-padding:5;
 }
 
 .scroll-pane {

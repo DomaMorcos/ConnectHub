@@ -25,6 +25,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import static java.awt.Color.black;
+
 public class NewsFeedFront {
     private FriendManager friendManager = FriendManager.getInstance();
     ContentDatabase contentDatabase = ContentDatabase.getInstance();
@@ -63,7 +65,7 @@ public class NewsFeedFront {
         // Add CSS class names
         storiesSection.getStyleClass().add("stories-section");
         friendList.getStyleClass().add("friend-list");
-        posts.getStyleClass().add("posts-and-stories");
+        posts.getStyleClass().add("posts");
         friendSuggestions.getStyleClass().add("friend-suggestions");
         contentCreationArea.getStyleClass().add("content-creation-area");
         mainLayout.getStyleClass().add("main-layout");
@@ -204,7 +206,7 @@ public class NewsFeedFront {
             TextArea postText = new TextArea(post.getContent());
             postText.setEditable(false);
             postText.setWrapText(true); // Allow text wrapping
-            postText.setPrefHeight(100); // Set fixed height
+            postText.setPrefHeight(50); // Set fixed height
             postText.setPrefWidth(400); // Set fixed width
             postText.setScrollTop(0); // Ensure the content is scrollable
 
@@ -216,8 +218,7 @@ public class NewsFeedFront {
                     ImageView postImage = new ImageView(
                             new Image(getClass().getResource(post.getImagePath()).toExternalForm())
                     );
-                    postImage.setFitHeight(80);
-                    postImage.setFitWidth(80);
+
                     postImage.getStyleClass().add("post-image");
                     singlePost.getChildren().add(postImage);
                 } catch (Exception e) {
@@ -226,7 +227,7 @@ public class NewsFeedFront {
                 }
             }
             singlePost.getChildren().add(postText);
-
+            singlePost.getStyleClass().add("SinglePost");
             // Add the single post to the postsBox
             postsBox.getChildren().add(singlePost);
         }
