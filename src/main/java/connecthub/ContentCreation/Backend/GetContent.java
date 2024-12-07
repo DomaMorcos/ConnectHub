@@ -5,9 +5,9 @@ import connecthub.UserAccountManagement.Backend.User;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import static connecthub.ContentCreation.Backend.ContentDatabase.loadContents;
 
 public class GetContent {
+    private ContentDatabase contentDatabase = ContentDatabase.getInstance();
     private static GetContent getContent = null;
 
     private GetContent() {
@@ -24,7 +24,7 @@ public class GetContent {
 
     public ArrayList<Post> getAllPosts() {
         //load
-        ArrayList<Content> contents = loadContents();
+        ArrayList<Content> contents = contentDatabase.loadContents();
         //array list empty
         ArrayList<Post> posts = new ArrayList<>();
         if (contents != null) {
@@ -40,7 +40,7 @@ public class GetContent {
 
     public ArrayList<Story> getAllStories() {
         //load
-        ArrayList<Content> contents = loadContents();
+        ArrayList<Content> contents = contentDatabase.loadContents();
         //array list empty
         ArrayList<Story> stories = new ArrayList<>();
         if (contents != null) {
@@ -55,12 +55,12 @@ public class GetContent {
     }
 
     public ArrayList<Content> getAllContents() {
-        return loadContents();
+        return contentDatabase.loadContents();
     }
 
     public ArrayList<Post> getAllPostsForUser(User user) {
         //load
-        ArrayList<Content> contents = loadContents();
+        ArrayList<Content> contents = contentDatabase.loadContents();
         //array list empty
         ArrayList<Post> posts = new ArrayList<>();
         if (contents != null) {
@@ -78,7 +78,7 @@ public class GetContent {
 
     public ArrayList<Story> getAllStoriesForUser(User user) {
         //load
-        ArrayList<Content> contents = loadContents();
+        ArrayList<Content> contents = contentDatabase.loadContents();
         //array list empty
         ArrayList<Story> stories = new ArrayList<>();
         if (contents != null) {
@@ -96,7 +96,7 @@ public class GetContent {
 
     public ArrayList<Content> getAllContentForUser(User user) {
         //load all contents
-        ArrayList<Content> contents = loadContents();
+        ArrayList<Content> contents = contentDatabase.loadContents();
         //array list empty
         ArrayList<Content> contentsForUser = new ArrayList<>();
         if (contents != null) {

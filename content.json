@@ -22,5 +22,13 @@
         "type": "post",
         "content": "New Post\tCheck",
         "timestamp": "2024-12-06T21:06:28.685876900"
+    },
+    {
+        "imagePath": "/Images/Screenshot 2024-12-05 123936.png",
+        "contentId": "P1_2024-12-07T14:29:00.559948400",
+        "authorId": "1",
+        "type": "post",
+        "content": "Explanaition of JavaFx",
+        "timestamp": "2024-12-07T14:29:00.559948400"
     }
 ]
