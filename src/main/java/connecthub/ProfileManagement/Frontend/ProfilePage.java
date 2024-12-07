@@ -123,7 +123,6 @@ public class ProfilePage {
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
         });
         management.getChildren().addAll(editBio,newsfeedButton,friendsButton);
 

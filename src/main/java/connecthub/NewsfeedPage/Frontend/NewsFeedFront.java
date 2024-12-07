@@ -317,6 +317,4 @@ public class NewsFeedFront {
         contentCreationArea.getChildren().add(profileButton);
         return contentCreationArea;
     }
-
-
 }

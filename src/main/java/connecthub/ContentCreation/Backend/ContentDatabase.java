@@ -50,7 +50,7 @@ public class ContentDatabase {
         }
     }
 
-    public static ArrayList<Content> loadContents() {
+    public  ArrayList<Content> loadContents() {
         // Clear the old one
         ContentDatabase contentDB = getInstance();
         contentDB.contents.clear();
