@@ -51,11 +51,6 @@ public class FriendsPage {
         primaryStage.showAndWait();
     }
 
-
-
-
-
-
     private VBox createFriendList(Stage stage , String userID) {
         friendsVBox = new VBox(10);
         friendsVBox.setPadding(new Insets(10));
@@ -194,7 +189,6 @@ public class FriendsPage {
             friendSuggestion.getChildren().addAll(username, sendFriendRequest);
             friendSuggestionsVBox.getChildren().add(friendSuggestion);
         }
-
         return friendSuggestionsVBox;
     }
 

@@ -1,5 +1,5 @@
 .root {
-    -fx-background-color: #fd5a00;
+    -fx-background-color: #85a98f;
     -fx-alignment: center;
     -fx-spacing: 40px;
 }
@@ -12,7 +12,7 @@ DatePicker{
 }
 Button{
     -fx-text-fill: White;
-    -fx-background-color: Red;
+    -fx-background-color: #525b44;
     -fx-background-radius: 20px;
     -fx-min-width: 100px;
 }

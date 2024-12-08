@@ -9,14 +9,13 @@ import connecthub.ContentCreation.Frontend.AddPost;
 import connecthub.ContentCreation.Frontend.AddStory;
 import connecthub.ContentCreation.Frontend.DisplayStory;
 import connecthub.FriendManagement.Backend.FriendManager;
-import connecthub.FriendManagement.Backend.FriendRequest;
 import connecthub.FriendManagement.Frontend.FriendsPage;
+import connecthub.NewsfeedPage.Backend.ImplementedNewsfeedBack;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Frontend.ProfilePage;
 import connecthub.TimestampFormatter;
 import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
-import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -28,14 +27,13 @@ import javafx.stage.Stage;
 
 import java.io.File;
 
-import static java.awt.Color.black;
-
 public class NewsFeedFront {
     private FriendManager friendManager = FriendManager.getInstance();
     ContentDatabase contentDatabase = ContentDatabase.getInstance();
     UserDatabase userDatabase = UserDatabase.getInstance();
     GetContent getContent = GetContent.getInstance();
     ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
+    ImplementedNewsfeedBack newsfeed = new ImplementedNewsfeedBack();
 
     public void start(String userID) throws Exception {
         Stage primaryStage = new Stage();
@@ -104,14 +102,10 @@ public class NewsFeedFront {
         storiesList.getStyleClass().add("stories-list");
 //        storiesList.setSpacing(15);
 //        storiesList.setPadding(new Insets(10));
+        User user = userDatabase.getUserById(userID);
 
-
-
-        // Populate the stories list
-
-        for (Story story : getContent.getAllStories()) {
+        for (Story story : getContent.getAllStoriesForUser(user)) {
             VBox singleStory = new VBox();
-            User user = userDatabase.getUserById(story.getAuthorId());
 //            singleStory.setSpacing(5);
             singleStory.getStyleClass().add("single-story");
             // Create story thumbnail
@@ -127,6 +121,40 @@ public class NewsFeedFront {
 
             // Story label and timestamp
             Label username = new Label(user.getUsername());
+            Label storyDate = new Label(TimestampFormatter.formatTimeAgo(story.getTimestamp()));
+
+            // Add click event to open the story
+            storyImage.setOnMouseClicked(e -> {
+                DisplayStory displayStory = new DisplayStory();
+                displayStory.start(story);
+            });
+
+            // Combine elements for a single story
+            singleStory.getChildren().addAll(storyImage, username, storyDate);
+            storiesList.getChildren().add(singleStory);
+        }
+
+
+        // Populate the stories list
+
+        for (Story story : newsfeed.getFriendsStories(userID)) {
+            VBox singleStory = new VBox();
+            User friend = userDatabase.getUserById(story.getAuthorId());
+//            singleStory.setSpacing(5);
+            singleStory.getStyleClass().add("single-story");
+            // Create story thumbnail
+            File storyImageFile = new File("src/main/resources" + profileDatabase.getProfile(friend.getUserId()).getProfilePhotoPath());
+            ImageView storyImage = new ImageView(new Image(storyImageFile.toURI().toString()));
+            storyImage.setFitHeight(80);
+            storyImage.setFitWidth(80);
+            storyImage.setPreserveRatio(true); // Ensures the aspect ratio is maintained
+            storyImage.getStyleClass().add("story-image");
+// Create a circular clip
+            Circle clip = new Circle(40, 40, 40); // x, y are the center of the circle, radius is 40 (half of width/height)
+            storyImage.setClip(clip);
+
+            // Story label and timestamp
+            Label username = new Label(friend.getUsername());
             Label storyDate = new Label(TimestampFormatter.formatTimeAgo(story.getTimestamp()));
 
             // Add click event to open the story
@@ -215,20 +243,77 @@ public class NewsFeedFront {
         postsLabel.getStyleClass().add("posts-label");
         postsBox.getChildren().add(postsLabel);
 
+        User user = userDatabase.getUserById(userID);
 
-
-        // Populate the posts list
-
-        for (Post post : getContent.getAllPosts()) {
+        for (Post post : getContent.getAllPostsForUser(user)) {
             VBox singlePost = new VBox();
             singlePost.getStyleClass().add("single-post");
-            User user = userDatabase.getUserById(post.getAuthorId());
             // Author image and username
             File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(user.getUserId()).getProfilePhotoPath());
             ImageView authorImage = new ImageView(new Image(authorImageFile.toURI().toString()));
             authorImage.setFitWidth(35);
             authorImage.setFitHeight(35);
             Label username = new Label(user.getUsername());
+            username.getStyleClass().add("post-authorname");
+            Label time = new Label(TimestampFormatter.formatTimestamp(post.getTimestamp()));
+            time.getStyleClass().add("post-time");
+            HBox imageAndName = new HBox(authorImage,username);
+            imageAndName.getStyleClass().add("image-and-name");
+
+            // Post content (TextArea) with fixed size and scrollable
+            TextArea postText = new TextArea(post.getContent());
+            postText.getStyleClass().add("post-text");
+            postText.setEditable(false);
+            postText.setWrapText(true); // Allow text wrapping
+            postText.setPrefHeight(50); // Set fixed height
+            postText.setPrefWidth(400); // Set fixed width
+            postText.setScrollTop(0); // Ensure the content is scrollable
+
+            // Add components to the single post VBox
+            singlePost.getChildren().addAll(imageAndName);
+            singlePost.getChildren().add(time);
+            // Optional post thumbnail image
+            if (post.getImagePath() != null && !post.getImagePath().isEmpty()) {
+                try {
+                    File postImageFile = new File("src/main/resources" + post.getImagePath());
+                    Image postImageContent = new Image(postImageFile.toURI().toString());
+                    ImageView postImage = new ImageView(postImageContent);
+                    postImage.getStyleClass().add("post-image");
+
+                    // Check the actual width of the image
+                    if (postImageContent.getWidth() > 300) {
+                        postImage.setFitWidth(300);
+                        postImage.setPreserveRatio(true);
+                    }
+
+                    HBox imageBox = new HBox(postImage);
+                    imageBox.getStyleClass().add("image-box");
+                    singlePost.getChildren().add(imageBox);
+                } catch (Exception e) {
+                    // Log or handle the invalid image path
+                    System.err.println("Invalid image path for post: " + post.getImagePath());
+                }
+            }
+
+            singlePost.getChildren().add(postText);
+            // Add the single post to the postsBox
+            postsBox.getChildren().add(singlePost);
+        }
+
+
+
+        // Populate the posts list
+
+        for (Post post : newsfeed.getFriendsPosts(userID)) {
+            VBox singlePost = new VBox();
+            singlePost.getStyleClass().add("single-post");
+            User friend = userDatabase.getUserById(post.getAuthorId());
+            // Author image and username
+            File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(friend.getUserId()).getProfilePhotoPath());
+            ImageView authorImage = new ImageView(new Image(authorImageFile.toURI().toString()));
+            authorImage.setFitWidth(35);
+            authorImage.setFitHeight(35);
+            Label username = new Label(friend.getUsername());
             username.getStyleClass().add("post-authorname");
             Label time = new Label(TimestampFormatter.formatTimestamp(post.getTimestamp()));
             time.getStyleClass().add("post-time");
