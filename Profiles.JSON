@@ -3,6 +3,7 @@
         "profilePhotoPath": "/Images/scale.png",
         "bio": "Testing Bio Save",
         "coverPhotoPath": "/Images/التوربينات المائية.JPG",
+        "blockedUsers": ["2"],
         "userId": "1",
         "friends": []
     },
@@ -10,6 +11,7 @@
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
         "bio": "Click on Edit to edit Bio",
         "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "blockedUsers": ["1"],
         "userId": "2",
         "friends": []
     },
@@ -17,6 +19,7 @@
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
         "bio": "Click on Edit to edit Bio",
         "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "blockedUsers": [],
         "userId": "3",
         "friends": []
     },
@@ -24,6 +27,7 @@
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
         "bio": "Click on Edit to edit Bio",
         "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "blockedUsers": [],
         "userId": "4",
         "friends": []
     }

@@ -10,8 +10,6 @@ import connecthub.UserAccountManagement.Backend.UserDatabase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.swing.*;
-
 public class ProfileDatabase {
     private static String PROFILE_FILEPATH = "Profiles.JSON";
     private static Map<String, UserProfile> profiles = new HashMap<>();
@@ -70,6 +68,10 @@ public class ProfileDatabase {
             JSONArray friendsArray = new JSONArray(profile.getFriends());
             profileObject.put("friends", friendsArray);
 
+            // Add the blockedUsers list to the profile object
+            JSONArray blockedUserArray = new JSONArray(profile.getBlockedUsers());
+            profileObject.put("blockedUsers", blockedUserArray);
+
             profilesArray.put(profileObject);
         }
 
@@ -100,11 +102,16 @@ public class ProfileDatabase {
                 for (int j = 0; j < friendsArray.length(); j++) {
                     friends.add(friendsArray.getString(j));
                 }
+                JSONArray blockedUsersArray = profileObject.getJSONArray("blockedUsers"); // Get the blockedUsers array
+                List<String> blockedUsers = new ArrayList<>();
+                for (int j = 0; j < blockedUsersArray.length(); j++) {
+                    blockedUsers.add(blockedUsersArray.getString(j));
+                }
                 String userId =profileObject.getString("userId");
                 String profilePhotoPath =profileObject.getString("profilePhotoPath");
                 String coverPhotoPath =profileObject.getString("coverPhotoPath");
                 String bio =profileObject.getString("bio");
-                UserProfile profile = new UserProfile(userId,profilePhotoPath,coverPhotoPath,bio,friends);
+                UserProfile profile = new UserProfile(userId,profilePhotoPath,coverPhotoPath,bio,friends,blockedUsers);
                 // Add the profile to the map
                 profiles.put(profile.getUserId(), profile);
             }

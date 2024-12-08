@@ -55,7 +55,6 @@ public class FriendManager {
                     addFriend(senderId, receiverId);
                 } else {
                     request.setStatus("Declined");
-//                    friendRequests.remove(request);
                 }
                 iterator.remove();
                 saveFriendRequests();
@@ -89,23 +88,19 @@ public class FriendManager {
 
     // Block friend
     public boolean blockFriend(String userId, String blockedId) {
-        removeFriend(userId, blockedId); // Remove friendship
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        UserProfile friendProfile = profileDatabase.getProfile(blockedId);
+        userProfile.deleteFriend(blockedId);
+        friendProfile.deleteFriend(userId);
+        userProfile.blockFriend(blockedId);
+        friendProfile.blockFriend(userId);
+        // Update Profile Database
+        ProfileDatabase profileDb = ProfileDatabase.getInstance();
+        profileDb.updateProfile(profileDb.getProfile(userId));
+        profileDb.updateProfile(profileDb.getProfile(blockedId));
         return true;
     }
 
-    // Get friends list
-//    public List<User> getFriendsList(String userId) {
-//        UserDatabase userDb = UserDatabase.getInstance();
-//        List<String> friendIds = friendsMap.getOrDefault(userId, new ArrayList<>());
-//        List<User> friends = new ArrayList<>();
-//        for (String friendId : friendIds) {
-//            User user = userDb.getUserById(friendId);
-//            if (user != null) {
-//                friends.add(user);
-//            }
-//        }
-//        return friends;
-//    }
     // Get friends list
     public List<User> getFriendsList(String userId) {
         UserProfile userProfile = profileDatabase.getProfile(userId);
@@ -113,14 +108,34 @@ public class FriendManager {
 
         List<String> friendIds = userProfile.getFriends();
         List<User> friends = new ArrayList<>();
+
         for (String friendId : friendIds) {
             User friend = userDatabase.getUserById(friendId);
             if (friend != null) {
                 friends.add(friend);
             }
         }
+        // Return the list of friends
         return friends;
     }
+
+    public List<User> getBlockedUsers(String userId) {
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        if (userProfile == null) return Collections.emptyList();
+
+        List<String> blockedUsersIds = userProfile.getBlockedUsers();
+        List<User> blockedUsers = new ArrayList<>();
+
+        for (String blockedUserId : blockedUsersIds) {
+            User blockedUser = userDatabase.getUserById(blockedUserId);
+            if (blockedUser != null) {
+                blockedUsers.add(blockedUser);
+            }
+        }
+        // Return the list of blocked users
+        return blockedUsers;
+    }
+
 
     // Get pending requests for a user
     public static List<FriendRequest> getPendingRequests(String userId) {
@@ -153,6 +168,7 @@ public class FriendManager {
         List<User> allUsers = new ArrayList<>(userDb.users);
         allUsers.removeIf(user -> user.getUserId().equals(userId) ||
                 existingFriends.contains(user.getUserId()) ||
+                getBlockedUsers(userId).stream().anyMatch(receiver -> receiver.getUserId().equals(user.getUserId())) ||
                 getAllPendingSenders(userId).stream().anyMatch(receiver -> receiver.getUserId().equals(user.getUserId())) ||
                 getAllReceivers().stream().anyMatch(receiver -> receiver.getUserId().equals(user.getUserId())));
         return allUsers;
