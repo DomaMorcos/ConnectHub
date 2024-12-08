@@ -9,11 +9,13 @@ import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Backend.ProfileManager;
 import connecthub.ProfileManagement.Backend.UserProfile;
 import connecthub.TimestampFormatter;
+import connecthub.UserAccountManagement.Backend.HashPassword;
 import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
 
 
 public class ProfilePage {
@@ -229,7 +232,7 @@ public class ProfilePage {
 
 
         changePassword.setOnAction(e -> {
-            Optional<String> result = handleChangePassword();
+            Optional<String> result = handleChangePassword(userID);
             result.ifPresent(newPassword -> profileManager.updatePassword(userID, newPassword));
         });
 
@@ -333,21 +336,69 @@ public class ProfilePage {
         return dialog.showAndWait();
     }
 
-    private Optional<String> handleChangePassword() {
-        TextInputDialog dialog = new TextInputDialog();
+    private Optional<String> handleChangePassword(String userId) {
+        // Retrieve the user
+        User user = userDatabase.getUserById(userId);
+
+        // Create a custom dialog
+        Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Change Password");
         dialog.setHeaderText("Change Password");
-        dialog.setContentText("Please enter your new password:");
+
+        // Create a PasswordField and an error message label
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Enter your new password");
+        Label errorLabel = new Label();
+        errorLabel.setStyle("-fx-text-fill: red;"); // Style for error text
+
+        // Layout for the dialog content
+        VBox content = new VBox(10, passwordField, errorLabel);
+        dialog.getDialogPane().setContent(content);
+
+        // Add "OK" and "Cancel" buttons
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+
+        // Disable the "OK" button by default
+        Node okButton = dialog.getDialogPane().lookupButton(okButtonType);
+        okButton.setDisable(true);
+
+        // Enable the "OK" button only if the input is not empty
+        passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
+            okButton.setDisable(newValue.trim().isEmpty());
+            errorLabel.setText(""); // Clear error message while typing
+        });
+
+        // Handle button clicks and input validation
+        dialog.setResultConverter(button -> {
+            if (button == okButtonType) {
+                return passwordField.getText();
+            }
+            return null; // Return null for "Cancel"
+        });
 
         while (true) {
             Optional<String> result = dialog.showAndWait();
-            if (result.isEmpty() || result.get().trim().isEmpty()) {
-                dialog.setHeaderText("Password cannot be empty. Please try again.");
+
+            if (result.isEmpty()) {
+                // User canceled the dialog
+                return Optional.empty();
+            }
+
+            String newPassword = result.get().trim();
+
+            if (hashPassword(newPassword).equals(user.getPassword())) {
+                // Show error message for invalid input
+                errorLabel.setText("New password cannot be the same as the old password.");
             } else {
-                return result;
+                // Valid input
+                return Optional.of(newPassword);
             }
         }
     }
+
+
+
 
 
 
