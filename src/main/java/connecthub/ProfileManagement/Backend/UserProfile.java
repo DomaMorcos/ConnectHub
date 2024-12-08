@@ -27,9 +27,6 @@ public class UserProfile implements Serializable {
         this.coverPhotoPath = coverPhotoPath;
         this.bio = bio;
         this.friends = new ArrayList<>(friends);
-
-        // Initialize friends in FriendManager
-        friendManager.initializeFriends(userId, friends);
     }
 
     // Getters and Setters

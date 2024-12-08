@@ -33,8 +33,7 @@ public class CreateUser {
 
         userDB.users.add(newUser);
         userDB.saveUsersToJsonFile();
-        // Initialize friends for the new user
-        FriendManager.getInstance().initializeFriends(generatedID, null);
+
         return true;
     }
 }

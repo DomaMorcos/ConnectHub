@@ -14,14 +14,14 @@ import java.util.*;
 
 public class FriendManager {
     private static FriendManager instance;
-    private  Map<String, List<String>> friendsMap; // userId -> list of friends
     private static  List<FriendRequest> friendRequests;
     private static final String REQUESTS_FILE = "FriendRequests.JSON";
     private static FriendManager friendManager  = null;
     private UserDatabase userDatabase = UserDatabase.getInstance();
+    private ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
 
     private FriendManager() {
-        friendsMap = new HashMap<>();
+
         friendRequests = loadFriendRequests();
     }
 
@@ -31,10 +31,6 @@ public class FriendManager {
             friendManager.loadFriendRequests();
         }
         return friendManager;
-    }
-    // Initialize friends for a new user
-    public void initializeFriends(String userId, List<String> friends) {
-        friendsMap.put(userId, friends != null ? new ArrayList<>(friends) : new ArrayList<>());
     }
 
     // Send friend request
@@ -70,40 +66,23 @@ public class FriendManager {
 
     // Add friend to both users
     public void addFriend(String userId, String friendId) {
-        friendsMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(friendId);
-        friendsMap.computeIfAbsent(friendId, k -> new ArrayList<>()).add(userId);
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        UserProfile friendProfile = profileDatabase.getProfile(friendId);
+        userProfile.addFriend(friendId);
+        friendProfile.addFriend(userId);
 
         // Update Profile Database
         ProfileDatabase profileDb = ProfileDatabase.getInstance();
         profileDb.updateProfile(profileDb.getProfile(userId));
         profileDb.updateProfile(profileDb.getProfile(friendId));
     }
-//    public void addFriend(String userId, String friendId) {
-//        ProfileDatabase profileDb = ProfileDatabase.getInstance();
-//
-//        // Get profiles of both users
-//        UserProfile userProfile = profileDb.getProfile(userId);
-//        UserProfile friendProfile = profileDb.getProfile(friendId);
-//
-//        // Add each other to the friends list
-//        if (userProfile != null && friendProfile != null) {
-//            userProfile.addFriend(friendId); // Add friend to user
-//            friendProfile.addFriend(userId); // Add user to friend's list
-//
-//            // Save the updated profiles to the JSON file
-//            profileDb.updateProfile(userProfile);
-//            profileDb.updateProfile(friendProfile);
-//        } else {
-//            System.out.println("Profiles not found for either user.");
-//        }
-//    }
-
-
 
     // Remove friend
     public boolean removeFriend(String userId, String friendId) {
-        friendsMap.getOrDefault(userId, new ArrayList<>()).remove(friendId);
-        friendsMap.getOrDefault(friendId, new ArrayList<>()).remove(userId);
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        UserProfile friendProfile = profileDatabase.getProfile(friendId);
+        userProfile.deleteFriend(friendId);
+        friendProfile.deleteFriend(userId);
         return true;
     }
 
@@ -114,18 +93,34 @@ public class FriendManager {
     }
 
     // Get friends list
+//    public List<User> getFriendsList(String userId) {
+//        UserDatabase userDb = UserDatabase.getInstance();
+//        List<String> friendIds = friendsMap.getOrDefault(userId, new ArrayList<>());
+//        List<User> friends = new ArrayList<>();
+//        for (String friendId : friendIds) {
+//            User user = userDb.getUserById(friendId);
+//            if (user != null) {
+//                friends.add(user);
+//            }
+//        }
+//        return friends;
+//    }
+    // Get friends list
     public List<User> getFriendsList(String userId) {
-        UserDatabase userDb = UserDatabase.getInstance();
-        List<String> friendIds = friendsMap.getOrDefault(userId, new ArrayList<>());
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        if (userProfile == null) return Collections.emptyList();
+
+        List<String> friendIds = userProfile.getFriends();
         List<User> friends = new ArrayList<>();
         for (String friendId : friendIds) {
-            User user = userDb.getUserById(friendId);
-            if (user != null) {
-                friends.add(user);
+            User friend = userDatabase.getUserById(friendId);
+            if (friend != null) {
+                friends.add(friend);
             }
         }
         return friends;
     }
+
     // Get pending requests for a user
     public static List<FriendRequest> getPendingRequests(String userId) {
         List<FriendRequest> pendingRequests = new ArrayList<>();
@@ -151,21 +146,17 @@ public class FriendManager {
     // Suggest friends
     public List<User> suggestFriends(String userId) {
         UserDatabase userDb = UserDatabase.getInstance();
-        List<String> existingFriends = friendsMap.getOrDefault(userId, new ArrayList<>());
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+
+        List<String> existingFriends = userProfile.getFriends();
         List<User> allUsers = new ArrayList<>(userDb.users);
         allUsers.removeIf(user -> user.getUserId().equals(userId) ||
                 existingFriends.contains(user.getUserId()) ||
                 getAllReceivers().stream().anyMatch(receiver -> receiver.getUserId().equals(user.getUserId())));
 
-        // Sort by mutual friends count
-        allUsers.sort((user1, user2) -> {
-            int mutual1 = countMutualFriends(userId, user1.getUserId());
-            int mutual2 = countMutualFriends(userId, user2.getUserId());
-            return Integer.compare(mutual2, mutual1); // Descending order
-        });
-
         return allUsers;
     }
+
     public List<User> getAllReceivers(){
         List<User> receivers = new ArrayList<User>();
         for(FriendRequest friendRequest : friendRequests) {
@@ -173,13 +164,6 @@ public class FriendManager {
             receivers.add(receiver);
         }
         return receivers;
-    }
-
-    public int countMutualFriends(String userId1, String userId2) {
-        List<String> friends1 = friendsMap.getOrDefault(userId1, new ArrayList<>());
-        List<String> friends2 = friendsMap.getOrDefault(userId2, new ArrayList<>());
-        friends1.retainAll(friends2); // Get intersection of both friend lists
-        return friends1.size();
     }
 
     // Save friend requests to JSON
