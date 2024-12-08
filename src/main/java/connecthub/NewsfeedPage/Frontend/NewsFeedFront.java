@@ -105,17 +105,18 @@ public class NewsFeedFront {
 //        storiesList.setSpacing(15);
 //        storiesList.setPadding(new Insets(10));
 
-        User user = userDatabase.getUserById(userID);
+
 
         // Populate the stories list
-        for (Story story : getContent.getAllStoriesForUser(user)) {
+
+        for (Story story : getContent.getAllStories()) {
             VBox singleStory = new VBox();
+            User user = userDatabase.getUserById(story.getAuthorId());
 //            singleStory.setSpacing(5);
             singleStory.getStyleClass().add("single-story");
             // Create story thumbnail
-            ImageView storyImage = new ImageView(
-                    new Image(getClass().getResource(profileDatabase.getProfile(userID).getProfilePhotoPath()).toExternalForm())
-            );
+            File storyImageFile = new File("src/main/resources" + profileDatabase.getProfile(user.getUserId()).getProfilePhotoPath());
+            ImageView storyImage = new ImageView(new Image(storyImageFile.toURI().toString()));
             storyImage.setFitHeight(80);
             storyImage.setFitWidth(80);
             storyImage.setPreserveRatio(true); // Ensures the aspect ratio is maintained
@@ -125,7 +126,7 @@ public class NewsFeedFront {
             storyImage.setClip(clip);
 
             // Story label and timestamp
-            Label username = new Label("My Story");
+            Label username = new Label(user.getUsername());
             Label storyDate = new Label(TimestampFormatter.formatTimeAgo(story.getTimestamp()));
 
             // Add click event to open the story
@@ -214,15 +215,16 @@ public class NewsFeedFront {
         postsLabel.getStyleClass().add("posts-label");
         postsBox.getChildren().add(postsLabel);
 
-        User user = userDatabase.getUserById(userID);
+
 
         // Populate the posts list
-        for (Post post : getContent.getAllPostsForUser(user)) {
+
+        for (Post post : getContent.getAllPosts()) {
             VBox singlePost = new VBox();
             singlePost.getStyleClass().add("single-post");
-
+            User user = userDatabase.getUserById(post.getAuthorId());
             // Author image and username
-            File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(userID).getProfilePhotoPath());
+            File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(user.getUserId()).getProfilePhotoPath());
             ImageView authorImage = new ImageView(new Image(authorImageFile.toURI().toString()));
             authorImage.setFitWidth(35);
             authorImage.setFitHeight(35);
@@ -272,6 +274,7 @@ public class NewsFeedFront {
             // Add the single post to the postsBox
             postsBox.getChildren().add(singlePost);
         }
+
 
         // Create a ScrollPane to make posts scrollable
         ScrollPane scrollPane = new ScrollPane(postsBox);
@@ -329,6 +332,13 @@ public class NewsFeedFront {
         storyButton.setOnAction(e -> {
             AddStory addStory = new AddStory();
             addStory.start(userID);
+            NewsFeedFront newsFeedFront = new NewsFeedFront();
+            try {
+                newsFeedFront.start(userID);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            stage.close();
         });
 
         Button postButton = new Button("Post");
@@ -336,6 +346,13 @@ public class NewsFeedFront {
         postButton.setOnAction(e -> {
             AddPost addPost = new AddPost();
             addPost.start(userID);
+            NewsFeedFront newsFeedFront = new NewsFeedFront();
+            try {
+                newsFeedFront.start(userID);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            stage.close();
         });
         contentCreationArea.getChildren().addAll(storyButton, postButton);
 

@@ -137,6 +137,7 @@ public class FriendsPage {
                         throw new RuntimeException(ex);
                     }
                 }
+
             });
 
             rejectButton.setOnAction(e -> {
@@ -152,6 +153,7 @@ public class FriendsPage {
                         throw new RuntimeException(ex);
                     }
                 }
+
             });
 
             requestBox.getChildren().addAll(friendRequestSender, acceptButton, rejectButton);
