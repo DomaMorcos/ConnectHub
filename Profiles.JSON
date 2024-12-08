@@ -5,7 +5,7 @@
         "coverPhotoPath": "/Images/التوربينات المائية.JPG",
         "blockedUsers": ["2"],
         "userId": "1",
-        "friends": []
+        "friends": ["3"]
     },
     {
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
@@ -21,7 +21,7 @@
         "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
         "blockedUsers": [],
         "userId": "3",
-        "friends": []
+        "friends": ["1"]
     },
     {
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
