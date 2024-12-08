@@ -1,5 +1,32 @@
-{"friendRequestsMap": {"2": [{
-    "senderId": "1",
-    "receiverId": "2",
-    "status": "Pending"
-}]}}
+[
+    {
+        "senderId": "1",
+        "receiverId": "2",
+        "status": "Pending"
+    },
+    {
+        "senderId": "1",
+        "receiverId": "3",
+        "status": "Pending"
+    },
+    {
+        "senderId": "1",
+        "receiverId": "3",
+        "status": "Pending"
+    },
+    {
+        "senderId": "1",
+        "receiverId": "3",
+        "status": "Pending"
+    },
+    {
+        "senderId": "1",
+        "receiverId": "3",
+        "status": "Pending"
+    },
+    {
+        "senderId": "1",
+        "receiverId": "3",
+        "status": "Pending"
+    }
+]

@@ -1,4 +1,3 @@
-
 package connecthub.ProfileManagement.Backend;
 
 import connecthub.FriendManagement.Backend.FriendManager;
@@ -11,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserProfile implements Serializable {
@@ -18,89 +18,84 @@ public class UserProfile implements Serializable {
     private String profilePhotoPath;
     private String coverPhotoPath;
     private String bio;
+    private FriendManager friendManager = FriendManager.getInstance();
+    private List<String> friends; // Keep a list of friends in this class as well.
 
     public UserProfile(String userId, String profilePhotoPath, String coverPhotoPath, String bio, List<String> friends) {
         this.userId = userId;
         this.profilePhotoPath = profilePhotoPath;
         this.coverPhotoPath = coverPhotoPath;
         this.bio = bio;
+        this.friends = new ArrayList<>(friends);
 
         // Initialize friends in FriendManager
-        FriendManager.getInstance().initializeFriends(userId, friends);
+        friendManager.initializeFriends(userId, friends);
     }
 
     // Getters and Setters
     public String getUserId() {
         return userId;
     }
+
     public String getProfilePhotoPath() {
         return profilePhotoPath;
     }
+
     public void setProfilePhotoPath(String profilePhotoPath) {
-        Path source = Paths.get(profilePhotoPath);
-        Path destination = Paths.get("src//main//Images//" + userId + ".png");
-        try {
-            if (Files.exists(source)) {
-                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-            } else {
-                System.out.println("Profile photo path does not exist: " + profilePhotoPath);
-                this.profilePhotoPath = new ImageIcon("imagesDatabase/defaultProfile.png").getDescription(); // Set a default image
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.profilePhotoPath = profilePhotoPath;
     }
+
+
     public String getCoverPhotoPath() {
         return coverPhotoPath;
     }
+
     public void setCoverPhotoPath(String coverPhotoPath) {
-        Path source = Paths.get(coverPhotoPath);
-        Path destination = Paths.get("src//main//Images//" + userId + ".png");
-        try {
-            if (Files.exists(source)) {
-                Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-            } else {
-                System.out.println("Cover photo path does not exist: " + coverPhotoPath);
-                this.coverPhotoPath = new ImageIcon("imagesDatabase//defaultCover.png").getDescription(); // Set a default image
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.coverPhotoPath = coverPhotoPath;
     }
+
     public String getBio() {
         return bio;
     }
+
     public void setBio(String bio) {
         this.bio = bio;
     }
 
     // Friend Management Methods
-    public List<User> getFriends() {
-
-        return FriendManager.getInstance().getFriendsList(userId);
-
+    public List<String> getFriends() {
+        return friends;
     }
+
     public void addFriend(String friendId) {
-        connecthub.FriendManagement.Backend.FriendManager.getInstance().addFriend(userId, friendId);
+        if (!friends.contains(friendId)) {
+            friends.add(friendId);  // Add friend to list
+            updateProfileAndSave();  // Update the profile and save
+        }
     }
 
     public void deleteFriend(String friendId) {
-        connecthub.FriendManagement.Backend.FriendManager.getInstance().removeFriend(userId, friendId);
+        if (friends.contains(friendId)) {
+            friends.remove(friendId);  // Remove friend from list
+            updateProfileAndSave();  // Update the profile and save
+        }
+    }
+
+    private void updateProfileAndSave() {
+        // Save the updated profile after modifying friends list
+        ProfileDatabase profileDb = ProfileDatabase.getInstance();
+        profileDb.updateProfile(this);  // Update profile in database
+        profileDb.saveProfilesToJsonFile();  // Save to JSON file
     }
 
     @Override
     public String toString() {
-        // Get the list of friends using the getFriends method
-        List<User> friendsList = getFriends();
-
         return "UserProfile{" +
                 "userId='" + userId + '\'' +
                 ", profilePhotoPath='" + profilePhotoPath + '\'' +
                 ", coverPhotoPath='" + coverPhotoPath + '\'' +
                 ", bio='" + bio + '\'' +
-                ", friends=" + friendsList +
+                ", friends=" + friends +
                 '}';
     }
-
-
 }

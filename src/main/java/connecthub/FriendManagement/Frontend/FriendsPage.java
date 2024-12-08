@@ -22,6 +22,7 @@ public class FriendsPage {
     private VBox friendRequestsVBox;
     private VBox friendSuggestionsVBox;
 
+
     public void start(String userID) throws Exception {
         Stage primaryStage = new Stage();
         primaryStage.setTitle("Friend Management");
@@ -85,7 +86,7 @@ public class FriendsPage {
 
             blockButton.setOnAction(e -> {
                 // Handle blocking friend
-                if (friendManager.blockUser(userID, friend.getUserId())) {
+                if (friendManager.blockFriend(userID, friend.getUserId())) {
                     AlertUtils.showInformationMessage("Friend Blocked", friend.getUsername() + "is succesfully block from the friends list");
 
                     FriendsPage friendsPage = new FriendsPage();
@@ -114,7 +115,7 @@ public class FriendsPage {
         friendRequestsVBox.getChildren().add(friendRequestsLabel);
 
         // Simulate loading friend requests (in a real app, fetch from backend)
-        for (FriendRequest friendRequest : FriendRequest.getPendingRequests(userID)) {
+        for (FriendRequest friendRequest : friendManager.getPendingRequests(userID)) {
             System.out.println(friendRequest.toString());
             HBox requestBox = new HBox(10);
             User friend = userDatabase.getUserById(friendRequest.getSenderId());
@@ -125,7 +126,7 @@ public class FriendsPage {
 
             acceptButton.setOnAction(e -> {
                 // Handle accepting the friend request
-                if (friendManager.respondToRequest(userID, friend.getUserId(), true)) {
+                if (friendManager.handleFriendRequest(userID, friend.getUserId(), true)) {
                     AlertUtils.showInformationMessage("Request Accepted", "Friend Request Accepted!");
 
                     FriendsPage friendsPage = new FriendsPage();
@@ -140,7 +141,7 @@ public class FriendsPage {
 
             rejectButton.setOnAction(e -> {
                 // Handle rejecting the friend request
-                if (friendManager.respondToRequest(userID, friend.getUserId(), false)) {
+                if (friendManager.handleFriendRequest(userID, friend.getUserId(), false)) {
                     AlertUtils.showInformationMessage("Request Rejected", "Friend Request Rejected!");
 
                     FriendsPage friendsPage = new FriendsPage();
@@ -177,7 +178,7 @@ public class FriendsPage {
             Label username = new Label(friend.getUsername());
             Button sendFriendRequest = new Button("Send Request");
             sendFriendRequest.setOnAction(e -> {
-                if (FriendRequest.sendFriendRequest(userID, friend.getUserId())) {
+                if (friendManager.sendFriendRequest(userID, friend.getUserId())) {
                     AlertUtils.showInformationMessage("Friend Request", "Friend Request is sent to " + friend.getUsername());
                     FriendsPage friendsPage = new FriendsPage();
                     try {

@@ -194,6 +194,7 @@ public class ProfilePage {
             System.out.println(imagePath);
             if (imagePath != null) {
                 userProfile.setProfilePhotoPath(imagePath);
+                profileDatabase.updateProfile(userProfile);
                 ProfilePage profilePage = new ProfilePage();
                 try {
                     profilePage.start(userID);
@@ -212,6 +213,7 @@ public class ProfilePage {
             String imagePath = openImageChooser(stage);
             if (imagePath != null) {
                 userProfile.setCoverPhotoPath(imagePath);
+                profileDatabase.updateProfile(userProfile);
                 ProfilePage profilePage = new ProfilePage();
                 try {
                     profilePage.start(userID);

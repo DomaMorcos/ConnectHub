@@ -1,22 +1,22 @@
 [
     {
-        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
-        "bio": "Test",
-        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "profilePhotoPath": "/Images/scale.png",
+        "bio": "Testing Bio Save",
+        "coverPhotoPath": "/Images/التوربينات المائية.JPG",
         "userId": "1",
         "friends": []
     },
     {
-        "profilePhotoPath": "DefaultProfilePhoto.jpg",
+        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
         "bio": "Click on Edit to edit Bio",
-        "coverPhotoPath": "DefaultCoverPhoto.png",
+        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
         "userId": "2",
         "friends": []
     },
     {
-        "profilePhotoPath": "DefaultProfilePhoto.jpg",
+        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
         "bio": "Click on Edit to edit Bio",
-        "coverPhotoPath": "DefaultCoverPhoto.png",
+        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
         "userId": "3",
         "friends": []
     },

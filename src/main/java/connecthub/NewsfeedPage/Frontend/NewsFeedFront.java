@@ -173,15 +173,28 @@ public class NewsFeedFront {
                 if (friendManager.removeFriend(userID, friend.getUserId())) {
                     AlertUtils.showInformationMessage("Friend Removed", friend.getUsername() + "is succesfully removed from the friends list");
 
+                    FriendsPage friendsPage = new FriendsPage();
+                    try {
+                        friendsPage.start(userID);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    stage.close();
                 }
             });
 
             blockButton.setOnAction(e -> {
                 // Handle blocking friend
-                if (friendManager.blockUser(userID, friend.getUserId())) {
+                if (friendManager.blockFriend(userID, friend.getUserId())) {
                     AlertUtils.showInformationMessage("Friend Blocked", friend.getUsername() + "is succesfully block from the friends list");
 
-
+                    FriendsPage friendsPage = new FriendsPage();
+                    try {
+                        friendsPage.start(userID);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    stage.close();
                 }
             });
 
@@ -289,10 +302,15 @@ public class NewsFeedFront {
             Label username = new Label(friend.getUsername());
             Button sendFriendRequest = new Button("Send Request");
             sendFriendRequest.setOnAction(e -> {
-                if (FriendRequest.sendFriendRequest(userID, friend.getUserId())) {
+                if (friendManager.sendFriendRequest(userID, friend.getUserId())) {
                     AlertUtils.showInformationMessage("Friend Request", "Friend Request is sent to " + friend.getUsername());
-
-
+                    FriendsPage friendsPage = new FriendsPage();
+                    try {
+                        friendsPage.start(userID);
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    stage.close();
                 }
             });
             friendSuggestion.getChildren().addAll(username, sendFriendRequest);
