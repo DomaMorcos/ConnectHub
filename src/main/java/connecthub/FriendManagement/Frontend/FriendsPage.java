@@ -76,11 +76,11 @@ public class FriendsPage {
 
                     FriendsPage friendsPage = new FriendsPage();
                     try {
+                        stage.close();
                         friendsPage.start(userID);
                     } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
-                    stage.close();
                 }
             });
 
@@ -91,11 +91,11 @@ public class FriendsPage {
 
                     FriendsPage friendsPage = new FriendsPage();
                     try {
+                        stage.close();
                         friendsPage.start(userID);
                     } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
-                    stage.close();
                 }
             });
 
@@ -131,11 +131,11 @@ public class FriendsPage {
 
                     FriendsPage friendsPage = new FriendsPage();
                     try {
+                        stage.close();
                         friendsPage.start(userID);
                     } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
-                    stage.close();
                 }
             });
 
@@ -146,11 +146,11 @@ public class FriendsPage {
 
                     FriendsPage friendsPage = new FriendsPage();
                     try {
+                        stage.close();
                         friendsPage.start(userID);
                     } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
-                    stage.close();
                 }
             });
 
@@ -182,11 +182,11 @@ public class FriendsPage {
                     AlertUtils.showInformationMessage("Friend Request", "Friend Request is sent to " + friend.getUsername());
                     FriendsPage friendsPage = new FriendsPage();
                     try {
+                        stage.close();
                         friendsPage.start(userID);
                     } catch (Exception ex) {
                         throw new RuntimeException(ex);
                     }
-                    stage.close();
                 }
             });
             friendSuggestion.getChildren().addAll(username, sendFriendRequest);

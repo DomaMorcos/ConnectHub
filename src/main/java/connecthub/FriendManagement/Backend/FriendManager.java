@@ -55,10 +55,11 @@ public class FriendManager {
                     addFriend(senderId, receiverId);
                 } else {
                     request.setStatus("Declined");
+//                    friendRequests.remove(request);
                 }
                 iterator.remove();
                 saveFriendRequests();
-                return accept;
+                return true;
             }
         }
         return false;
@@ -152,8 +153,8 @@ public class FriendManager {
         List<User> allUsers = new ArrayList<>(userDb.users);
         allUsers.removeIf(user -> user.getUserId().equals(userId) ||
                 existingFriends.contains(user.getUserId()) ||
+                getAllPendingSenders(userId).stream().anyMatch(receiver -> receiver.getUserId().equals(user.getUserId())) ||
                 getAllReceivers().stream().anyMatch(receiver -> receiver.getUserId().equals(user.getUserId())));
-
         return allUsers;
     }
 
@@ -165,6 +166,17 @@ public class FriendManager {
         }
         return receivers;
     }
+
+    public List<User> getAllPendingSenders(String userId){
+        List<User> pendingSenders = new ArrayList<User>();
+        for(FriendRequest friendRequest : friendRequests) {
+            if (friendRequest.getReceiverId().equals(userId)) {
+                User sender = userDatabase.getUserById(friendRequest.getSenderId());
+                pendingSenders.add(sender);
+            }
+        }
+        return pendingSenders;
+        }
 
     // Save friend requests to JSON
     private static void saveFriendRequests() {

@@ -4,14 +4,14 @@
         "bio": "Testing Bio Save",
         "coverPhotoPath": "/Images/التوربينات المائية.JPG",
         "userId": "1",
-        "friends": ["2"]
+        "friends": []
     },
     {
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
         "bio": "Click on Edit to edit Bio",
         "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
         "userId": "2",
-        "friends": ["1"]
+        "friends": []
     },
     {
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
