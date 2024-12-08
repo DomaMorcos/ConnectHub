@@ -3,13 +3,21 @@ package connecthub.ProfileManagement.Frontend;
 import connecthub.ContentCreation.Backend.ContentDatabase;
 import connecthub.ContentCreation.Backend.GetContent;
 import connecthub.ContentCreation.Backend.Post;
+import connecthub.FriendManagement.Frontend.FriendsPage;
+import connecthub.NewsfeedPage.Frontend.NewsFeedFront;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Backend.ProfileManager;
 import connecthub.ProfileManagement.Backend.UserProfile;
+import connecthub.TimestampFormatter;
+import connecthub.UserAccountManagement.Backend.HashPassword;
+import connecthub.UserAccountManagement.Backend.LogUser;
 import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
+import connecthub.UserAccountManagement.Frontend.LoginPage;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -22,64 +30,92 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Array;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
+
+
 public class ProfilePage {
     private ScrollPane scrollPane;
-    private HBox photos,bioBox;
+    private HBox photos,management;
     private VBox posts, profileInfo, mainLayout;
     private ImageView profilePhoto, coverPhoto;
-    private Label profileName, bio;
-    private Button editBio, createPost;
+    private Label profileName,bioLabel;
+    private TextArea bio;
+    private Button editBio , newsfeedButton , friendsButton;
     private MenuBar settingMenuBar;
     private MenuItem friends, editProfilePhoto, editCoverPhoto, changePassword, logout;
     ContentDatabase contentDatabase = ContentDatabase.getInstance();
     UserDatabase userDatabase = UserDatabase.getInstance();
     ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
     ProfileManager profileManager = new ProfileManager(contentDatabase, userDatabase);
+    GetContent getContent = GetContent.getInstance();
+    private File selectedImage;
+
+    private static final String DESTINATION_FOLDER = "src/main/resources/Images/";
 
 
     public void start(String userID) throws Exception {
         Stage stage = new Stage();
-//        System.out.println(getClass().getResource("ProfilePage.css"));
-//        System.out.println(getClass().getResource("DefaultProfilePhoto.jpg"));
-        UserProfile userProfile = profileManager.getProfile(userID);
+
+        UserProfile userProfile = profileDatabase.getProfile(userID);
 
         // Cover Photo
-        coverPhoto = new ImageView(new Image(getClass().getResource("DefaultCoverPhoto.png").toExternalForm()));
+
+        File coverImageFile = new File("src/main/resources" + userProfile.getCoverPhotoPath());
+        Image coverImageContent = new Image(coverImageFile.toURI().toString());
+        coverPhoto= new ImageView(coverImageContent);
+
         coverPhoto.setId("CoverPhoto");
-        coverPhoto.setFitHeight(200);
+        coverPhoto.setFitHeight(150);
         coverPhoto.setFitWidth(600);
 
         // Profile Photo
-        profilePhoto = new ImageView(new Image(getClass().getResource("DefaultProfilePhoto.jpg").toExternalForm()));
+
+        File profileImageFile = new File("src/main/resources" + userProfile.getProfilePhotoPath());
+        Image profileImageContent = new Image(profileImageFile.toURI().toString());
+        profilePhoto= new ImageView(profileImageContent);
+
+
         profilePhoto.setId("ProfilePhoto");
-        profilePhoto.setFitHeight(200);
+        profilePhoto.setFitHeight(150);
         profilePhoto.setFitWidth(200);
 
         // Cover and Profile Photo in a Horizontal Box;
         photos = new HBox();
         photos.setId("PhotosBox");
-//        photos.setPadding(new Insets(10));
-//        photos.setSpacing(10);
         photos.getChildren().addAll(profilePhoto , coverPhoto);
 
         User user = userDatabase.getUserById(userID);
         // Profile Info
         profileName = new Label(user.getUsername());
         profileName.setId("ProfileName");
-        bio = new Label(userProfile.getBio());
-        bio.setId("Bio");
+
+        bioLabel = new Label("Biography");
+        bioLabel.getStyleClass().add("bio-label");
+        bio = new TextArea(userProfile.getBio());
+        bio.setWrapText(true); // Allow text wrapping
+        bio.setPrefHeight(100); // Set fixed height
+        bio.setPrefWidth(300); // Set fixed width
+        bio.setScrollTop(0); // Ensure the content is scrollable
+        VBox bioBox = new VBox(bioLabel,bio);
+        bioBox.getStyleClass().add("bio-box");
         editBio = new Button("Edit Bio");
         editBio.setId("EditBio");
         editBio.setOnAction(e -> {
             Optional<String> result = handleEditBio();
             result.ifPresent(newBio -> {
                 userProfile.setBio(newBio);
-                profileManager.updateProfile(userProfile);
+
+                profileDatabase.updateProfile(userProfile);
+
                 ProfilePage profilePage = new ProfilePage();
                 try {
                     profilePage.start(userID);
@@ -91,33 +127,49 @@ public class ProfilePage {
             });
         });
 
-        bioBox = new HBox();
-        bioBox.setId("BioBox");
-        bioBox.getChildren().addAll(bio,editBio);
+
+        management = new HBox();
+        management.setId("Management");
+        newsfeedButton = new Button("NewsFeed");
+        newsfeedButton.setOnAction(e -> {
+            NewsFeedFront newsFeedFront = new NewsFeedFront();
+            try {
+                newsFeedFront.start(userID);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+            stage.close();
+        });
+        friendsButton = new Button("Friends");
+        friendsButton.setOnAction(e ->{
+            FriendsPage friendsPage = new FriendsPage();
+            try {
+                friendsPage.start(userID);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        management.getChildren().addAll(editBio,newsfeedButton,friendsButton);
 
         profileInfo = new VBox();
         profileInfo.setId("ProfileInfo");
 //        profileInfo.setPadding(new Insets(10));
 //        profileInfo.setSpacing(10);
-        profileInfo.getChildren().addAll(photos, profileName,bioBox);
+        profileInfo.getChildren().addAll(photos, profileName,management,bioBox);
+        profileInfo.setMaxHeight(400);
+// Initialize the class-level `posts`
+        ScrollPane posts = createPosts(userID);
 
-        // Initialize the class-level `posts`
-        posts = new VBox();
-//        for (Pane postPane : loadPosts(user)) {
-//            posts.getChildren().add(postPane);
-//        }
-//        posts.setPadding(new Insets(10));
-//        posts.setSpacing(10);
+// Scrollable Posts
 
-        // Scrollable Posts
-        scrollPane = new ScrollPane(posts);
-        scrollPane.setFitToWidth(true);
+        posts.setFitToWidth(true);
 
-        // Main Layout
+// Main Layout
         mainLayout = new VBox();
 //        mainLayout.setPadding(new Insets(10));
 //        mainLayout.setSpacing(20);
-        mainLayout.getChildren().addAll(profileInfo, scrollPane);
+        mainLayout.getChildren().addAll(profileInfo, posts);
+
 
         VBox root = new VBox();
         root.getChildren().addAll(mainLayout);
@@ -125,7 +177,6 @@ public class ProfilePage {
         // Menu
         settingMenuBar = new MenuBar();
         Menu settingsMenu = new Menu("Settings");
-        friends = new MenuItem("Friends");
         editProfilePhoto = new MenuItem("Edit Profile Photo");
         editCoverPhoto = new MenuItem("Edit Cover Photo");
         changePassword = new MenuItem("Change Password");
@@ -138,39 +189,64 @@ public class ProfilePage {
         );
 
         // Handle editProfilePhoto click event
+// Handle editProfilePhoto click event
         editProfilePhoto.setOnAction(event -> {
-            File file = fileChooser.showOpenDialog(stage);
-            if (file != null) {
-                userProfile.setProfilePhotoPath(file.getAbsolutePath());
+            String imagePath = openImageChooser(stage);
+            System.out.println(imagePath);
+            if (imagePath != null) {
+                userProfile.setProfilePhotoPath(imagePath);
+                profileDatabase.updateProfile(userProfile);
                 ProfilePage profilePage = new ProfilePage();
                 try {
                     profilePage.start(userID);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
+                stage.close();
+            } else {
+                // Handle case where no image was selected
+                System.out.println("No image selected for profile photo.");
             }
         });
 
-        // Handle editCoverPhoto click event
+// Handle editCoverPhoto click event
         editCoverPhoto.setOnAction(event -> {
-            File file = fileChooser.showOpenDialog(stage);
-            if (file != null) {
-                userProfile.setCoverPhotoPath(file.getAbsolutePath());
+            String imagePath = openImageChooser(stage);
+            if (imagePath != null) {
+                userProfile.setCoverPhotoPath(imagePath);
+                profileDatabase.updateProfile(userProfile);
                 ProfilePage profilePage = new ProfilePage();
                 try {
                     profilePage.start(userID);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
+                stage.close();
+            } else {
+                // Handle case where no image was selected
+                System.out.println("No image selected for cover photo.");
             }
         });
+
 
         changePassword.setOnAction(e -> {
-            Optional<String> result = handleChangePassword();
+            Optional<String> result = handleChangePassword(userID);
             result.ifPresent(newPassword -> profileManager.updatePassword(userID, newPassword));
         });
 
-        settingsMenu.getItems().addAll(friends, editProfilePhoto, editCoverPhoto, changePassword, logout);
+        logout.setOnAction(e -> {
+            LogUser logUser = new LogUser();
+            logUser.logout(user.getEmail());
+            LoginPage loginPage = new LoginPage();
+            stage.close();
+            try {
+                loginPage.start(stage);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        settingsMenu.getItems().addAll(editProfilePhoto, editCoverPhoto, changePassword, logout);
         settingMenuBar.getMenus().add(settingsMenu);
 
         VBox layout = new VBox(settingMenuBar, root);
@@ -180,40 +256,91 @@ public class ProfilePage {
         scene.getStylesheets().add(getClass().getResource("ProfilePage.css").toExternalForm());
         stage.setTitle("Profile Page");
         stage.setScene(scene);
+        stage.setOnCloseRequest( e -> {
+            LogUser logUser = new LogUser();
+            logUser.logout(user.getEmail());
+        });
         stage.show();
     }
 
 
-    private ArrayList<Pane> loadPosts(User user) {
-        posts.getChildren().clear();
-        ArrayList<Pane> userPosts = new ArrayList<>();
-        GetContent getContent = new GetContent();
-        ArrayList<Post> postsList = getContent.getAllPostsForUser(user);
-        if (postsList.isEmpty()) {
-            Label contentString = new Label("No posts yet!");
-            Pane postPane = new Pane();
-            postPane.getChildren().add(contentString);
-            userPosts.add(postPane);
-            return userPosts;
+    private ScrollPane createPosts(String userID) {
+        VBox postsBox = new VBox();
+        postsBox.getStyleClass().add("posts-box");
 
-        }
-        for (Post post : postsList) {
+        Label postsLabel = new Label("Recent Posts");
+        postsLabel.getStyleClass().add("posts-label");
+        postsBox.getChildren().add(postsLabel);
+
+        User user = userDatabase.getUserById(userID);
+
+        // Populate the posts list
+        for (Post post : getContent.getAllPostsForUser(user)) {
+            VBox singlePost = new VBox();
+            singlePost.getStyleClass().add("single-post");
+
+            // Author image and username
+            File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(userID).getProfilePhotoPath());
+            ImageView authorImage = new ImageView(new Image(authorImageFile.toURI().toString()));
+            authorImage.setFitWidth(35);
+            authorImage.setFitHeight(35);
             Label username = new Label(user.getUsername());
-            Label time = new Label(post.getTimestamp());
-            Label contentString = new Label(post.getContent());
-            if (!post.getImagePath().isEmpty()) {
-                ImageView contentImage = new ImageView(new Image(post.getImagePath()));
-                Pane postPane = new Pane();
-                postPane.getChildren().addAll(username, time, contentString, contentImage);
-                userPosts.add(postPane);
-                continue;
+            username.getStyleClass().add("post-authorname");
+            Label time = new Label(TimestampFormatter.formatTimestamp(post.getTimestamp()));
+            time.getStyleClass().add("post-time");
+            HBox imageAndName = new HBox(authorImage,username);
+            imageAndName.getStyleClass().add("image-and-name");
+
+            // Post content (TextArea) with fixed size and scrollable
+            TextArea postText = new TextArea(post.getContent());
+            postText.getStyleClass().add("post-text");
+            postText.setEditable(false);
+            postText.setWrapText(true); // Allow text wrapping
+            postText.setPrefHeight(50); // Set fixed height
+            postText.setPrefWidth(400); // Set fixed width
+            postText.setScrollTop(0); // Ensure the content is scrollable
+
+            // Add components to the single post VBox
+            singlePost.getChildren().addAll(imageAndName);
+            singlePost.getChildren().add(time);
+            // Optional post thumbnail image
+            if (post.getImagePath() != null && !post.getImagePath().isEmpty()) {
+                try {
+                    File postImageFile = new File("src/main/resources" + post.getImagePath());
+                    Image postImageContent = new Image(postImageFile.toURI().toString());
+                    ImageView postImage = new ImageView(postImageContent);
+                    postImage.getStyleClass().add("post-image");
+
+// Check the actual width of the image
+                    if (postImageContent.getWidth() > 300) {
+                        postImage.setFitWidth(300);
+                        postImage.setPreserveRatio(true);
+                    }
+
+                    HBox imageBox = new HBox(postImage);
+                    imageBox.getStyleClass().add("image-box");
+                    singlePost.getChildren().add(imageBox);
+                } catch (Exception e) {
+                    // Log or handle the invalid image path
+                    System.err.println("Invalid image path for post: " + post.getImagePath());
+                }
             }
-            Pane postPane = new Pane();
-            postPane.getChildren().addAll(username, time, contentString);
-            userPosts.add(postPane);
+
+            singlePost.getChildren().add(postText);
+            // Add the single post to the postsBox
+            postsBox.getChildren().add(singlePost);
         }
-        return userPosts;
+
+        // Create a ScrollPane to make posts scrollable
+        ScrollPane scrollPane = new ScrollPane(postsBox);
+        scrollPane.setFitToWidth(true); // Ensure the ScrollPane stretches to fit the width of the postsBox
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Always show vertical scrollbar
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Disable horizontal scrollbar
+        scrollPane.getStyleClass().add("post-scroll-pane");
+
+        return scrollPane;
     }
+
 
     private Optional<String> handleEditBio() {
         TextInputDialog dialog = new TextInputDialog("Enter Bio");
@@ -223,20 +350,120 @@ public class ProfilePage {
         return dialog.showAndWait();
     }
 
-    private Optional<String> handleChangePassword() {
-        TextInputDialog dialog = new TextInputDialog();
+    private Optional<String> handleChangePassword(String userId) {
+        // Retrieve the user
+        User user = userDatabase.getUserById(userId);
+
+        // Create a custom dialog
+        Dialog<String> dialog = new Dialog<>();
         dialog.setTitle("Change Password");
         dialog.setHeaderText("Change Password");
-        dialog.setContentText("Please enter your new password:");
+
+        // Create a PasswordField and an error message label
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Enter your new password");
+        Label errorLabel = new Label();
+        errorLabel.setStyle("-fx-text-fill: red;"); // Style for error text
+
+        // Layout for the dialog content
+        VBox content = new VBox(10, passwordField, errorLabel);
+        dialog.getDialogPane().setContent(content);
+
+        // Add "OK" and "Cancel" buttons
+        ButtonType okButtonType = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(okButtonType, ButtonType.CANCEL);
+
+        // Disable the "OK" button by default
+        Node okButton = dialog.getDialogPane().lookupButton(okButtonType);
+        okButton.setDisable(true);
+
+        // Enable the "OK" button only if the input is not empty
+        passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
+            okButton.setDisable(newValue.trim().isEmpty());
+            errorLabel.setText(""); // Clear error message while typing
+        });
+
+        // Handle button clicks and input validation
+        dialog.setResultConverter(button -> {
+            if (button == okButtonType) {
+                return passwordField.getText();
+            }
+            return null; // Return null for "Cancel"
+        });
 
         while (true) {
             Optional<String> result = dialog.showAndWait();
-            if (result.isEmpty() || result.get().trim().isEmpty()) {
-                dialog.setHeaderText("Password cannot be empty. Please try again.");
+
+            if (result.isEmpty()) {
+                // User canceled the dialog
+                return Optional.empty();
+            }
+
+            String newPassword = result.get().trim();
+
+            if (hashPassword(newPassword).equals(user.getPassword())) {
+                // Show error message for invalid input
+                errorLabel.setText("New password cannot be the same as the old password.");
             } else {
-                return result;
+                // Valid input
+                return Optional.of(newPassword);
             }
         }
     }
+
+
+
+
+
+
+
+    private String openImageChooser(Stage primaryStage) {
+        // Create a FileChooser to filter image files
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.gif"));
+
+        // Show the FileChooser dialog
+        File selectedImage = fileChooser.showOpenDialog(primaryStage);
+
+        // If an image is selected, handle the file copying
+        if (selectedImage != null) {
+            try {
+                // Ensure the destination folder exists
+                File destinationDir = new File(DESTINATION_FOLDER);
+                if (!destinationDir.exists()) {
+                    destinationDir.mkdirs();
+                }
+
+                // Create destination file path for the selected image
+                Path sourcePath = selectedImage.toPath();
+                Path destinationPath = new File(DESTINATION_FOLDER, selectedImage.getName()).toPath();
+
+                // Force file copy and flush immediately
+                try (FileChannel sourceChannel = FileChannel.open(sourcePath);
+                     FileChannel destinationChannel = FileChannel.open(destinationPath,
+                             StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING)) {
+                    destinationChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+                }
+
+                // Return the relative path of the uploaded image
+                return "/Images/" + selectedImage.getName();
+
+            } catch (IOException ex) {
+                // Show an error message if file copying fails
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Failed to upload image");
+                alert.setContentText(ex.getMessage());
+                alert.showAndWait();
+            }
+        }
+
+        // Return null if no image is selected
+        return null;
+    }
+
+
+
+
 
 }

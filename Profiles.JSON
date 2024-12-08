@@ -1,17 +1,34 @@
 [
     {
-
-        "profilePhotoPath": "DefaultProfilePhoto.jpg",
+        "profilePhotoPath": "/Images/scale.png",
+        "bio": "Testing Bio Save",
+        "coverPhotoPath": "/Images/التوربينات المائية.JPG",
+        "blockedUsers": ["2"],
+        "userId": "1",
+        "friends": ["3"]
+    },
+    {
+        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
         "bio": "Click on Edit to edit Bio",
-        "coverPhotoPath": "DefaultProfilePhoto.jpg",
+        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "blockedUsers": ["1"],
         "userId": "2",
         "friends": []
     },
     {
-        "profilePhotoPath": "DefaultProfilePhoto.jpg",
-        "bio": "This is a bio talking about me",
-        "coverPhotoPath": "DefaultProfilePhoto.jpg",
+        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "blockedUsers": [],
         "userId": "3",
+        "friends": ["1"]
+    },
+    {
+        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "blockedUsers": [],
+        "userId": "4",
         "friends": []
     }
 ]

@@ -1,161 +1,229 @@
 package connecthub.FriendManagement.Backend;
 
+import connecthub.ProfileManagement.Backend.ProfileDatabase;
+import connecthub.ProfileManagement.Backend.UserProfile;
 import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
+import org.json.JSONArray;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FriendManager {
     private static FriendManager instance;
-    private final Map<String, List<String>> friendsMap = new HashMap<>();
-    private final Map<String, List<FriendRequest>> friendRequestsMap = new HashMap<>(); // Track pending requests
-    private final Map<String, List<String>> blockedMap = new HashMap<>(); // Blocked users map
+    private static  List<FriendRequest> friendRequests;
+    private static final String REQUESTS_FILE = "FriendRequests.JSON";
+    private static FriendManager friendManager  = null;
+    private UserDatabase userDatabase = UserDatabase.getInstance();
+    private ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
 
-    private FriendManager() {}
+    private FriendManager() {
 
-    public static synchronized FriendManager getInstance() {
-        if (instance == null) {
-            instance = new FriendManager();
-        }
-        return instance;
+        friendRequests = loadFriendRequests();
     }
 
-    public void initializeFriends(String userId, List<String> friends) {
-        if (!friendsMap.containsKey(userId)) {
-            friendsMap.put(userId, friends != null ? new ArrayList<>(friends) : new ArrayList<>());
+    public static FriendManager getInstance() {
+        if (friendManager == null) {
+            friendManager= new FriendManager();
+            friendManager.loadFriendRequests();
         }
+        return friendManager;
     }
 
-    public List<User> getFriendsList(String userId) {
-        UserDatabase userDatabase = UserDatabase.getInstance();
-
-        // Ensure friendsMap is initialized for the given user
-        if (!friendsMap.containsKey(userId)) {
-            friendsMap.put(userId, new ArrayList<>());
-        }
-
-        // Retrieve the friends list, excluding blocked users
-        List<String> friendsList = friendsMap.get(userId);
-        List<User> filteredFriends = new ArrayList<>();
-
-        for (String friendId : friendsList) {
-            if (!isBlocked(userId, friendId)) {
-                User friend = userDatabase.getUserById(friendId);
-                if (friend != null) {
-                    filteredFriends.add(friend);
-                }
-            }
-        }
-        return filteredFriends;
-    }
-
-    public List<User> suggestFriends(String userId) {
-        UserDatabase userDatabase = UserDatabase.getInstance();
-
-        // Initialize friendsMap for the given user if necessary
-        if (!friendsMap.containsKey(userId)) {
-            friendsMap.put(userId, new ArrayList<>());
-        }
-
-        List<User> suggestions = new ArrayList<>();
-        List<User> userFriends = getFriendsList(userId);
-        Set<String> userFriendIds = userFriends.stream().map(User::getUserId).collect(Collectors.toSet());
-
-        for (String potentialFriendId : friendsMap.keySet()) {
-            if (!userFriendIds.contains(potentialFriendId) &&
-                    !potentialFriendId.equals(userId) &&
-                    !isBlocked(userId, potentialFriendId)) {
-
-                User potentialFriend = userDatabase.getUserById(potentialFriendId);
-                if (potentialFriend != null) {
-                    suggestions.add(potentialFriend);
-                }
-            }
-        }
-        return suggestions;
-    }
-
-
-
-    // Add a friend for a user (mutual friendship)
-    public void addFriend(String userId, String friendId) {
-        if (isBlocked(userId, friendId)) {
-            System.out.println("Cannot add friend, user is blocked.");
-            return;
-        }
-        friendsMap.computeIfAbsent(userId, k -> new ArrayList<>()).add(friendId);
-        friendsMap.computeIfAbsent(friendId, k -> new ArrayList<>()).add(userId); // Mutual friendship
-    }
-
-    // Remove a friend from the user's friend list
-    public void removeFriend(String userId, String friendId) {
-        List<String> userFriends = friendsMap.get(userId);
-        List<String> friendFriends = friendsMap.get(friendId);
-
-        // Ensure that both user and friend have each other in their lists
-        if (userFriends != null) {
-            userFriends.remove(friendId);
-        }
-
-        if (friendFriends != null) {
-            friendFriends.remove(userId);
-        }
-    }
-
-    // Send a friend request (mark as Pending)
-    public void sendFriendRequest(String senderId, String receiverId) {
-        if (getFriendsList(senderId).contains(receiverId)) {
-            System.out.println("You are already friends.");
-            return;
-        }
+    // Send friend request
+    public static boolean sendFriendRequest(String senderId, String receiverId) {
         FriendRequest request = new FriendRequest(senderId, receiverId, "Pending");
-        friendRequestsMap.computeIfAbsent(receiverId, k -> new ArrayList<>()).add(request);
-        System.out.println("Friend request sent from " + senderId + " to " + receiverId);
+        friendRequests.add(request);
+        saveFriendRequests();
+        return true;
     }
 
-    // Accept or decline friend requests
-    public void respondToRequest(String receiverId, String senderId, boolean accept) {
-        List<FriendRequest> requests = friendRequestsMap.getOrDefault(receiverId, new ArrayList<>());
-        for (FriendRequest request : requests) {
-            if (request.getSenderId().equals(senderId) && request.getStatus().equals("Pending")) {
-                request.setStatus(accept ? "Accepted" : "Declined");
-                if (accept) {
-                    addFriend(receiverId, senderId);
+    // Handle friend request response
+    public boolean handleFriendRequest(String receiverId, String senderId, boolean accept) {
+        Iterator<FriendRequest> iterator = friendRequests.iterator();
+        while (iterator.hasNext()) {
+            FriendRequest request = iterator.next();
+            if (request.getSenderId().equals(senderId) && request.getReceiverId().equals(receiverId)) {
+                if (!"Pending".equals(request.getStatus())) {
+                    return false; // Prevent redundant actions
                 }
-                break;
+                if (accept) {
+                    request.setStatus("Accepted");
+                    addFriend(senderId, receiverId);
+                } else {
+                    request.setStatus("Declined");
+                }
+                iterator.remove();
+                saveFriendRequests();
+                return true;
             }
         }
+        return false;
     }
 
-    // Block a user
-    public void blockUser(String userId, String blockId) {
-        if (!blockedMap.containsKey(userId)) {
-            blockedMap.put(userId, new ArrayList<>());
+    // Add friend to both users
+    public void addFriend(String userId, String friendId) {
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        UserProfile friendProfile = profileDatabase.getProfile(friendId);
+        userProfile.addFriend(friendId);
+        friendProfile.addFriend(userId);
+
+        // Update Profile Database
+        ProfileDatabase profileDb = ProfileDatabase.getInstance();
+        profileDb.updateProfile(profileDb.getProfile(userId));
+        profileDb.updateProfile(profileDb.getProfile(friendId));
+    }
+
+    // Remove friend
+    public boolean removeFriend(String userId, String friendId) {
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        UserProfile friendProfile = profileDatabase.getProfile(friendId);
+        userProfile.deleteFriend(friendId);
+        friendProfile.deleteFriend(userId);
+        return true;
+    }
+
+    // Block friend
+    public boolean blockFriend(String userId, String blockedId) {
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        UserProfile friendProfile = profileDatabase.getProfile(blockedId);
+        userProfile.deleteFriend(blockedId);
+        friendProfile.deleteFriend(userId);
+        userProfile.blockFriend(blockedId);
+        friendProfile.blockFriend(userId);
+        // Update Profile Database
+        ProfileDatabase profileDb = ProfileDatabase.getInstance();
+        profileDb.updateProfile(profileDb.getProfile(userId));
+        profileDb.updateProfile(profileDb.getProfile(blockedId));
+        return true;
+    }
+
+    // Get friends list
+    public List<User> getFriendsList(String userId) {
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        if (userProfile == null) return Collections.emptyList();
+
+        List<String> friendIds = userProfile.getFriends();
+        List<User> friends = new ArrayList<>();
+
+        for (String friendId : friendIds) {
+            User friend = userDatabase.getUserById(friendId);
+            if (friend != null) {
+                friends.add(friend);
+            }
         }
-        blockedMap.get(userId).add(blockId);
-        System.out.println("User " + blockId + " is now blocked by " + userId);
+        // Return the list of friends
+        return friends;
     }
 
-    // Check if a user is blocked by another user
-    public boolean isBlocked(String userId, String friendId) {
-        return blockedMap.getOrDefault(userId, new ArrayList<>()).contains(friendId);
+    public List<User> getBlockedUsers(String userId) {
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        if (userProfile == null) return Collections.emptyList();
+
+        List<String> blockedUsersIds = userProfile.getBlockedUsers();
+        List<User> blockedUsers = new ArrayList<>();
+
+        for (String blockedUserId : blockedUsersIds) {
+            User blockedUser = userDatabase.getUserById(blockedUserId);
+            if (blockedUser != null) {
+                blockedUsers.add(blockedUser);
+            }
+        }
+        // Return the list of blocked users
+        return blockedUsers;
     }
 
-    // Remove a user from the blocked list
-    public void unblockUser(String userId, String unblockId) {
-        if (blockedMap.containsKey(userId)) {
-            blockedMap.get(userId).remove(unblockId);
-            System.out.println("User " + unblockId + " is unblocked by " + userId);
+
+    // Get pending requests for a user
+    public static List<FriendRequest> getPendingRequests(String userId) {
+        List<FriendRequest> pendingRequests = new ArrayList<>();
+        for (FriendRequest request : friendRequests) {
+            if (request.getReceiverId().equals(userId) && "Pending".equals(request.getStatus())) {
+                pendingRequests.add(request);
+            }
+        }
+        return pendingRequests;
+    }
+    // Get all users with the same name
+    public List<User> getUsersByName(String name) {
+        UserDatabase userDb = UserDatabase.getInstance();
+        List<User> matchedUsers = new ArrayList<>();
+        for (User user : userDb.users) {
+            if (user.getUsername().equalsIgnoreCase(name)) {
+                matchedUsers.add(user);
+            }
+        }
+        return matchedUsers;
+    }
+
+    // Suggest friends
+    public List<User> suggestFriends(String userId) {
+        UserDatabase userDb = UserDatabase.getInstance();
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+
+        List<String> existingFriends = userProfile.getFriends();
+        List<User> allUsers = new ArrayList<>(userDb.users);
+        allUsers.removeIf(user -> user.getUserId().equals(userId) ||
+                existingFriends.contains(user.getUserId()) ||
+                getBlockedUsers(userId).stream().anyMatch(receiver -> receiver.getUserId().equals(user.getUserId())) ||
+                getAllPendingSenders(userId).stream().anyMatch(receiver -> receiver.getUserId().equals(user.getUserId())) ||
+                getAllReceivers().stream().anyMatch(receiver -> receiver.getUserId().equals(user.getUserId())));
+        return allUsers;
+    }
+
+    public List<User> getAllReceivers(){
+        List<User> receivers = new ArrayList<User>();
+        for(FriendRequest friendRequest : friendRequests) {
+            User receiver = userDatabase.getUserById(friendRequest.getReceiverId()) ;
+            receivers.add(receiver);
+        }
+        return receivers;
+    }
+
+    public List<User> getAllPendingSenders(String userId){
+        List<User> pendingSenders = new ArrayList<User>();
+        for(FriendRequest friendRequest : friendRequests) {
+            if (friendRequest.getReceiverId().equals(userId)) {
+                User sender = userDatabase.getUserById(friendRequest.getSenderId());
+                pendingSenders.add(sender);
+            }
+        }
+        return pendingSenders;
+        }
+
+    // Save friend requests to JSON
+    private static void saveFriendRequests() {
+        JSONArray jsonArray = new JSONArray();
+        for (FriendRequest request : friendRequests) {
+            if ("Pending".equals(request.getStatus())) {
+                jsonArray.put(request.toJson());
+            }
+        }
+
+        try (FileWriter file = new FileWriter(REQUESTS_FILE)) {
+            file.write(jsonArray.toString(4));
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    // Display the online/offline status of friends
-    public List<FriendStatus> getFriendStatuses(String userId) {
-        List<FriendStatus> friendStatuses = new ArrayList<>();
-        for (User friendId : getFriendsList(userId)) {
-            friendStatuses.add(new FriendStatus(friendId, "online")); // Example status, should come from user status management
+    // Load friend requests from JSON
+    private List<FriendRequest> loadFriendRequests() {
+        List<FriendRequest> requests = new ArrayList<>();
+        try {
+            String json = new String(Files.readAllBytes(Paths.get(REQUESTS_FILE)));
+            JSONArray jsonArray = new JSONArray(json);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                requests.add(FriendRequest.fromJson(jsonArray.getJSONObject(i)));
+            }
+        } catch (IOException e) {
+            System.out.println("FriendRequests.json not found, starting with empty list.");
         }
-        return friendStatuses;
+        return requests;
     }
 }

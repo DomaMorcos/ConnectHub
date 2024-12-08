@@ -1,4 +1,4 @@
 package connecthub.ContentCreation.Frontend;
 
-public class ContentCreationFront {
+public class User {
 }
