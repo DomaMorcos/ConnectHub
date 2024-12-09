@@ -191,6 +191,14 @@ public class NewsFeedFront {
         VBox friendsVBox = new VBox(10);
         friendsVBox.setPadding(new Insets(10));
 
+        refreshFriendList(friendsVBox, userID);
+        stage.close();
+        return friendsVBox;
+    }
+
+    private void refreshFriendList(VBox friendsVBox, String userID) {
+        friendsVBox.getChildren().clear(); // Clear existing children to refresh the list
+
         Label friendsLabel = new Label("My Friends");
         friendsVBox.getChildren().add(friendsLabel);
 
@@ -217,9 +225,8 @@ public class NewsFeedFront {
 
             friendsVBox.getChildren().add(userFriend);
         }
-
-        return friendsVBox;
     }
+
 
 
     private ScrollPane createPosts(String userID) {

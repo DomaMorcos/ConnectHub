@@ -26,7 +26,7 @@ public class CreateUser {
         }
         String hash = hashPassword(password);
         String generatedID = generateID();
-        User newUser = new User(generatedID, email, username, hash, dateOfBirth, "offline");
+        User newUser = new User.Builder().userId(generatedID).email(email).username(username).password(hash).dateOfBirth(dateOfBirth).status("offline").build();
         UserProfile userProfile = new UserProfile(generatedID, "/Images/DefaultProfilePhoto.jpg","/Images/DefaultCoverPhoto.png","Click on Edit to edit Bio",new ArrayList<>(), new ArrayList<>());
         ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
         profileDatabase.updateProfile(userProfile);
