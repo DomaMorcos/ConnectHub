@@ -406,11 +406,12 @@ public class NewsFeedFront {
             addStory.start(userID);
             NewsFeedFront newsFeedFront = new NewsFeedFront();
             try {
+                stage.close();
                 newsFeedFront.start(userID);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
+
         });
 
         Button postButton = new Button("Post");
@@ -420,11 +421,12 @@ public class NewsFeedFront {
             addPost.start(userID);
             NewsFeedFront newsFeedFront = new NewsFeedFront();
             try {
+                stage.close();
                 newsFeedFront.start(userID);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
+
         });
         contentCreationArea.getChildren().addAll(storyButton, postButton);
 
@@ -433,11 +435,12 @@ public class NewsFeedFront {
         refreshButton.setOnAction(e -> {
             NewsFeedFront newsFeedFront = new NewsFeedFront();
             try {
+                stage.close();
+
                 newsFeedFront.start(userID);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
         });
         contentCreationArea.getChildren().add(refreshButton);
         Button profileButton = new Button("Profile");
@@ -445,11 +448,11 @@ public class NewsFeedFront {
         profileButton.setOnAction(e ->{
             ProfilePage profilePage = new ProfilePage();
             try {
+                stage.close();
                 profilePage.start(userID);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
         });
         contentCreationArea.getChildren().add(profileButton);
         return contentCreationArea;

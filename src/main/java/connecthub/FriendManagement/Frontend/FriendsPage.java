@@ -3,16 +3,22 @@ package connecthub.FriendManagement.Frontend;
 import connecthub.AlertUtils;
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.FriendManagement.Backend.FriendRequest;
+import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.io.File;
+
 public class FriendsPage {
 
+    private ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
     private FriendManager friendManager = FriendManager.getInstance();
     private UserDatabase userDatabase = UserDatabase.getInstance();
     private VBox friendsVBox;
@@ -63,6 +69,21 @@ public class FriendsPage {
 
         for (User friend : friendManager.getFriendsList(userID)) {
             Label friendName = new Label(friend.getUsername());
+            File friendImageFile = new File("src/main/resources" + profileDatabase.getProfile(friend.getUserId()).getProfilePhotoPath());
+            ImageView friendImage = new ImageView(new Image(friendImageFile.toURI().toString()));
+
+            File statusImageFile = new File(
+                    friend.getStatus().equals("online") ? "src/main/resources/Images/greenDot.png" : "src/main/resources/Images/redDot.png"
+            );
+            ImageView statusImage = new ImageView(new Image(statusImageFile.toURI().toString()));
+            statusImage.setFitWidth(10);
+            statusImage.setFitHeight(10);
+
+            friendImage.setFitWidth(25);
+            friendImage.setFitHeight(25);
+
+            Label status = new Label(friend.getStatus());
+            HBox friendStats = new HBox(friendImage,friendName,statusImage,status);
             Button removeButton = new Button("Remove");
             Button blockButton = new Button("Block");
 
@@ -82,9 +103,9 @@ public class FriendsPage {
                 }
             });
 
-            HBox friendBox = new HBox(10);
-            friendBox.getChildren().addAll(friendName, removeButton, blockButton);
-            friendsVBox.getChildren().add(friendBox);
+            HBox friendFunctions = new HBox(removeButton,blockButton);
+            VBox singleFriend = new VBox(friendStats,friendFunctions);
+            friendsVBox.getChildren().add(singleFriend);
         }
     }
 
