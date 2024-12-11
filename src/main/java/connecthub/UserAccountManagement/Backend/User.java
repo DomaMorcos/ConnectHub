@@ -10,13 +10,57 @@ public class User implements Serializable {
     private String dateOfBirth;
     private String status;
 
-    public User(String userId, String email, String username, String password, String dateOfBirth, String status) {
-        this.userId = userId;
-        this.email = email;
-        this.username = username;
-        this.password = password; // Store the hashed password
-        this.dateOfBirth = dateOfBirth;
-        this.status = status;
+    //using Builder Design Pattern
+    private User(Builder builder) {
+        this.userId = builder.userId;
+        this.email = builder.email;
+        this.username = builder.username;
+        this.password = builder.password; // Store the hashed password
+        this.dateOfBirth = builder.dateOfBirth;
+        this.status = builder.status;
+    }
+
+    public static class Builder {
+        private String userId;
+        private String email;
+        private String username;
+        private String password; // Password should be hashed
+        private String dateOfBirth;
+        private String status;
+
+        public Builder userId(String userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder username(String username) {
+            this.username = username;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder dateOfBirth(String dateOfBirth) {
+            this.dateOfBirth = dateOfBirth;
+            return this;
+        }
+
+        public Builder status(String status) {
+            this.status = status;
+            return this;
+        }
+
+        public User build() {
+            return new User(this);
+        }
     }
 
     public void setStatus(String status) {

@@ -1,10 +1,7 @@
 package connecthub.UserAccountManagement.Frontend;
 
 import connecthub.AlertUtils;
-import connecthub.ProfileManagement.Backend.ProfileDatabase;
-import connecthub.ProfileManagement.Backend.UserProfile;
 import connecthub.UserAccountManagement.Backend.CreateUser;
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -84,14 +81,18 @@ public class RegisterPage {
 
         registerButton = new Button("Register");
         registerButton.setOnAction(e -> {
-            handleRegisterAction(stage);
-            LoginPage loginPage = new LoginPage();
-            try {
-                loginPage.start(stage);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            // Call the registration handler and check if registration was successful
+            boolean registrationSuccessful = handleRegisterAction(stage);
 
+            // Go to the login page if there is a successful registration
+            if (registrationSuccessful) {
+                LoginPage loginPage = new LoginPage();
+                try {
+                    loginPage.start(stage);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         });
         grid.add(registerButton, 1, 9);
 
@@ -104,21 +105,38 @@ public class RegisterPage {
 
     }
 
-    public void handleRegisterAction(Stage stage) {
-        CreateUser createUser = new CreateUser();
+    public boolean handleRegisterAction(Stage stage) {
+        CreateUser  createUser  = new CreateUser ();
         String email = emailTextField.getText();
         String username = usernameTextField.getText();
         String password = passwordField.getText();
-        String dateOfBirth = dateOfBirthDatePicker.getValue().toString();
+        String dateOfBirth = dateOfBirthDatePicker.getValue() != null ? dateOfBirthDatePicker.getValue().toString() : "";
 
-        if (email.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            AlertUtils.showErrorMessage("Empty Fields", "Please Fill All The Required Fields!");
-        } else if (!(createUser.signup(email, username, password, dateOfBirth))) {
-            AlertUtils.showWarningMessage("Error", "Email Already in Use!");
+        boolean registrationSuccessful = false; // Flag to indicate registration success
+
+        // Check if all fields are empty
+        if (email.isEmpty() && username.isEmpty() && password.isEmpty() && dateOfBirth.isEmpty()) {
+            AlertUtils.showErrorMessage("Empty Fields", "Please fill in all the required fields!");
+        } else if (email.isEmpty()) {
+            AlertUtils.showErrorMessage("Empty Email", "Please enter your email!");
+        } else if (username.isEmpty()) {
+            AlertUtils.showErrorMessage("Empty Username", "Please enter your username!");
+        } else if (password.isEmpty()) {
+            AlertUtils.showErrorMessage("Empty Password", "Please enter your password!");
+        } else if (dateOfBirth.isEmpty()) {
+            AlertUtils.showErrorMessage("Empty Date of Birth", "Please select your date of birth!");
+        } else if (!isEmailValid(email)) {
+            AlertUtils.showErrorMessage("Invalid Email", "Please enter a valid email format!");
+        } else if (!isUsernameValid(username)) {
+            AlertUtils.showErrorMessage("Invalid Username", "Username should start with a character!");
+        } else if (!createUser.signup(email, username, password, dateOfBirth)) {
+            AlertUtils.showWarningMessage("Error", "Email already in use!");
         } else {
-            createUser.signup(email, username, password, dateOfBirth);
-            AlertUtils.showInformationMessage("Registration Successful", "Registration Successful ! ");
-            stage.close();
+            // Successful registration
+            AlertUtils.showInformationMessage("Registration Successful", "Registration successful!");
+            registrationSuccessful = true; // Set the flag to true
+            stage.close(); // Close the registration window only on successful registration
         }
+        return registrationSuccessful;
     }
 }

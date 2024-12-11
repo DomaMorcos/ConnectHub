@@ -37,7 +37,10 @@ public class AddPost {
         Stage stage = new Stage();
         postTextArea = new TextArea();
         postTextArea.setPromptText("Write your Post here...");
-        postTextArea.setPrefHeight(150);
+        postTextArea.setWrapText(true); // Allow text wrapping
+        postTextArea.setPrefHeight(50); // Set fixed height
+        postTextArea.setPrefWidth(400); // Set fixed width
+        postTextArea.setScrollTop(0); // Ensure the content is scrollable
 
         textLabel = new Label("Post Text:");
         imageLabel = new Label("Add an Image:");
@@ -52,12 +55,12 @@ public class AddPost {
 
         // Layout for the page
         VBox layout = new VBox(10);
-        layout.setPadding(new Insets(20));
-
+        layout.getStyleClass().add(".add-box");
         layout.getChildren().addAll(textLabel, postTextArea, imageLabel, uploadButton, createPostButton);
 
         // Scene setup
         Scene scene = new Scene(layout, 400, 400);
+        scene.getStylesheets().add(getClass().getResource("AddWindow.css").toExternalForm());
         stage.setTitle("Add a Post");
         stage.setScene(scene);
         stage.showAndWait();

@@ -79,7 +79,7 @@ public class UserDatabase {
                 LocalDate dateOfBirth = LocalDate.parse(userJson.getString("dateOfBirth"), formatter);
                 String password = userJson.getString("password");
                 String status = userJson.getString("status");
-                User user = new User(userId, email, username, password, dateOfBirth.toString(), status);
+                User user = new User.Builder().userId(userId).email(email).username(username).password(password).dateOfBirth(dateOfBirth.toString()).status(status).build();
                 userDB.users.add(user);
             }
         } catch (IOException e) {
