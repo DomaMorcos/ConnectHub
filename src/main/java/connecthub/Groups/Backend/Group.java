@@ -37,22 +37,8 @@ public class Group {
         if (!membersId.contains(memberId)) {
             throw new IllegalArgumentException("User is not a member of the group.");
         }
-        if (!adminsId.contains(memberId)) {
-            adminsId.add(memberId);  // Add member to admins only if not already in admins list
-        }
-        saveGroupChanges();
-    }
-
-    public void demoteToMember(String adminId, String adminToDemote) {
-        if (!adminsId.contains(adminId) && !adminId.equals(creator)) {
-            throw new IllegalArgumentException("Only the creator or admins can demote admins.");
-        }
-        if (adminId.equals(adminToDemote)) {
-            throw new IllegalArgumentException("Creator cannot be demoted.");
-        }
-        adminsId.remove(adminToDemote);
-        if (!membersId.contains(adminToDemote)) {
-            membersId.add(adminToDemote);  // Add demoted admin back to members if not already there
+        if (!adminsId.contains(memberId)) { // Avoid duplicate admins
+            adminsId.add(memberId);
         }
         saveGroupChanges();
     }
@@ -61,8 +47,25 @@ public class Group {
         if (!membersId.contains(memberId)) {
             throw new IllegalArgumentException("User is not a member of the group.");
         }
+        if (memberId.equals(creator)) {
+            throw new IllegalArgumentException("The creator cannot leave the group.");
+        }
         membersId.remove(memberId);
-        adminsId.remove(memberId);
+        adminsId.remove(memberId); // Remove from admins as well
+        saveGroupChanges();
+    }
+
+    public void demoteToMember(String adminId, String adminToDemote) {
+        if (!adminsId.contains(adminId) && !adminId.equals(creator)) {
+            throw new IllegalArgumentException("Only the creator or admins can demote admins.");
+        }
+        if (adminToDemote.equals(creator)) {
+            throw new IllegalArgumentException("The creator cannot be demoted.");
+        }
+        adminsId.remove(adminToDemote);
+        if (!membersId.contains(adminToDemote)) {
+            membersId.add(adminToDemote);
+        }
         saveGroupChanges();
     }
 
@@ -85,7 +88,7 @@ public class Group {
 
     public void removePost(String postId, String adminId) {
         if (!adminsId.contains(adminId) && !adminId.equals(creator)) {
-            throw new IllegalArgumentException("Only admins or creator can remove posts.");
+            throw new IllegalArgumentException("Only admins or the creator can remove posts.");
         }
         groupPosts.removeIf(post -> post.getPostId().equals(postId));
         saveGroupChanges();
@@ -93,7 +96,7 @@ public class Group {
 
     public void requestToJoinGroup(String userId) {
         if (!joinRequests.contains(userId)) {
-            joinRequests.add(userId);  // Add user to join requests list only if not already there
+            joinRequests.add(userId);
         }
         saveGroupChanges();
     }
@@ -105,7 +108,7 @@ public class Group {
         if (joinRequests.contains(userId)) {
             joinRequests.remove(userId);
             if (!membersId.contains(userId)) {
-                membersId.add(userId);  // Add user to members only if not already there
+                membersId.add(userId);
             }
         } else {
             throw new IllegalArgumentException("No such join request found.");
@@ -130,8 +133,8 @@ public class Group {
     }
 
     private void saveGroupChanges() {
-        GroupManager groupManager = new GroupManager();
-        groupManager.saveGroupsToJsonFile();
+        GroupDatabase groupDatabase = new GroupDatabase();
+        groupDatabase.saveGroupsToJsonFile();
     }
 
     public JSONObject toJson() {
