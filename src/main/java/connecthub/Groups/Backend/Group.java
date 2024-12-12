@@ -197,4 +197,11 @@ public class Group {
     public ArrayList<GroupPost> getGroupPosts() {
         return new ArrayList<>(groupPosts);
     }
+
+    public boolean isAdmin(String userID){
+        return adminsId.contains(userID);
+    }
+    public boolean isCreator(String userId){
+        return userId.equals(creator);
+    }
 }

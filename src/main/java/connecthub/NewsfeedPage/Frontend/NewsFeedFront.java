@@ -57,15 +57,17 @@ public class NewsFeedFront {
 
         // Left side: Friend List
         VBox friendList = createFriendList(primaryStage,userID);
-        mainLayout.setLeft(friendList);
+        VBox friendSuggestions = createFriendSuggestions(primaryStage,userID);
+        HBox leftSection = new HBox(friendList,friendSuggestions);
+        mainLayout.setLeft(leftSection);
 
         // Center: Posts
         ScrollPane posts = createPosts(userID);
         mainLayout.setCenter(posts);
 
-        // Right side: Friend Suggestions
-        VBox friendSuggestions = createFriendSuggestions(primaryStage,userID);
-        mainLayout.setRight(friendSuggestions);
+        // Right side: Joined Groups
+        VBox joinedGroups = createJoinedGroups(primaryStage,userID);
+
 
         // Add CSS class names
         storiesSection.getStyleClass().add("stories-section");
@@ -456,5 +458,10 @@ public class NewsFeedFront {
         });
         contentCreationArea.getChildren().add(profileButton);
         return contentCreationArea;
+    }
+    private VBox createJoinedGroups(Stage stage , String UserID){
+        VBox joinedGroups = new VBox();
+        HBox singleGroup = new HBox();
+        Label groupLabel = new()
     }
 }
