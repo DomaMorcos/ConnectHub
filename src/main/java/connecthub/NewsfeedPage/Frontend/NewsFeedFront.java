@@ -9,11 +9,11 @@ import connecthub.ContentCreation.Frontend.AddPost;
 import connecthub.ContentCreation.Frontend.AddStory;
 import connecthub.ContentCreation.Frontend.DisplayStory;
 import connecthub.FriendManagement.Backend.FriendManager;
-import connecthub.FriendManagement.Frontend.FriendsPage;
 import connecthub.NewsfeedPage.Backend.ImplementedNewsfeedBack;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Frontend.ProfilePage;
 import connecthub.TimestampFormatter;
+import connecthub.UserAccountManagement.Backend.LogUser;
 import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
 import javafx.geometry.Insets;
@@ -41,7 +41,6 @@ public class NewsFeedFront {
 
         // Main layout
         BorderPane mainLayout = new BorderPane();
-//        mainLayout.setPadding(new Insets(10));
 
         // Top: Stories
         HBox storiesSection = createStoriesSection(userID);
@@ -58,16 +57,16 @@ public class NewsFeedFront {
 
         // Left side: Friend List
         VBox friendList = createFriendList(primaryStage,userID);
-        mainLayout.setLeft(friendList);
+        VBox friendSuggestions = createFriendSuggestions(primaryStage,userID);
+        HBox leftSection = new HBox(friendList,friendSuggestions);
+        mainLayout.setLeft(leftSection);
 
         // Center: Posts
         ScrollPane posts = createPosts(userID);
         mainLayout.setCenter(posts);
 
-        // Right side: Friend Suggestions
-        VBox friendSuggestions = createFriendSuggestions(primaryStage,userID);
-        mainLayout.setRight(friendSuggestions);
-
+        // Right side: Joined Groups
+        VBox joinedGroups = createJoinedGroups(primaryStage,userID);
 
 
         // Add CSS class names
@@ -82,6 +81,11 @@ public class NewsFeedFront {
         Scene scene = new Scene(mainLayout, 1280, 720);
         scene.getStylesheets().add(getClass().getResource("NewsFeedFront.css").toExternalForm());
         primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest( e -> {
+            User user = userDatabase.getUserById(userID);
+            LogUser logUser = new LogUser();
+            logUser.logout(user.getEmail());
+        });
         primaryStage.show();
     }
 
@@ -115,7 +119,7 @@ public class NewsFeedFront {
             storyImage.setFitWidth(80);
             storyImage.setPreserveRatio(true); // Ensures the aspect ratio is maintained
             storyImage.getStyleClass().add("story-image");
-// Create a circular clip
+            // Create a circular clip
             Circle clip = new Circle(40, 40, 40); // x, y are the center of the circle, radius is 40 (half of width/height)
             storyImage.setClip(clip);
 
@@ -149,7 +153,8 @@ public class NewsFeedFront {
             storyImage.setFitWidth(80);
             storyImage.setPreserveRatio(true); // Ensures the aspect ratio is maintained
             storyImage.getStyleClass().add("story-image");
-// Create a circular clip
+
+            // Create a circular clip
             Circle clip = new Circle(40, 40, 40); // x, y are the center of the circle, radius is 40 (half of width/height)
             storyImage.setClip(clip);
 
@@ -184,9 +189,17 @@ public class NewsFeedFront {
     }
 
 
-    private VBox createFriendList(Stage stage , String userID) {
+    private VBox createFriendList(Stage stage, String userID) {
         VBox friendsVBox = new VBox(10);
         friendsVBox.setPadding(new Insets(10));
+
+        refreshFriendList(friendsVBox, userID);
+        stage.close();
+        return friendsVBox;
+    }
+
+    private void refreshFriendList(VBox friendsVBox, String userID) {
+        friendsVBox.getChildren().clear(); // Clear existing children to refresh the list
 
         Label friendsLabel = new Label("My Friends");
         friendsVBox.getChildren().add(friendsLabel);
@@ -194,46 +207,29 @@ public class NewsFeedFront {
         // Simulate loading friends (in a real app, fetch from backend)
         for (User friend : friendManager.getFriendsList(userID)) {
             Label friendName = new Label(friend.getUsername());
-            Button removeButton = new Button("Remove");
-            Button blockButton = new Button("Block");
 
-            removeButton.setOnAction(e -> {
-                // Handle removing friend
-                if (friendManager.removeFriend(userID, friend.getUserId())) {
-                    AlertUtils.showInformationMessage("Friend Removed", friend.getUsername() + "is succesfully removed from the friends list");
+            File friendImageFile = new File("src/main/resources" + profileDatabase.getProfile(friend.getUserId()).getProfilePhotoPath());
+            ImageView friendImage = new ImageView(new Image(friendImageFile.toURI().toString()));
 
-                    FriendsPage friendsPage = new FriendsPage();
-                    try {
-                        friendsPage.start(userID);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    stage.close();
-                }
-            });
+            File statusImageFile = new File(
+                    friend.getStatus().equals("online") ? "src/main/resources/Images/greenDot.png" : "src/main/resources/Images/redDot.png"
+            );
+            ImageView statusImage = new ImageView(new Image(statusImageFile.toURI().toString()));
+            statusImage.setFitWidth(10);
+            statusImage.setFitHeight(10);
 
-            blockButton.setOnAction(e -> {
-                // Handle blocking friend
-                if (friendManager.blockFriend(userID, friend.getUserId())) {
-                    AlertUtils.showInformationMessage("Friend Blocked", friend.getUsername() + "is succesfully block from the friends list");
+            friendImage.setFitWidth(25);
+            friendImage.setFitHeight(25);
 
-                    FriendsPage friendsPage = new FriendsPage();
-                    try {
-                        friendsPage.start(userID);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    stage.close();
-                }
-            });
+            Label status = new Label(friend.getStatus());
+            HBox userFriend = new HBox(friendImage, friendName, statusImage, status);
+            userFriend.setSpacing(10);
 
-            HBox friendBox = new HBox(10);
-            friendBox.getChildren().addAll(friendName, removeButton, blockButton);
-            friendsVBox.getChildren().add(friendBox);
+            friendsVBox.getChildren().add(userFriend);
         }
-
-        return friendsVBox;
     }
+
+
 
     private ScrollPane createPosts(String userID) {
         VBox postsBox = new VBox();
@@ -340,7 +336,7 @@ public class NewsFeedFront {
                     ImageView postImage = new ImageView(postImageContent);
                     postImage.getStyleClass().add("post-image");
 
-// Check the actual width of the image
+                    // Check the actual width of the image
                     if (postImageContent.getWidth() > 300) {
                         postImage.setFitWidth(300);
                         postImage.setPreserveRatio(true);
@@ -384,25 +380,18 @@ public class NewsFeedFront {
 
 
         for (User friend : friendManager.suggestFriends(userID)) {
-            VBox friendSuggestion = new VBox();
-            friendSuggestion.setSpacing(10);
-            friendSuggestion.setPadding(new Insets(10));
             Label username = new Label(friend.getUsername());
             Button sendFriendRequest = new Button("Send Request");
+
             sendFriendRequest.setOnAction(e -> {
                 if (friendManager.sendFriendRequest(userID, friend.getUserId())) {
-                    AlertUtils.showInformationMessage("Friend Request", "Friend Request is sent to " + friend.getUsername());
-                    FriendsPage friendsPage = new FriendsPage();
-                    try {
-                        friendsPage.start(userID);
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    stage.close();
+                    AlertUtils.showInformationMessage("Friend Request", "Friend request sent to " + friend.getUsername() + "!");
                 }
             });
-            friendSuggestion.getChildren().addAll(username, sendFriendRequest);
-            friendSuggestionsVBox.getChildren().add(friendSuggestion);
+
+            VBox suggestionBox = new VBox(5);
+            suggestionBox.getChildren().addAll(username, sendFriendRequest);
+            friendSuggestionsVBox.getChildren().add(suggestionBox);
         }
 
         return friendSuggestionsVBox;
@@ -419,11 +408,12 @@ public class NewsFeedFront {
             addStory.start(userID);
             NewsFeedFront newsFeedFront = new NewsFeedFront();
             try {
+                stage.close();
                 newsFeedFront.start(userID);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
+
         });
 
         Button postButton = new Button("Post");
@@ -433,11 +423,12 @@ public class NewsFeedFront {
             addPost.start(userID);
             NewsFeedFront newsFeedFront = new NewsFeedFront();
             try {
+                stage.close();
                 newsFeedFront.start(userID);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
+
         });
         contentCreationArea.getChildren().addAll(storyButton, postButton);
 
@@ -446,11 +437,12 @@ public class NewsFeedFront {
         refreshButton.setOnAction(e -> {
             NewsFeedFront newsFeedFront = new NewsFeedFront();
             try {
+                stage.close();
+
                 newsFeedFront.start(userID);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
         });
         contentCreationArea.getChildren().add(refreshButton);
         Button profileButton = new Button("Profile");
@@ -458,13 +450,18 @@ public class NewsFeedFront {
         profileButton.setOnAction(e ->{
             ProfilePage profilePage = new ProfilePage();
             try {
+                stage.close();
                 profilePage.start(userID);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            stage.close();
         });
         contentCreationArea.getChildren().add(profileButton);
         return contentCreationArea;
+    }
+    private VBox createJoinedGroups(Stage stage , String UserID){
+        VBox joinedGroups = new VBox();
+        HBox singleGroup = new HBox();
+        Label groupLabel = new()
     }
 }

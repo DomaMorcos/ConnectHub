@@ -10,8 +10,10 @@ import connecthub.ProfileManagement.Backend.ProfileManager;
 import connecthub.ProfileManagement.Backend.UserProfile;
 import connecthub.TimestampFormatter;
 import connecthub.UserAccountManagement.Backend.HashPassword;
+import connecthub.UserAccountManagement.Backend.LogUser;
 import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
+import connecthub.UserAccountManagement.Frontend.LoginPage;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -62,8 +64,6 @@ public class ProfilePage {
 
     public void start(String userID) throws Exception {
         Stage stage = new Stage();
-//        System.out.println(getClass().getResource("ProfilePage.css"));
-//        System.out.println(getClass().getResource("DefaultProfilePhoto.jpg"));
 
         UserProfile userProfile = profileDatabase.getProfile(userID);
 
@@ -91,8 +91,6 @@ public class ProfilePage {
         // Cover and Profile Photo in a Horizontal Box;
         photos = new HBox();
         photos.setId("PhotosBox");
-//        photos.setPadding(new Insets(10));
-//        photos.setSpacing(10);
         photos.getChildren().addAll(profilePhoto , coverPhoto);
 
         User user = userDatabase.getUserById(userID);
@@ -236,6 +234,18 @@ public class ProfilePage {
             result.ifPresent(newPassword -> profileManager.updatePassword(userID, newPassword));
         });
 
+        logout.setOnAction(e -> {
+            LogUser logUser = new LogUser();
+            logUser.logout(user.getEmail());
+            LoginPage loginPage = new LoginPage();
+            stage.close();
+            try {
+                loginPage.start(stage);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
         settingsMenu.getItems().addAll(editProfilePhoto, editCoverPhoto, changePassword, logout);
         settingMenuBar.getMenus().add(settingsMenu);
 
@@ -246,6 +256,10 @@ public class ProfilePage {
         scene.getStylesheets().add(getClass().getResource("ProfilePage.css").toExternalForm());
         stage.setTitle("Profile Page");
         stage.setScene(scene);
+        stage.setOnCloseRequest( e -> {
+            LogUser logUser = new LogUser();
+            logUser.logout(user.getEmail());
+        });
         stage.show();
     }
 
