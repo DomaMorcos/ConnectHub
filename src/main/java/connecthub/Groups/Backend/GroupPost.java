@@ -17,6 +17,15 @@ public class GroupPost {
         this.timestamp = timestamp;
     }
 
+    public GroupPost createPost(String authorId, String content, String imagePath, String timestamp) {
+        this.postId = authorId + "_" + timestamp;
+        this.authorId = authorId;
+        this.content = content;
+        this.imagePath = imagePath;
+        this.timestamp = timestamp;
+        return new GroupPost(postId, authorId, content, imagePath, timestamp);
+    }
+
     public String getPostId() {
         return postId;
     }
@@ -62,7 +71,7 @@ public class GroupPost {
         jsonObject.put("postId", postId);
         jsonObject.put("authorId", authorId);
         jsonObject.put("content", content);
-        jsonObject.put("imagePath", imagePath != null ? imagePath : ""); // Empty string if no imagePath
+        jsonObject.put("imagePath", imagePath != null ? imagePath : "");
         jsonObject.put("timestamp", timestamp);
         return jsonObject;
     }
@@ -71,7 +80,7 @@ public class GroupPost {
         String postId = jsonObject.getString("postId");
         String authorId = jsonObject.getString("authorId");
         String content = jsonObject.getString("content");
-        String imagePath = jsonObject.optString("imagePath", ""); // Default to empty string if not available
+        String imagePath = jsonObject.optString("imagePath", "");
         String timestamp = jsonObject.getString("timestamp");
 
         return new GroupPost(postId, authorId, content, imagePath, timestamp);
