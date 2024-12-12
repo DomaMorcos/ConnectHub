@@ -60,6 +60,17 @@ public class GroupDatabase {
         return userGroups;
     }
 
+    public ArrayList<Group> getGroupSuggestionsForUser(String userId) {
+        ArrayList<Group> groupSuggestions = new ArrayList<>();
+        for (Group group : groups) {
+            if (!group.getMembersId().contains(userId) && !group.getAdminsId().contains(userId)) {
+                groupSuggestions.add(group);
+            }
+        }
+
+        return groupSuggestions;
+    }
+
     public void saveGroupsToJsonFile() {
         JSONArray groupsArray = new JSONArray();
         for (Group group : groups) {
