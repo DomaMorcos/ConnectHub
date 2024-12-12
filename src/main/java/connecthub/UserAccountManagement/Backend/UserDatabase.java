@@ -1,6 +1,5 @@
 package connecthub.UserAccountManagement.Backend;
 
-import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
