@@ -9,17 +9,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-public class GroupManager {
+public class GroupDatabase {
 
     private static final String GROUP_FILEPATH = "Groups.JSON";
     private ArrayList<Group> groups;
 
-    public GroupManager() {
+    public GroupDatabase() {
         groups = loadGroupsFromJsonFile();
     }
 
     public ArrayList<Group> getGroups() {
-        return groups;
+        return new ArrayList<>(groups);
     }
 
     public ArrayList<String> getJoinRequestsForGroup(String groupId) {
@@ -48,12 +48,30 @@ public class GroupManager {
         return allPosts;
     }
 
-    public void saveGroupsToJsonFile() {
-        if (groups.isEmpty()) {
-            System.out.println("No groups to save.");
-            return;
+    public ArrayList<Group> getGroupsForUser(String userId) {
+        ArrayList<Group> userGroups = new ArrayList<>();
+
+        for (Group group : groups) {
+            if (group.getMembersId().contains(userId) || group.getAdminsId().contains(userId)) {
+                userGroups.add(group);
+            }
         }
 
+        return userGroups;
+    }
+
+    public ArrayList<Group> getGroupSuggestionsForUser(String userId) {
+        ArrayList<Group> groupSuggestions = new ArrayList<>();
+        for (Group group : groups) {
+            if (!group.getMembersId().contains(userId) && !group.getAdminsId().contains(userId)) {
+                groupSuggestions.add(group);
+            }
+        }
+
+        return groupSuggestions;
+    }
+
+    public void saveGroupsToJsonFile() {
         JSONArray groupsArray = new JSONArray();
         for (Group group : groups) {
             groupsArray.put(group.toJson());
@@ -68,7 +86,7 @@ public class GroupManager {
     }
 
     private ArrayList<Group> loadGroupsFromJsonFile() {
-        ArrayList<Group> groups = new ArrayList<>();
+        groups = new ArrayList<>(); // Reset list to avoid duplicates
         File file = new File(GROUP_FILEPATH);
         if (!file.exists()) {
             System.out.println("Groups JSON file not found. Returning empty group list.");
@@ -99,7 +117,6 @@ public class GroupManager {
     }
 
     public void addGroup(Group group) {
-        // Check if group already exists based on groupId
         if (getGroupById(group.getGroupId()) == null) {
             groups.add(group);
             saveGroupsToJsonFile();

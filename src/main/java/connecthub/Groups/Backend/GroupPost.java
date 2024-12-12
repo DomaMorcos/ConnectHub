@@ -6,10 +6,9 @@ public class GroupPost {
     private String postId;
     private String authorId;
     private String content;
-    private String imagePath;  // Optional field for the image path
+    private String imagePath; // Optional field for image path
     private String timestamp;
 
-    // Constructor for GroupPost
     public GroupPost(String postId, String authorId, String content, String imagePath, String timestamp) {
         this.postId = postId;
         this.authorId = authorId;
@@ -18,7 +17,6 @@ public class GroupPost {
         this.timestamp = timestamp;
     }
 
-    // Getters and setters for the fields
     public String getPostId() {
         return postId;
     }
@@ -59,23 +57,21 @@ public class GroupPost {
         this.timestamp = timestamp;
     }
 
-    // Convert GroupPost object to JSON
     public JSONObject toJson() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("postId", postId);
         jsonObject.put("authorId", authorId);
         jsonObject.put("content", content);
-        jsonObject.put("imagePath", imagePath != null ? imagePath : "");  // Empty string if no imagePath
+        jsonObject.put("imagePath", imagePath != null ? imagePath : ""); // Empty string if no imagePath
         jsonObject.put("timestamp", timestamp);
         return jsonObject;
     }
 
-    // Convert JSON object to GroupPost
     public static GroupPost fromJson(JSONObject jsonObject) {
         String postId = jsonObject.getString("postId");
         String authorId = jsonObject.getString("authorId");
         String content = jsonObject.getString("content");
-        String imagePath = jsonObject.optString("imagePath", "");  // Default to empty string if not available
+        String imagePath = jsonObject.optString("imagePath", ""); // Default to empty string if not available
         String timestamp = jsonObject.getString("timestamp");
 
         return new GroupPost(postId, authorId, content, imagePath, timestamp);
