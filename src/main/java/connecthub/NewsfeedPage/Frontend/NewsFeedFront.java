@@ -10,6 +10,10 @@ import connecthub.ContentCreation.Frontend.AddStory;
 import connecthub.ContentCreation.Frontend.DisplayStory;
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.FriendManagement.Frontend.SearchPage;
+import connecthub.Groups.Backend.Group;
+import connecthub.Groups.Backend.GroupDatabase;
+import connecthub.Groups.Frontend.CreateGroup;
+import connecthub.Groups.Frontend.GroupPage;
 import connecthub.NewsfeedPage.Backend.ImplementedNewsfeedBack;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Frontend.ProfilePage;
@@ -35,7 +39,7 @@ public class NewsFeedFront {
     GetContent getContent = GetContent.getInstance();
     ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
     ImplementedNewsfeedBack newsfeed = new ImplementedNewsfeedBack();
-
+    GroupDatabase groupDatabase = GroupDatabase.getInstance();
     public void start(String userID) throws Exception {
         Stage primaryStage = new Stage();
         primaryStage.setTitle("Newsfeed Page");
@@ -58,15 +62,19 @@ public class NewsFeedFront {
 
         // Left side: Friend List
         VBox friendList = createFriendList(primaryStage,userID);
-        mainLayout.setLeft(friendList);
+        VBox friendSuggestions = createFriendSuggestions(primaryStage,userID);
+        HBox leftSection = new HBox(friendList,friendSuggestions);
+        mainLayout.setLeft(leftSection);
 
         // Center: Posts
         ScrollPane posts = createPosts(userID);
         mainLayout.setCenter(posts);
 
-        // Right side: Friend Suggestions
-        VBox friendSuggestions = createFriendSuggestions(primaryStage,userID);
-        mainLayout.setRight(friendSuggestions);
+        // Right side: Joined Groups
+        VBox joinedGroups = createJoinedGroups(primaryStage,userID);
+        VBox suggestedGroups = createSuggestedGroup(primaryStage,userID);
+        VBox groupsSection = new VBox(joinedGroups,suggestedGroups);
+        mainLayout.setRight(groupsSection);
 
         // Add CSS class names
         storiesSection.getStyleClass().add("stories-section");
@@ -400,6 +408,13 @@ public class NewsFeedFront {
         HBox contentCreationArea = new HBox();
         contentCreationArea.setPadding(new Insets(10));
 //        contentCreationArea.setSpacing(10);
+        Button createGroupButton = new Button("Create Group");
+        createGroupButton.setOnAction(e->{
+            CreateGroup createGroup = new CreateGroup();
+            createGroup.start(userID);
+            stage.close();
+        });
+        contentCreationArea.getChildren().add(createGroupButton);
         Button storyButton = new Button("Story");
         storyButton.getStyleClass().add("button");
         storyButton.setOnAction(e -> {
@@ -472,5 +487,35 @@ public class NewsFeedFront {
         contentCreationArea.getChildren().add(profileButton);
 
         return contentCreationArea;
+    }
+    private VBox createJoinedGroups(Stage stage , String userID){
+        VBox joinedGroups = new VBox();
+        Label joinedGroupsLabel = new Label("Groups Joined");
+        joinedGroups.getChildren().add(joinedGroupsLabel);
+        for(Group group : groupDatabase.getGroupsForUser(userID)){
+            Label groupLabel = new Label(group.getName());
+            groupLabel.setOnMouseClicked(e -> {
+                GroupPage groupPage = new GroupPage();
+                groupPage.start(userID,group.getGroupId());
+            });
+            HBox singleGroup = new HBox(groupLabel);
+            joinedGroups.getChildren().add(singleGroup);
+        }
+        return joinedGroups;
+    }
+    private VBox createSuggestedGroup(Stage stage ,String userID){
+        VBox suggestedGroups = new VBox();
+        Label suggestedGroupsLabel = new Label("Groups Suggestions");
+        suggestedGroups.getChildren().add(suggestedGroupsLabel);
+        for(Group group : groupDatabase.getGroupSuggestionsForUser(userID)){
+            Label groupLabel = new Label(group.getName());
+            Button joinButton = new Button("Join");
+            joinButton.setOnAction(e ->{
+                group.requestToJoinGroup(group.getGroupId(),userID);
+            });
+            HBox singleGroup = new HBox(groupLabel,joinButton);
+            suggestedGroups.getChildren().add(singleGroup);
+        }
+        return suggestedGroups;
     }
 }
