@@ -275,6 +275,7 @@ public class GroupPage {
                     throw new RuntimeException(ex);
                 }
             });
+            optionsBox.getChildren().add(deleteGroupButton);
             optionsBox.getChildren().add(changeGroupImage);
         }
 

@@ -135,7 +135,7 @@ public class Group {private String name;
                 boolean postExists = group.getGroupPosts().stream()
                         .anyMatch(p -> p.getPostId().equals(post.getPostId()));
                 if (!postExists) {
-                    group.getGroupPosts().add(post);
+                    group.groupPosts.add(post);
                     groupDatabase.saveGroupsToJsonFile();
                     return true;
                 }

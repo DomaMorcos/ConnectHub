@@ -3,9 +3,9 @@
     "adminsId": ["1"],
     "membersId": ["1"],
     "joinRequests": [],
-    "groupId": "Pizza Lovers_1",
-    "name": "Pizza Lovers",
-    "description": "This is a group for pizza lovers",
+    "groupId": "Pizza_1",
+    "name": "Pizza",
+    "description": "Pizza",
     "photo": "/Images/DefaultCoverPhoto.png",
     "groupPosts": []
 }]
