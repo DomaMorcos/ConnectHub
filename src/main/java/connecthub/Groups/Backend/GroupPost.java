@@ -17,13 +17,12 @@ public class GroupPost {
         this.timestamp = timestamp;
     }
 
-    public GroupPost createPost(String authorId, String content, String imagePath, String timestamp) {
+    public GroupPost(String authorId, String content, String imagePath, String timestamp) {
         this.postId = authorId + "_" + timestamp;
         this.authorId = authorId;
         this.content = content;
         this.imagePath = imagePath;
         this.timestamp = timestamp;
-        return new GroupPost(postId, authorId, content, imagePath, timestamp);
     }
 
     public String getPostId() {

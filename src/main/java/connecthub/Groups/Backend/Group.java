@@ -5,8 +5,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class Group {
-    private String name;
+public class Group {private String name;
     private String description;
     private String photo;
     private String groupId;
@@ -30,24 +29,56 @@ public class Group {
         this.membersId.add(creator);
     }
 
-    public void promoteToAdmin(String groupId, String memberId, String adminId) {
-        Group group = GroupDatabase.getInstance().getGroupById(groupId);
-        if (!group.adminsId.contains(adminId) && !adminId.equals(group.creator)) {
-            throw new IllegalArgumentException("Only the creator or admins can promote members.");
+    public void addMemberToGroup(String groupId, String userId) {
+        GroupDatabase gdb = GroupDatabase.getInstance();
+        for (Group group : gdb.groups) {
+            if (group.getGroupId().equals(groupId)) {
+                if (group.getMembersId().contains(userId)) {
+                    System.out.println("User with ID " + userId + " is already a member of the group.");
+                    return ;
+                }
+
+                group.getMembersId().add(userId);
+                gdb.saveGroupsToJsonFile(); // Save the updated groups to the JSON file
+                System.out.println("User with ID " + userId + " has been added to group " + groupId + ".");
+                return ;
+            }
         }
-        if (!group.membersId.contains(memberId)) {
-            throw new IllegalArgumentException("User is not a member of the group.");
+        System.out.println("Group with ID " + groupId + " not found.");
+        return ;
+    }
+
+    public void promoteToAdmin(String groupId, String memberId, String userId) {
+        GroupDatabase gdb = GroupDatabase.getInstance();
+        for (Group group : gdb.groups) {
+            if (group.getGroupId().equals(groupId)) {
+                if (!group.getAdminsId().contains(userId)) {
+                    System.out.println("User with ID " + userId + " is not an admin and cannot promote others.");
+                    return;
+                }
+
+                if (group.getAdminsId().contains(memberId)) {
+                    System.out.println("User with ID " + memberId + " is already an admin.");
+                    return;
+                }
+
+                group.getAdminsId().add(memberId);
+                gdb.saveGroupsToJsonFile();
+                System.out.println("User with ID " + memberId + " has been promoted to admin in group " + groupId + ".");
+                return;
+            }
         }
-        if (!group.adminsId.contains(memberId)) {
-            group.adminsId.add(memberId);
-        }
-        saveGroupChanges(group);
+        System.out.println("Group with ID " + groupId + " not found.");
+        return;
     }
 
     public void leaveGroup(String groupId, String memberId) {
         Group group = GroupDatabase.getInstance().getGroupById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Group with ID '" + groupId + "' does not exist.");
+        }
         if (!group.membersId.contains(memberId)) {
-            throw new IllegalArgumentException("User is not a member of the group.");
+            throw new IllegalArgumentException("User with ID '" + memberId + "' is not a member of the group.");
         }
         if (memberId.equals(group.creator)) {
             throw new IllegalArgumentException("The creator cannot leave the group.");
@@ -57,98 +88,153 @@ public class Group {
         saveGroupChanges(group);
     }
 
-    public void demoteToMember(String groupId, String adminId, String adminToDemote) {
+    public void demoteToMember(String groupId, String userId, String adminId) {
         Group group = GroupDatabase.getInstance().getGroupById(groupId);
-        if (!group.adminsId.contains(adminId) && !adminId.equals(group.creator)) {
-            throw new IllegalArgumentException("Only the creator or admins can demote admins.");
+        if (group == null) {
+            throw new IllegalArgumentException("Group with ID '" + groupId + "' does not exist.");
         }
-        if (adminToDemote.equals(group.creator)) {
+        if (!userId.equals(group.creator)) {
+            throw new IllegalArgumentException("Only the group creator can demote admins.");
+        }
+        if (adminId.equals(group.creator)) {
             throw new IllegalArgumentException("The creator cannot be demoted.");
         }
-        group.adminsId.remove(adminToDemote);
-        if (!group.membersId.contains(adminToDemote)) {
-            group.membersId.add(adminToDemote);
+        if (!group.adminsId.contains(adminId)) {
+            throw new IllegalArgumentException("User with ID '" + adminId + "' is not an admin.");
+        }
+        group.adminsId.remove(adminId);
+        if (!group.membersId.contains(adminId)) {
+            group.membersId.add(adminId);
         }
         saveGroupChanges(group);
     }
 
-    public void removeMember(String groupId, String memberId, String adminId) {
+    public void removeMember(String groupId, String memberId, String userId) {
         Group group = GroupDatabase.getInstance().getGroupById(groupId);
-        if (!group.adminsId.contains(adminId) && !adminId.equals(group.creator)) {
-            throw new IllegalArgumentException("Only the creator or admins can remove members.");
+        if (group == null) {
+            throw new IllegalArgumentException("Group with ID '" + groupId + "' does not exist.");
+        }
+        if (!group.adminsId.contains(userId) && !userId.equals(group.creator)) {
+            throw new IllegalArgumentException("Only the group creator or an admin can remove members.");
         }
         if (!group.membersId.contains(memberId)) {
-            throw new IllegalArgumentException("User is not a member of the group.");
+            throw new IllegalArgumentException("User with ID '" + memberId + "' is not a member of the group.");
+        }
+        if (memberId.equals(group.creator)) {
+            throw new IllegalArgumentException("The creator cannot be removed from the group.");
         }
         group.membersId.remove(memberId);
         group.adminsId.remove(memberId);
         saveGroupChanges(group);
     }
 
-    public void addPost(String groupId, GroupPost post) {
-        Group group = GroupDatabase.getInstance().getGroupById(groupId);
-        group.groupPosts.add(post);
-        saveGroupChanges(group);
+    public boolean addPost(String groupId, GroupPost post) {
+        GroupDatabase groupDatabase = GroupDatabase.getInstance();
+        for (Group group : groupDatabase.groups) {
+            if (group.getGroupId().equals(groupId)) {
+                boolean postExists = group.getGroupPosts().stream()
+                        .anyMatch(p -> p.getPostId().equals(post.getPostId()));
+                if (!postExists) {
+                    group.getGroupPosts().add(post);
+                    groupDatabase.saveGroupsToJsonFile();
+                    return true;
+                }
+                return false;
+            }
+        }
+        System.out.println("Group with ID " + groupId + " not found.");
+        return false;
     }
 
     public void removePost(String groupId, String postId, String adminId) {
         Group group = GroupDatabase.getInstance().getGroupById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Group with ID '" + groupId + "' does not exist.");
+        }
         if (!group.adminsId.contains(adminId) && !adminId.equals(group.creator)) {
-            throw new IllegalArgumentException("Only admins or the creator can remove posts.");
+            throw new IllegalArgumentException("Only the creator or admins can remove posts.");
         }
         group.groupPosts.removeIf(post -> post.getPostId().equals(postId));
         saveGroupChanges(group);
     }
 
+    public void editPost(String groupId, String postId, String authorId, String newContent) {
+        Group group = GroupDatabase.getInstance().getGroupById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Group with ID '" + groupId + "' does not exist.");
+        }
+        for (GroupPost post : group.getGroupPosts()) {
+            if (post.getPostId().equals(postId)) {
+                if (!post.getAuthorId().equals(authorId)) {
+                    throw new IllegalArgumentException("Only the author can edit this post.");
+                }
+                post.setContent(newContent);
+                saveGroupChanges(group);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Post with ID '" + postId + "' not found.");
+    }
+
     public void requestToJoinGroup(String groupId, String userId) {
         Group group = GroupDatabase.getInstance().getGroupById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Group with ID '" + groupId + "' does not exist.");
+        }
         if (!group.joinRequests.contains(userId)) {
             group.joinRequests.add(userId);
         }
         saveGroupChanges(group);
     }
 
-    public void approveJoinRequest(String groupId, String userId, String adminId) {
+    public void approveJoinRequest(String groupId, String memberId, String userId) {
         Group group = GroupDatabase.getInstance().getGroupById(groupId);
-        if (!group.adminsId.contains(adminId) && !adminId.equals(group.creator)) {
-            throw new IllegalArgumentException("Only the creator or admins can approve requests.");
+        if (group == null) {
+            throw new IllegalArgumentException("Group with ID '" + groupId + "' does not exist.");
         }
-        if (group.joinRequests.contains(userId)) {
-            group.joinRequests.remove(userId);
-            if (!group.membersId.contains(userId)) {
-                group.membersId.add(userId);
+        if (!group.adminsId.contains(userId) && !userId.equals(group.creator)) {
+            throw new IllegalArgumentException("Only the creator or admins can approve join requests.");
+        }
+        if (group.joinRequests.contains(memberId)) {
+            group.joinRequests.remove(memberId);
+            if (!group.membersId.contains(memberId)) {
+                group.membersId.add(memberId);
             }
         } else {
-            throw new IllegalArgumentException("No such join request found.");
+            throw new IllegalArgumentException("No join request from user with ID '" + memberId + "' found.");
         }
         saveGroupChanges(group);
     }
 
-    public void rejectJoinRequest(String groupId, String userId, String adminId) {
+    public void rejectJoinRequest(String groupId, String memberId, String userId) {
         Group group = GroupDatabase.getInstance().getGroupById(groupId);
-        if (!group.adminsId.contains(adminId) && !adminId.equals(group.creator)) {
-            throw new IllegalArgumentException("Only the creator or admins can reject requests.");
-        }
-        if (group.joinRequests.contains(userId)) {
-            group.joinRequests.remove(userId);
-        } else {
-            throw new IllegalArgumentException("No such join request found.");
-        }
-        saveGroupChanges(group);
-    }
 
-    public void removeGroup(String groupId) {
-        GroupDatabase groupDatabase = GroupDatabase.getInstance();
-        groupDatabase.groups.removeIf(group -> group.getGroupId().equals(groupId));
-        groupDatabase.saveGroupsToJsonFile();
+        if (group == null) {
+            throw new IllegalArgumentException("Group with ID '" + groupId + "' does not exist.");
+        }
+
+        if (!group.adminsId.contains(userId) && !userId.equals(group.creator)) {
+            throw new IllegalArgumentException("Only the creator or admins can reject join requests.");
+        }
+
+        if (!group.joinRequests.contains(memberId)) {
+            throw new IllegalArgumentException("No join request from user with ID '" + memberId + "' found.");
+        }
+
+        group.joinRequests.remove(memberId);
+
+        saveGroupChanges(group);
     }
 
     public ArrayList<String> getJoinRequests(String groupId) {
         Group group = GroupDatabase.getInstance().getGroupById(groupId);
+        if (group == null) {
+            throw new IllegalArgumentException("Group " + groupId + " does not exist.");
+        }
         return new ArrayList<>(group.joinRequests);
     }
 
-    private void saveGroupChanges(Group group) {
+    public void saveGroupChanges(Group group) {
         GroupDatabase groupDatabase = GroupDatabase.getInstance();
         groupDatabase.saveGroupsToJsonFile();
     }
@@ -202,7 +288,11 @@ public class Group {
         JSONArray postsArray = jsonObject.optJSONArray("groupPosts");
         if (postsArray != null) {
             for (int i = 0; i < postsArray.length(); i++) {
-                group.groupPosts.add(GroupPost.fromJson(postsArray.getJSONObject(i)));
+                try {
+                    group.groupPosts.add(GroupPost.fromJson(postsArray.getJSONObject(i)));
+                } catch (Exception e) {
+                    System.err.println("Skipping malformed post: " + e.getMessage());
+                }
             }
         }
 
@@ -236,10 +326,64 @@ public class Group {
         return new ArrayList<>(groupPosts != null ? groupPosts : new ArrayList<>());
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public void setAdminsId(ArrayList<String> adminsId) {
+        this.adminsId = adminsId;
+    }
+
+    public void setMembersId(ArrayList<String> membersId) {
+        this.membersId = membersId;
+    }
+
+    public void setGroupPosts(ArrayList<GroupPost> groupPosts) {
+        this.groupPosts = groupPosts;
+    }
+
+    public ArrayList<String> getJoinRequests() {
+        return joinRequests;
+    }
+
+    public void setJoinRequests(ArrayList<String> joinRequests) {
+        this.joinRequests = joinRequests;
+    }
+
+
     public boolean isAdmin(String userID){
         return adminsId.contains(userID);
     }
     public boolean isCreator(String userId){
         return userId.equals(creator);
     }
+
 }
