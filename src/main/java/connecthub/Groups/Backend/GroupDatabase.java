@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-public class GroupDatabase implements GroupPersistence{
+public class GroupDatabase implements GroupPersistence {
 
     private static final String GROUP_FILEPATH = "Groups.JSON";
     public ArrayList<Group> groups = new ArrayList<>();
@@ -77,6 +77,7 @@ public class GroupDatabase implements GroupPersistence{
 
         return db.groups;
     }
+
     public ArrayList<Group> getGroups() {
         return new ArrayList<>(groups);
     }
@@ -130,6 +131,7 @@ public class GroupDatabase implements GroupPersistence{
         }
         return null;
     }
+
     public void addGroup(Group group) {
         boolean groupExists = groups.stream().anyMatch(g -> g.getGroupId().equals(group.getGroupId()));
         if (!groupExists) {
