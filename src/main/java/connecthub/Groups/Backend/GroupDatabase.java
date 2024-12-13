@@ -32,31 +32,32 @@ public class GroupDatabase implements GroupPersistence{
     public void saveGroupsToJsonFile() {
         GroupDatabase groupDatabase = GroupDatabase.getInstance();
         JSONArray jsonArray = new JSONArray();
+
         for (Group group : groupDatabase.groups) {
             jsonArray.put(group.toJson());
         }
 
         try (FileWriter file = new FileWriter(GROUP_FILEPATH)) {
             file.write(jsonArray.toString(4));
-            file.close();
-            System.out.println("Groups saved to JSON file.");
+            System.out.println("Groups saved to JSON file successfully.");
         } catch (IOException e) {
-            System.err.println("Error writing to Groups JSON file: " + e.getMessage());
+            System.err.println("Failed to save groups to JSON file: " + e.getMessage());
         }
     }
 
     public ArrayList<Group> loadGroupsFromJsonFile() {
         GroupDatabase db = GroupDatabase.getInstance();
         db.groups.clear();
+
+        Path pathFile = Paths.get(GROUP_FILEPATH);
+
         try {
-            Path pathFile = Paths.get(GROUP_FILEPATH);
             if (!Files.exists(pathFile)) {
-                Files.createFile(pathFile);
                 System.out.println("Groups JSON file not found. Returning empty group list.");
                 return db.groups;
             }
 
-            String json = new String(Files.readAllBytes(pathFile));
+            String json = Files.readString(pathFile);
             if (json.trim().isEmpty()) {
                 System.out.println("Groups JSON file is empty. Returning empty group list.");
                 return db.groups;
@@ -68,14 +69,14 @@ public class GroupDatabase implements GroupPersistence{
                 db.groups.add(Group.fromJson(jsonObject));
             }
             System.out.println("Groups loaded from JSON file.");
-            return db.groups;
+        } catch (IOException e) {
+            System.err.println("Error reading Groups JSON file: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Invalid JSON content in Groups JSON file: " + e.getMessage());
         }
 
         return db.groups;
     }
-
     public ArrayList<Group> getGroups() {
         return new ArrayList<>(groups);
     }
@@ -129,11 +130,12 @@ public class GroupDatabase implements GroupPersistence{
         }
         return null;
     }
-
     public void addGroup(Group group) {
-        if (getGroupById(group.getGroupId()) == null) {
+        boolean groupExists = groups.stream().anyMatch(g -> g.getGroupId().equals(group.getGroupId()));
+        if (!groupExists) {
             groups.add(group);
-            saveGroupsToJsonFile();
+            saveGroupsToJsonFile(); // Save only when a new group is added
+            System.out.println("Group added successfully.");
         } else {
             System.out.println("Group already exists.");
         }
