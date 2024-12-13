@@ -2,6 +2,8 @@ package connecthub.Groups.Backend;
 
 import org.json.JSONObject;
 
+import java.time.LocalDateTime;
+
 public class GroupPost {
     private String postId;
     private String authorId;
@@ -17,12 +19,9 @@ public class GroupPost {
         this.timestamp = timestamp;
     }
 
-    public GroupPost createPost(String authorId, String content, String imagePath, String timestamp) {
-        this.postId = authorId + "_" + timestamp;
-        this.authorId = authorId;
-        this.content = content;
-        this.imagePath = imagePath;
-        this.timestamp = timestamp;
+    public static GroupPost createPost(String authorId, String content, String imagePath) {
+        String timestamp = LocalDateTime.now().toString();
+        String postId = authorId + "_" + timestamp;
         return new GroupPost(postId, authorId, content, imagePath, timestamp);
     }
 
@@ -68,11 +67,11 @@ public class GroupPost {
 
     public JSONObject toJson() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("postId", postId);
-        jsonObject.put("authorId", authorId);
-        jsonObject.put("content", content);
+        jsonObject.put("postId", postId != null ? postId : "");
+        jsonObject.put("authorId", authorId != null ? authorId : "");
+        jsonObject.put("content", content != null ? content : "");
         jsonObject.put("imagePath", imagePath != null ? imagePath : "");
-        jsonObject.put("timestamp", timestamp);
+        jsonObject.put("timestamp", timestamp != null ? timestamp : "");
         return jsonObject;
     }
 
