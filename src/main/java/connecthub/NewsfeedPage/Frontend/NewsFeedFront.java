@@ -9,6 +9,7 @@ import connecthub.ContentCreation.Frontend.AddPost;
 import connecthub.ContentCreation.Frontend.AddStory;
 import connecthub.ContentCreation.Frontend.DisplayStory;
 import connecthub.FriendManagement.Backend.FriendManager;
+import connecthub.FriendManagement.Frontend.SearchPage;
 import connecthub.Groups.Backend.Group;
 import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Frontend.CreateGroup;
@@ -458,6 +459,20 @@ public class NewsFeedFront {
             }
         });
         contentCreationArea.getChildren().add(refreshButton);
+
+        Button searchButton = new Button("Search");
+        searchButton.getStyleClass().add("button");
+        searchButton.setOnAction(e ->{
+            SearchPage searchPage = new SearchPage();
+            try {
+                stage.close();
+                searchPage.start(userID);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        contentCreationArea.getChildren().add(searchButton);
+
         Button profileButton = new Button("Profile");
         profileButton.getStyleClass().add("button");
         profileButton.setOnAction(e ->{
@@ -470,6 +485,7 @@ public class NewsFeedFront {
             }
         });
         contentCreationArea.getChildren().add(profileButton);
+
         return contentCreationArea;
     }
     private VBox createJoinedGroups(Stage stage , String userID){

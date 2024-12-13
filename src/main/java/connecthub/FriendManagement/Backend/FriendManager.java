@@ -34,7 +34,7 @@ public class FriendManager {
     }
 
     // Send friend request
-    public static boolean sendFriendRequest(String senderId, String receiverId) {
+    public boolean sendFriendRequest(String senderId, String receiverId) {
         FriendRequest request = new FriendRequest(senderId, receiverId, "Pending");
         friendRequests.add(request);
         saveFriendRequests();
@@ -101,6 +101,18 @@ public class FriendManager {
         return true;
     }
 
+    public boolean blockUser(String userId, String blockedId) {
+        UserProfile userProfile = profileDatabase.getProfile(userId);
+        UserProfile friendProfile = profileDatabase.getProfile(blockedId);
+        userProfile.blockFriend(blockedId);
+        friendProfile.blockFriend(userId);
+        // Update Profile Database
+        ProfileDatabase profileDb = ProfileDatabase.getInstance();
+        profileDb.updateProfile(profileDb.getProfile(userId));
+        profileDb.updateProfile(profileDb.getProfile(blockedId));
+        return true;
+    }
+
     // Get friends list
     public List<User> getFriendsList(String userId) {
         UserProfile userProfile = profileDatabase.getProfile(userId);
@@ -148,16 +160,26 @@ public class FriendManager {
         return pendingRequests;
     }
     // Get all users with the same name
-    public List<User> getUsersByName(String name) {
+    public List<User> getUsersByName(String name,String userID) {
         UserDatabase userDb = UserDatabase.getInstance();
+        User me = userDb.getUserById(userID);
+        List<User> allUsers = userDb.users;
+        List<User> filteredArray = new ArrayList<>();
+        for (User user: allUsers) {
+            if (!getBlockedUsers(userID).contains(user) && !user.equals(me) ){
+                filteredArray.add(user);
+            }
+        }
         List<User> matchedUsers = new ArrayList<>();
-        for (User user : userDb.users) {
-            if (user.getUsername().equalsIgnoreCase(name)) {
+        String lowerCaseName = name.toLowerCase(); // Normalize the search term to lowercase
+        for (User user : filteredArray) {
+            if (user.getUsername().toLowerCase().contains(lowerCaseName)) { // Normalize usernames and check
                 matchedUsers.add(user);
             }
         }
         return matchedUsers;
     }
+
 
     // Suggest friends
     public List<User> suggestFriends(String userId) {
