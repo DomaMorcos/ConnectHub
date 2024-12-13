@@ -3,23 +3,24 @@ package connecthub.UserAccountManagement.Backend;
 import static connecthub.UserAccountManagement.Backend.HashPassword.hashPassword;
 
 public class LogUser {
-
+    UserDatabase userDB = UserDatabase.getInstance();
 
     public boolean login(String email, String password) {
-        User user = users.get(email);
-        if (user == null || !user.getPassword().equals(hashPassword(password))) {
+        User user = userDB.getUser(email);
+        if (user == null || !(user.getPassword().equals(hashPassword(password)))) {
             return false;
         }
         user.setStatus("online");
-        saveUSers();
+        userDB.saveUsersToJsonFile();
         return true;
     }
 
+
     public void logout(String email) {
-        User user = users.get(email);
+        User user = userDB.getUser(email);
         if (user != null) {
             user.setStatus("offline");
-            saveUsers();
+            userDB.saveUsersToJsonFile();
         }
     }
 }
