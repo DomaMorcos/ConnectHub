@@ -4,6 +4,8 @@ import connecthub.AlertUtils;
 import connecthub.Groups.Backend.Group;
 import connecthub.Groups.Backend.GroupDatabase;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -26,31 +28,44 @@ public class CreateGroup {
     // Folder path inside the `resources` directory where images will be saved
     private static final String DESTINATION_FOLDER = "src/main/resources/Images/";
     private File selectedImage;
-    public void start(String userID){
+    public void start(String userID) {
         Stage stage = new Stage();
         GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20));
 
-        groupNameLabel = new Label("Enter Group Name");
-        grid.add(groupNameLabel,0,0);
+        // Add Group Name Input
+        groupNameLabel = new Label("Enter Group Name:");
+        grid.add(groupNameLabel, 0, 0);
         groupNameTextField = new TextField();
-        grid.add(groupNameTextField,1,0);
+        grid.add(groupNameTextField, 1, 0);
 
-        groupDescriptionLabel = new Label("Enter Group Description");
-        grid.add(groupDescriptionLabel,0,1);
+        // Add Group Description Input
+        groupDescriptionLabel = new Label("Enter Group Description:");
+        grid.add(groupDescriptionLabel, 0, 1);
         groupDescriptionTextField = new TextField();
-        grid.add(groupDescriptionTextField,1,1);
+        grid.add(groupDescriptionTextField, 1, 1);
 
-        imageLabel = new Label("Add an Image");
-        grid.add(imageLabel,0,2);
+        // Add Image Upload Option
+        imageLabel = new Label("Add an Image:");
+        grid.add(imageLabel, 0, 2);
         uploadButton = new Button("Add Image");
         uploadButton.setOnAction(e -> openImageChooser(stage));
-        grid.add(uploadButton,1,2);
+        grid.add(uploadButton, 1, 2);
 
+        // Add Create Group Button
         createGroupButton = new Button("Create Group");
-        createGroupButton.setOnAction(e -> handleAddGroup(stage,userID));
+        createGroupButton.setOnAction(e -> handleAddGroup(stage, userID));
+        grid.add(createGroupButton, 1, 3);
 
-
+        // Set the scene and show the stage
+        Scene scene = new Scene(grid, 400, 300);
+        stage.setTitle("Create Group");
+        stage.setScene(scene);
+        stage.show();
     }
+
 
 
 

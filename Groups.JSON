@@ -1,1 +1,11 @@
-[]
+[{
+    "creator": "1",
+    "adminsId": ["1"],
+    "membersId": ["1"],
+    "joinRequests": [],
+    "groupId": "Pizza Lovers_1",
+    "name": "Pizza Lovers",
+    "description": "This is a group for pizza lovers",
+    "photo": "/Images/DefaultCoverPhoto.png",
+    "groupPosts": []
+}]

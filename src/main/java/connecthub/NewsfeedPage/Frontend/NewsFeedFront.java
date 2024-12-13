@@ -11,6 +11,7 @@ import connecthub.ContentCreation.Frontend.DisplayStory;
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.Groups.Backend.Group;
 import connecthub.Groups.Backend.GroupDatabase;
+import connecthub.Groups.Frontend.CreateGroup;
 import connecthub.Groups.Frontend.GroupPage;
 import connecthub.NewsfeedPage.Backend.ImplementedNewsfeedBack;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
@@ -406,6 +407,13 @@ public class NewsFeedFront {
         HBox contentCreationArea = new HBox();
         contentCreationArea.setPadding(new Insets(10));
 //        contentCreationArea.setSpacing(10);
+        Button createGroupButton = new Button("Create Group");
+        createGroupButton.setOnAction(e->{
+            CreateGroup createGroup = new CreateGroup();
+            createGroup.start(userID);
+            stage.close();
+        });
+        contentCreationArea.getChildren().add(createGroupButton);
         Button storyButton = new Button("Story");
         storyButton.getStyleClass().add("button");
         storyButton.setOnAction(e -> {
