@@ -1,18 +1,20 @@
 package connecthub.Groups.Backend;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-public class GroupDatabase {
+public class GroupDatabase implements GroupPersistence{
 
     private static final String GROUP_FILEPATH = "Groups.JSON";
-    public ArrayList<Group> groups;
+    public ArrayList<Group> groups = new ArrayList<>();
 
     private static GroupDatabase groupDatabase = null;
 
@@ -27,43 +29,46 @@ public class GroupDatabase {
         return groupDatabase;
     }
 
-    public synchronized void saveGroupsToJsonFile() {
-        JSONArray groupsArray = new JSONArray();
-        for (Group group : groups) {
-            groupsArray.put(group.toJson());
+    public void saveGroupsToJsonFile() {
+        GroupDatabase groupDatabase = GroupDatabase.getInstance();
+        JSONArray jsonArray = new JSONArray();
+        for (Group group : groupDatabase.groups) {
+            jsonArray.put(group.toJson());
         }
 
         try (FileWriter file = new FileWriter(GROUP_FILEPATH)) {
-            file.write(groupsArray.toString(4));
+            file.write(jsonArray.toString(4));
+            file.close();
             System.out.println("Groups saved to JSON file.");
         } catch (IOException e) {
             System.err.println("Error writing to Groups JSON file: " + e.getMessage());
         }
     }
 
-    private ArrayList<Group> loadGroupsFromJsonFile() {
+    public ArrayList<Group> loadGroupsFromJsonFile() {
         GroupDatabase db = GroupDatabase.getInstance();
         db.groups.clear();
-        File file = new File(GROUP_FILEPATH);
-        if (!file.exists()) {
-            System.out.println("Groups JSON file not found. Returning empty group list.");
-            return db.groups;
-        }
-
         try {
-            String json = new String(Files.readAllBytes(Paths.get(GROUP_FILEPATH)));
+            Path pathFile = Paths.get(GROUP_FILEPATH);
+            if (!Files.exists(pathFile)) {
+                Files.createFile(pathFile);
+                System.out.println("Groups JSON file not found. Returning empty group list.");
+                return db.groups;
+            }
+
+            String json = new String(Files.readAllBytes(pathFile));
             if (json.trim().isEmpty()) {
                 System.out.println("Groups JSON file is empty. Returning empty group list.");
                 return db.groups;
             }
 
-            JSONArray groupsArray = new JSONArray(json);
-            for (int i = 0; i < groupsArray.length(); i++) {
-                db.groups.add(Group.fromJson(groupsArray.getJSONObject(i)));
+            JSONArray jsonArray = new JSONArray(json);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                db.groups.add(Group.fromJson(jsonObject));
             }
             System.out.println("Groups loaded from JSON file.");
-        } catch (IOException e) {
-            System.err.println("Error reading the Groups JSON file: " + e.getMessage());
+            return db.groups;
         } catch (Exception e) {
             System.err.println("Invalid JSON content in Groups JSON file: " + e.getMessage());
         }
