@@ -9,11 +9,13 @@ import connecthub.ContentCreation.Frontend.AddPost;
 import connecthub.ContentCreation.Frontend.AddStory;
 import connecthub.ContentCreation.Frontend.DisplayStory;
 import connecthub.FriendManagement.Backend.FriendManager;
+import connecthub.FriendManagement.Frontend.SearchPage;
 import connecthub.Groups.Backend.Group;
 import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Frontend.CreateGroup;
 import connecthub.Groups.Frontend.GroupPage;
 import connecthub.NewsfeedPage.Backend.ImplementedNewsfeedBack;
+import connecthub.NotificationSystem.frontend.NotificationPage;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Frontend.ProfilePage;
 import connecthub.TimestampFormatter;
@@ -458,6 +460,20 @@ public class NewsFeedFront {
             }
         });
         contentCreationArea.getChildren().add(refreshButton);
+
+        Button searchButton = new Button("Search");
+        searchButton.getStyleClass().add("button");
+        searchButton.setOnAction(e ->{
+            SearchPage searchPage = new SearchPage();
+            try {
+                stage.close();
+                searchPage.start(userID);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        contentCreationArea.getChildren().add(searchButton);
+
         Button profileButton = new Button("Profile");
         profileButton.getStyleClass().add("button");
         profileButton.setOnAction(e ->{
@@ -470,6 +486,23 @@ public class NewsFeedFront {
             }
         });
         contentCreationArea.getChildren().add(profileButton);
+<<<<<<< HEAD
+=======
+        // New Notification button
+        Button notificationButton = new Button("Notifications");
+        notificationButton.getStyleClass().add("button");
+        notificationButton.setOnAction(e -> {
+            NotificationPage notificationPage = new NotificationPage(); // Needs to be implemented.
+            try {
+                stage.close();
+                notificationPage.start(userID); // Open the notification page.
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        contentCreationArea.getChildren().add(notificationButton);
+>>>>>>> 686b9883875d5d1396821dbbce7c5d0a0090bf7a
+
         return contentCreationArea;
     }
     private VBox createJoinedGroups(Stage stage , String userID){
