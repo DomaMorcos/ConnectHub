@@ -1,5 +1,12 @@
-[{
-    "senderId": "5",
-    "receiverId": "2",
-    "status": "Pending"
-}]
+[
+    {
+        "senderId": "5",
+        "receiverId": "2",
+        "status": "Pending"
+    },
+    {
+        "senderId": "3",
+        "receiverId": "1",
+        "status": "Pending"
+    }
+]
