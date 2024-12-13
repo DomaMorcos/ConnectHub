@@ -116,27 +116,30 @@ public class UserProfilePage {
             }
             stage.close();
         });
-       List<User> myFriends = friendManager.getFriendsList(myID);
+        List<User> myFriends = friendManager.getFriendsList(myID);
+        List<User> pendingRequests = friendManager.getAllPendingSenders(myID);
 
+        management.getChildren().clear(); // Clear any existing buttons to avoid duplication
 
-
-        if (myFriends.contains(user)){
+// Check if the user is in the friends list
+        if (myFriends.contains(user)) {
             Button removeButton = new Button("Remove");
-            removeButton.setOnAction(e ->{
-                friendManager.removeFriend(myID,userID);
-                AlertUtils.showInformationMessage("Remove Friend","Friend Removed successfully");
+            removeButton.setOnAction(e -> {
+                friendManager.removeFriend(myID, userID);
+                AlertUtils.showInformationMessage("Remove Friend", "Friend removed successfully");
                 UserProfilePage userProfilePage = new UserProfilePage();
                 try {
                     stage.close();
-                    userProfilePage.start(myID,userID);
+                    userProfilePage.start(myID, userID);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
             });
+
             Button blockButton = new Button("Block");
-            blockButton.setOnAction(e ->{
-                friendManager.blockFriend(myID,userID);
-                AlertUtils.showInformationMessage("Block Friend", "Friend Blocked successfully");
+            blockButton.setOnAction(e -> {
+                friendManager.blockFriend(myID, userID);
+                AlertUtils.showInformationMessage("Block Friend", "Friend blocked successfully");
                 NewsFeedFront newsFeedFront = new NewsFeedFront();
                 try {
                     stage.close();
@@ -145,25 +148,43 @@ public class UserProfilePage {
                     throw new RuntimeException(ex);
                 }
             });
-            management.getChildren().addAll(removeButton,blockButton);
+
+            management.getChildren().addAll(removeButton, blockButton);
         }
-        else if (!myFriends.contains(user)) {
+// Check if the user is in the pending requests list
+        else if (pendingRequests.contains(user)) {
+            Button newsfeedButton = new Button("Newsfeed");
+            newsfeedButton.setOnAction(e -> {
+                NewsFeedFront newsFeedFront = new NewsFeedFront();
+                try {
+                    stage.close();
+                    newsFeedFront.start(myID);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+
+            management.getChildren().add(newsfeedButton); // Add only the newsfeed button
+        }
+// Check if the user is not a friend and not in pending requests
+        else {
             Button addButton = new Button("Add");
-            addButton.setOnAction(e ->{
-                friendManager.sendFriendRequest(myID,userID);
-                AlertUtils.showInformationMessage("Add Friend","Friend request sent");
+            addButton.setOnAction(e -> {
+                friendManager.sendFriendRequest(myID, userID);
+                AlertUtils.showInformationMessage("Add Friend", "Friend request sent");
                 UserProfilePage userProfilePage = new UserProfilePage();
                 try {
                     stage.close();
-                    userProfilePage.start(myID,userID);
+                    userProfilePage.start(myID, userID);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
             });
+
             Button blockButton = new Button("Block");
-            blockButton.setOnAction(e ->{
-                friendManager.blockUser(myID,userID);
-                AlertUtils.showInformationMessage("Block User", "User Blocked successfully");
+            blockButton.setOnAction(e -> {
+                friendManager.blockUser(myID, userID);
+                AlertUtils.showInformationMessage("Block User", "User blocked successfully");
                 NewsFeedFront newsFeedFront = new NewsFeedFront();
                 try {
                     stage.close();
@@ -172,9 +193,11 @@ public class UserProfilePage {
                     throw new RuntimeException(ex);
                 }
             });
-            management.getChildren().addAll(addButton,blockButton);
+
+            management.getChildren().addAll(addButton, blockButton);
         }
-        management.getChildren().addAll(newsfeedButton);
+
+
 
         profileInfo = new VBox();
         profileInfo.setId("ProfileInfo");

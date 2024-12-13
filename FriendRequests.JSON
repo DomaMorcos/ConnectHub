@@ -8,5 +8,10 @@
         "senderId": "3",
         "receiverId": "1",
         "status": "Pending"
+    },
+    {
+        "senderId": "1",
+        "receiverId": "3",
+        "status": "Pending"
     }
 ]
