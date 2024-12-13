@@ -1,15 +1,17 @@
 package connecthub.NotificationSystem.backend;
 
 
+import java.util.List;
+
 public class NotificationManager {
     private static  NotificationDatabase notificationDatabase = NotificationDatabase.getInstance();
     private static NotificationManager notificationManager = null;
-    
+
     private NotificationManager(){
-        
+
     }
     public static NotificationManager getInstance(){
-        
+
         if(notificationManager == null){
             notificationManager = new NotificationManager();
             notificationDatabase.loadNotificationsFromFile();

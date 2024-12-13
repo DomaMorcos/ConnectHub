@@ -17,13 +17,13 @@ public class NotificationDatabase {
     private static NotificationDatabase notificationDatabase = null;
 
     private NotificationDatabase() {
-        loadNotificationsFromFile();
+
     }
 
     public static NotificationDatabase getInstance() {
         if (notificationDatabase == null) {
             notificationDatabase = new NotificationDatabase();
-            notificationDatabase.saveNotificationsToFile();
+            notificationDatabase.loadNotificationsFromFile();
         }
         return notificationDatabase;
     }
