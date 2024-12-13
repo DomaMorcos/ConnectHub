@@ -1,5 +1,6 @@
 package connecthub.FriendManagement.Backend;
 
+import connecthub.NotificationSystem.backend.NotificationManager;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Backend.UserProfile;
 import connecthub.UserAccountManagement.Backend.User;
@@ -37,6 +38,8 @@ public class FriendManager {
     public boolean sendFriendRequest(String senderId, String receiverId) {
         FriendRequest request = new FriendRequest(senderId, receiverId, "Pending");
         friendRequests.add(request);
+        NotificationManager notificationManager = NotificationManager.getInstance();
+        notificationManager.sendFriendRequestNotification(receiverId,senderId);
         saveFriendRequests();
         return true;
     }
