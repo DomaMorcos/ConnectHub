@@ -3,7 +3,8 @@ package connecthub.NotificationSystem.frontend;
 import connecthub.AlertUtils;
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.FriendManagement.Frontend.FriendsPage;
-import connecthub.Groups.Backend.GroupManager;
+import connecthub.Groups.Backend.GroupDatabase;
+import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.NotificationSystem.backend.NotificationDatabase;
 import connecthub.NotificationSystem.backend.NotificationSystem;
 import connecthub.NotificationSystem.backend.NotificationManager;
@@ -22,7 +23,7 @@ import java.util.List;
 public class NotificationPage {
 
     private  FriendManager friendManager;
-    private  GroupManager groupManager;
+    private GroupDatabase groupManager;
     private NotificationDatabase notificationDatabase = NotificationDatabase.getInstance();
 
     private VBox notificationsList;

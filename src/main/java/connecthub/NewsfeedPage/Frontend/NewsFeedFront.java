@@ -486,8 +486,7 @@ public class NewsFeedFront {
             }
         });
         contentCreationArea.getChildren().add(profileButton);
-<<<<<<< HEAD
-=======
+
         // New Notification button
         Button notificationButton = new Button("Notifications");
         notificationButton.getStyleClass().add("button");
@@ -501,7 +500,7 @@ public class NewsFeedFront {
             }
         });
         contentCreationArea.getChildren().add(notificationButton);
->>>>>>> 686b9883875d5d1396821dbbce7c5d0a0090bf7a
+
 
         return contentCreationArea;
     }
