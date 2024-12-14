@@ -35,6 +35,8 @@ public class GroupPage {
     ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
     GroupDatabase groupDatabase = GroupDatabase.getInstance();
     UserDatabase userDatabase = UserDatabase.getInstance();
+    private VBox memberList,groupInfoBox,creatorAndAdmins,postsBox;
+    private HBox optionsBox;
     private static final String DESTINATION_FOLDER = "src/main/resources/Images/";
 
     public void start(String userID, String groupID) {
@@ -75,11 +77,27 @@ public class GroupPage {
 
     public VBox createGroupMembers(String userID, String groupID) {
         Label groupMembers = new Label("Group Members");
-        VBox memberList = new VBox(groupMembers);
+        memberList = new VBox(groupMembers);
+        refreshGroupMembers(userID, groupID);
+        return memberList;
+    }
+
+    public void refreshGroupMembers(String userID, String groupID) {
+        // Clear the existing list
+        memberList.getChildren().clear();
+
+        // Add the Group Members label
+        Label groupMembers = new Label("Group Members");
+        memberList.getChildren().add(groupMembers);
+
+        // Get group information
         Group group = groupDatabase.getGroupById(groupID);
         ArrayList<String> memberIDs = group.getMembersId();
+
+        // Iterate through the members and update the UI
         for (String memberID : memberIDs) {
             if (group.isCreator(memberID) || group.isAdmin(memberID)) continue;
+
             User member = userDatabase.getUserById(memberID);
             HBox singleMemberBox = new HBox();
             File memberImageFile = new File("src/main/resources" + profileDatabase.getProfile(member.getUserId()).getProfilePhotoPath());
@@ -88,53 +106,39 @@ public class GroupPage {
             memberImage.setFitHeight(35);
             Label memberName = new Label(member.getUsername());
             singleMemberBox.getChildren().addAll(memberImage, memberName);
+
             if (group.isAdmin(userID) || group.isCreator(userID)) {
                 Button removeMemberButton = new Button("Remove");
                 removeMemberButton.setOnAction(e -> {
                     group.removeMember(groupID, memberID, userID);
+                    AlertUtils.showInformationMessage("Remove Member", "Member Removed!");
+                    refreshGroupMembers(userID, groupID);
                 });
-                // Handle remove click
                 singleMemberBox.getChildren().add(removeMemberButton);
             }
+
             if (group.isCreator(userID)) {
                 Button promoteMemberButton = new Button("Promote");
                 promoteMemberButton.setOnAction(e -> {
-                    group.promoteToAdmin(groupID, memberID, userID);
+                    group.promoteToAdmin(groupID, userID, memberID);
+                    AlertUtils.showInformationMessage("Promote Member", "Member Promoted to Admin!");
+                    refreshGroupMembers(userID, groupID);
+                    refreshAdminsBox(userID, groupID);
                 });
                 singleMemberBox.getChildren().add(promoteMemberButton);
-                // Handle promote click
             }
+
             memberList.getChildren().add(singleMemberBox);
         }
-        return memberList;
     }
 
-    public VBox createGroupInfoBox(String userID, String groupID) {
-        Group group = groupDatabase.getGroupById(groupID);
-        File groupImageFile = new File("src/main/resources" + group.getPhoto());
-        ImageView groupImage = new ImageView(new Image(groupImageFile.toURI().toString()));
-        groupImage.setFitWidth(35);
-        groupImage.setFitHeight(35);
+    public void refreshAdminsBox(String userID, String groupID) {
+        // Clear the existing list
+        creatorAndAdmins.getChildren().clear();
 
-        VBox groupInfoBox = new VBox(groupImage);
-
-        Label groupName = new Label(group.getName());
-
-        TextArea groupDescriptionText = new TextArea(group.getDescription());
-        groupDescriptionText.getStyleClass().add("post-text");
-        groupDescriptionText.setEditable(false);
-        groupDescriptionText.setWrapText(true); // Allow text wrapping
-        groupDescriptionText.setPrefHeight(50); // Set fixed height
-        groupDescriptionText.setPrefWidth(400); // Set fixed width
-        groupDescriptionText.setScrollTop(0); // Ensure the content is scrollable
-
-        groupInfoBox.getChildren().addAll(groupName, groupDescriptionText);
-        return groupInfoBox;
-    }
-
-    public VBox createGroupAdmins(String userID, String groupID) {
+        // Add the Creator label and details
         Label groupCreator = new Label("Creator");
-        VBox creatorAndAdmins = new VBox(groupCreator);
+        creatorAndAdmins.getChildren().add(groupCreator);
         Group group = groupDatabase.getGroupById(groupID);
         User creator = userDatabase.getUserById(group.getCreator());
         HBox singleCreatorBox = new HBox();
@@ -146,11 +150,15 @@ public class GroupPage {
         singleCreatorBox.getChildren().addAll(creatorImage, groupCreatorName);
         creatorAndAdmins.getChildren().add(singleCreatorBox);
 
+        // Add the Admins label
         Label groupAdmins = new Label("Admins");
         creatorAndAdmins.getChildren().add(groupAdmins);
         ArrayList<String> adminIDs = group.getAdminsId();
+
+        // Iterate through the admins and update the UI
         for (String adminID : adminIDs) {
             if(group.isCreator(adminID)) continue;
+
             HBox singleAdminBox = new HBox();
             User admin = userDatabase.getUserById(adminID);
             File adminImageFile = new File("src/main/resources" + profileDatabase.getProfile(admin.getUserId()).getProfilePhotoPath());
@@ -159,25 +167,64 @@ public class GroupPage {
             adminImage.setFitHeight(35);
             Label adminName = new Label(admin.getUsername());
             singleAdminBox.getChildren().addAll(adminImage, adminName);
+
             if (group.isCreator(userID)) {
                 Button demoteButton = new Button("Demote");
-                // handle demoteButton
                 demoteButton.setOnAction(e -> {
                     group.demoteToMember(groupID, userID, adminID);
+                    AlertUtils.showInformationMessage("Demote User", "This admin has been demoted to member.");
+                    refreshGroupMembers(userID, groupID);
+                    refreshAdminsBox(userID, groupID);
                 });
                 singleAdminBox.getChildren().add(demoteButton);
-
-
             }
-            creatorAndAdmins.getChildren().add(singleAdminBox);
 
+            creatorAndAdmins.getChildren().add(singleAdminBox);
         }
+    }
+
+
+    public VBox createGroupInfoBox(String userID, String groupID) {
+        groupInfoBox = new VBox();
+        refreshInfoBox(userID, groupID);
+        return groupInfoBox;
+    }
+    private void refreshInfoBox(String userID, String groupID) {
+        groupInfoBox.getChildren().clear();
+        Group group = groupDatabase.getGroupById(groupID);
+        File groupImageFile = new File("src/main/resources" + group.getPhoto());
+        ImageView groupImage = new ImageView(new Image(groupImageFile.toURI().toString()));
+        groupImage.setFitWidth(35);
+        groupImage.setFitHeight(35);
+        Label groupName = new Label(group.getName());
+
+        TextArea groupDescriptionText = new TextArea(group.getDescription());
+        groupDescriptionText.getStyleClass().add("post-text");
+        groupDescriptionText.setEditable(false);
+        groupDescriptionText.setWrapText(true); // Allow text wrapping
+        groupDescriptionText.setPrefHeight(50); // Set fixed height
+        groupDescriptionText.setPrefWidth(400); // Set fixed width
+        groupDescriptionText.setScrollTop(0); // Ensure the content is scrollable
+
+        groupInfoBox.getChildren().addAll(groupName, groupDescriptionText);
+    }
+
+    public VBox createGroupAdmins(String userID, String groupID) {
+        creatorAndAdmins = new VBox();
+        refreshAdminsBox(userID, groupID);
         return creatorAndAdmins;
     }
 
     public HBox createOptionsBox(String userID, String groupID, Stage stage) {
+        optionsBox = new HBox();
+
+        refreshOptionsBox(userID, groupID,stage);
+
+        return optionsBox;
+    }
+    private void refreshOptionsBox(String userID, String groupID,Stage stage) {
+        optionsBox.getChildren().clear();
         Group group = groupDatabase.getGroupById(groupID);
-        HBox optionsBox = new HBox();
 
         Button newsFeedButton = new Button("NewsFeed");
         newsFeedButton.setOnAction(e -> {
@@ -197,27 +244,22 @@ public class GroupPage {
 
         postButton.setOnAction(e -> {
             AddGroupPost addGroupPost = new AddGroupPost();
-            addGroupPost.start(userID, groupID);
-            GroupPage groupPage = new GroupPage();
-            try {
-                stage.close();
-                groupPage.start(userID, groupID);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            addGroupPost.start(groupID, userID);
+            refreshPosts(userID,groupID);
+            //Add Refresh Post here
         });
 
 
         Button refreshButton = new Button("Refresh");
         // handle Refresh button click
         refreshButton.setOnAction(e -> {
-            GroupPage groupPage = new GroupPage();
-            try {
-                stage.close();
-                groupPage.start(groupID, userID);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            refreshAdminsBox(userID,groupID);
+            refreshInfoBox(userID,groupID);
+            refreshPosts(userID,groupID);
+            refreshOptionsBox(userID,groupID,stage);
+            refreshGroupMembers(userID,groupID);
+
+
         });
 
         optionsBox.getChildren().addAll(postButton, refreshButton);
@@ -253,14 +295,7 @@ public class GroupPage {
                 System.out.println(imagePath);
                 if (imagePath != null) {
                     group.setPhoto(imagePath);
-                    GroupPage groupPage = new GroupPage();
-
-                    try {
-                        stage.close();
-                        groupPage.start(userID, groupID);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
+                    refreshInfoBox(userID, groupID);
 
                 } else {
                     // Handle case where no image was selected
@@ -282,14 +317,27 @@ public class GroupPage {
             optionsBox.getChildren().add(deleteGroupButton);
             optionsBox.getChildren().add(changeGroupImage);
         }
-
-        return optionsBox;
     }
 
     private ScrollPane createPosts(String userID, String groupID) {
-        Group group = groupDatabase.getGroupById(groupID);
 
-        VBox postsBox = new VBox();
+        postsBox = new VBox();
+
+
+        refreshPosts(userID,groupID);
+        // Create a ScrollPane to make posts scrollable
+        ScrollPane scrollPane = new ScrollPane(postsBox);
+        scrollPane.setFitToWidth(true); // Ensure the ScrollPane stretches to fit the width of the postsBox
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Always show vertical scrollbar
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Disable horizontal scrollbar
+        scrollPane.getStyleClass().add("post-scroll-pane");
+
+        return scrollPane;
+    }
+    private void refreshPosts(String userID , String groupID) {
+        postsBox.getChildren().clear();
+        Group group = groupDatabase.getGroupById(groupID);
+        System.out.println(group.getGroupId());
         postsBox.getStyleClass().add("posts-box");
 
         Label postsLabel = new Label("Recent Posts");
@@ -333,15 +381,18 @@ public class GroupPage {
             editPost.setOnAction(e -> {
                 Optional<String> result = handleEditPost();
                 result.ifPresent(newPost -> {
-                    group.editPost(groupID, post.getPostId(), post.getAuthorId(), String.valueOf(result));
+                    group.editPost(groupID, post.getPostId(), post.getAuthorId(), newPost);
+                    refreshPosts(userID, groupID);
                 });
             });
+
             singlePost.getChildren().add(editPost);
             if (group.isAdmin(userID) || group.isCreator(userID)) {
 
                 Button deletePost = new Button("Delete");
                 deletePost.setOnAction(e -> {
                     group.removePost(groupID, post.getPostId(), userID);
+                    refreshPosts(userID,groupID);
                 });
                 // handle delete Post;
 
@@ -376,16 +427,6 @@ public class GroupPage {
             // Add the single post to the postsBox
             postsBox.getChildren().add(singlePost);
         }
-
-
-        // Create a ScrollPane to make posts scrollable
-        ScrollPane scrollPane = new ScrollPane(postsBox);
-        scrollPane.setFitToWidth(true); // Ensure the ScrollPane stretches to fit the width of the postsBox
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Always show vertical scrollbar
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // Disable horizontal scrollbar
-        scrollPane.getStyleClass().add("post-scroll-pane");
-
-        return scrollPane;
     }
 
     private String openImageChooser(Stage primaryStage) {

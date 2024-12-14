@@ -25,8 +25,6 @@ public class Group {private String name;
         this.membersId = new ArrayList<>();
         this.groupPosts = new ArrayList<>();
         this.joinRequests = new ArrayList<>();
-        this.adminsId.add(creator);
-        this.membersId.add(creator);
     }
 
     public void addMemberToGroup(String groupId, String userId) {
@@ -48,12 +46,13 @@ public class Group {private String name;
         return ;
     }
 
-    public void promoteToAdmin(String groupId, String memberId, String userId) {
+    public void promoteToAdmin(String groupId, String creatorId, String memberId) {
+        System.out.println("PROMOTE TO ADMIN CLICKED");
         GroupDatabase gdb = GroupDatabase.getInstance();
         for (Group group : gdb.groups) {
             if (group.getGroupId().equals(groupId)) {
-                if (!group.getAdminsId().contains(userId)) {
-                    System.out.println("User with ID " + userId + " is not an admin and cannot promote others.");
+                if (!group.isCreator(creatorId)) {
+                    System.out.println("User with ID " + creatorId + " is not an admin and cannot promote others.");
                     return;
                 }
 
@@ -61,9 +60,9 @@ public class Group {private String name;
                     System.out.println("User with ID " + memberId + " is already an admin.");
                     return;
                 }
-
-                group.getAdminsId().add(memberId);
-                gdb.saveGroupsToJsonFile();
+                group.membersId.remove(memberId);
+                group.adminsId.add(memberId);
+                saveGroupChanges(group);
                 System.out.println("User with ID " + memberId + " has been promoted to admin in group " + groupId + ".");
                 return;
             }
@@ -88,12 +87,12 @@ public class Group {private String name;
         saveGroupChanges(group);
     }
 
-    public void demoteToMember(String groupId, String userId, String adminId) {
+    public void demoteToMember(String groupId, String creatorId, String adminId) {
         Group group = GroupDatabase.getInstance().getGroupById(groupId);
         if (group == null) {
             throw new IllegalArgumentException("Group with ID '" + groupId + "' does not exist.");
         }
-        if (!userId.equals(group.creator)) {
+        if (!group.isCreator(creatorId)) {
             throw new IllegalArgumentException("Only the group creator can demote admins.");
         }
         if (adminId.equals(group.creator)) {
@@ -103,9 +102,8 @@ public class Group {private String name;
             throw new IllegalArgumentException("User with ID '" + adminId + "' is not an admin.");
         }
         group.adminsId.remove(adminId);
-        if (!group.membersId.contains(adminId)) {
-            group.membersId.add(adminId);
-        }
+        group.membersId.add(adminId);
+
         saveGroupChanges(group);
     }
 

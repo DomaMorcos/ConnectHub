@@ -1,22 +1,29 @@
 [{
     "creator": "1",
     "adminsId": [
-        "1",
-        "1",
-        "1",
-        "1"
+        "3",
+        "4"
     ],
-    "membersId": [
-        "1",
-        "1",
-        "1",
-        "1",
-        "3"
-    ],
+    "membersId": [],
     "joinRequests": [],
-    "groupId": "Pizza_1",
-    "name": "Pizza",
-    "description": "Pizza",
-    "photo": "/Images/DefaultCoverPhoto.png",
-    "groupPosts": []
+    "groupId": "Group _1",
+    "name": "Group ",
+    "description": "Test",
+    "photo": "/Images/ProfileAvatar.png",
+    "groupPosts": [
+        {
+            "imagePath": "",
+            "postId": "1_2024-12-14T18:07:07.141906",
+            "authorId": "1",
+            "content": "New Post",
+            "timestamp": "2024-12-14T18:07:07.141906"
+        },
+        {
+            "imagePath": "",
+            "postId": "4_2024-12-14T18:34:20.613661100",
+            "authorId": "4",
+            "content": "Doma edited dama's post",
+            "timestamp": "2024-12-14T18:34:20.613661100"
+        }
+    ]
 }]
