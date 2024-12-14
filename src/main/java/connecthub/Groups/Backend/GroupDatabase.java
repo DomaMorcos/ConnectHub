@@ -1,15 +1,17 @@
 package connecthub.Groups.Backend;
 
+import connecthub.UserAccountManagement.Backend.User;
+import connecthub.UserAccountManagement.Backend.UserDatabase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GroupDatabase implements GroupPersistence {
 
@@ -78,7 +80,7 @@ public class GroupDatabase implements GroupPersistence {
         return db.groups;
     }
 
-    public ArrayList<Group> getGroups() {
+    public ArrayList<Group> getAllGroups() {
         return new ArrayList<>(groups);
     }
 
@@ -115,11 +117,11 @@ public class GroupDatabase implements GroupPersistence {
     public ArrayList<Group> getGroupSuggestionsForUser(String userId) {
         ArrayList<Group> groupSuggestions = new ArrayList<>();
         for (Group group : groups) {
-            if (!group.getMembersId().contains(userId) && !group.getAdminsId().contains(userId)) {
+            if (!group.getMembersId().contains(userId) && !group.getAdminsId().contains(userId) && !group.getCreator().equals(userId)) {
                 groupSuggestions.add(group);
             }
         }
-
+        groupSuggestions.removeIf(group -> group.getJoinRequests().contains(userId));
         return groupSuggestions;
     }
 
@@ -130,6 +132,25 @@ public class GroupDatabase implements GroupPersistence {
             }
         }
         return null;
+    }
+    public Group getGroupByName(String groupName) {
+        for (Group group : groups) {
+            if (group.getName().equals(groupName)) {
+                return group;
+            }
+        }
+        return null;
+    }
+    public List<Group> getGroupsByName(String name) {
+        GroupDatabase groupDatabase = GroupDatabase.getInstance();
+        List<Group> matchedGroups = new ArrayList<>();
+        String lowerCaseName = name.toLowerCase(); // Normalize the search term to lowercase
+        for (Group group : groupDatabase.getAllGroups()) {
+            if (group.getName().toLowerCase().contains(lowerCaseName)) { // Normalize usernames and check
+                matchedGroups.add(group);
+            }
+        }
+        return matchedGroups;
     }
 
     public void addGroup(Group group) {
