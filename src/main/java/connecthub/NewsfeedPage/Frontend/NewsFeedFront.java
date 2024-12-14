@@ -9,7 +9,8 @@ import connecthub.ContentCreation.Frontend.AddPost;
 import connecthub.ContentCreation.Frontend.AddStory;
 import connecthub.ContentCreation.Frontend.DisplayStory;
 import connecthub.FriendManagement.Backend.FriendManager;
-import connecthub.FriendManagement.Frontend.SearchPage;
+import connecthub.FriendManagement.Frontend.SearchGroupPage;
+import connecthub.FriendManagement.Frontend.SearchUserPage;
 import connecthub.Groups.Backend.Group;
 import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Frontend.CreateGroup;
@@ -463,14 +464,51 @@ public class NewsFeedFront {
 
         Button searchButton = new Button("Search");
         searchButton.getStyleClass().add("button");
-        searchButton.setOnAction(e ->{
-            SearchPage searchPage = new SearchPage();
-            try {
-                stage.close();
-                searchPage.start(userID);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+        searchButton.setOnAction(e -> {
+            // Create a new dialog for search options
+            Dialog<String> searchDialog = new Dialog<>();
+            searchDialog.setTitle("Search Options");
+            searchDialog.setHeaderText("Choose your search method:");
+
+            // Add buttons for choices
+            ButtonType searchByGroup = new ButtonType("Search by Group");
+            ButtonType searchByUser = new ButtonType("Search by User");
+            ButtonType cancel = ButtonType.CANCEL;
+
+            searchDialog.getDialogPane().getButtonTypes().addAll(searchByGroup, searchByUser, cancel);
+
+            // Handle button clicks
+            searchDialog.setResultConverter(dialogButton -> {
+                if (dialogButton == searchByGroup) {
+                    return "group";
+                } else if (dialogButton == searchByUser) {
+                    return "user";
+                }
+                return null;
+            });
+
+            // Show the dialog and process the result
+            searchDialog.showAndWait().ifPresent(result -> {
+                if ("group".equals(result)) {
+                    // Navigate to Search by Group
+                    SearchGroupPage searchGroupPage = new SearchGroupPage();
+                    try {
+                        stage.close();
+                        searchGroupPage.start(userID); // Pass userID to the new page
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                } else if ("user".equals(result)) {
+                    // Navigate to Search by User
+                    SearchUserPage searchUserPage = new SearchUserPage(); //
+                    try {
+                        stage.close();
+                        searchUserPage.start(userID); // Pass userID to the new page
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            });
         });
         contentCreationArea.getChildren().add(searchButton);
 

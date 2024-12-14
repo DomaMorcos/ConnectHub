@@ -76,12 +76,6 @@ public class Group {private String name;
         if (group == null) {
             throw new IllegalArgumentException("Group with ID '" + groupId + "' does not exist.");
         }
-        if (!group.membersId.contains(memberId)) {
-            throw new IllegalArgumentException("User with ID '" + memberId + "' is not a member of the group.");
-        }
-        if (memberId.equals(group.creator)) {
-            throw new IllegalArgumentException("The creator cannot leave the group.");
-        }
         group.membersId.remove(memberId);
         group.adminsId.remove(memberId);
         saveGroupChanges(group);
@@ -383,5 +377,6 @@ public class Group {private String name;
     public boolean isCreator(String userId){
         return userId.equals(creator);
     }
+    public boolean isMember(String userId) { return membersId.contains(userId);}
 
 }

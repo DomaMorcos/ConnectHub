@@ -1,11 +1,8 @@
 [{
     "creator": "1",
-    "adminsId": [
-        "3",
-        "4"
-    ],
+    "adminsId": ["4"],
     "membersId": [],
-    "joinRequests": [],
+    "joinRequests": ["5"],
     "groupId": "Group _1",
     "name": "Group ",
     "description": "Test",
