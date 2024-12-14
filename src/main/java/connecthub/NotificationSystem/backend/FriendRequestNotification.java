@@ -22,6 +22,10 @@ public class FriendRequestNotification extends Notification {
         return obj;
     }
 
+    @Override
+    public String getGroupId() {
+        return "";
+    }
     // Getters
     public String getSenderId() {
         return senderId;

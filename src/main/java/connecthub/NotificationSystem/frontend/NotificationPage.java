@@ -5,6 +5,7 @@ import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.FriendManagement.Frontend.FriendsPage;
 import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Backend.GroupDatabase;
+import connecthub.Groups.Frontend.GroupPage;
 import connecthub.NotificationSystem.backend.NotificationDatabase;
 import connecthub.NotificationSystem.backend.NotificationSystem;
 import connecthub.NotificationSystem.backend.NotificationManager;
@@ -151,23 +152,23 @@ public class NotificationPage {
             }
         } else if (notification.getType().equals("GroupActivity")) {
             try {
-                FriendsPage friendPage = new FriendsPage();
-                friendPage.start(userId); // Open FriendPage
+                GroupPage groupPage = new GroupPage();
+                groupPage.start(userId, notification.getGroupId()); // Open the group page with the group ID from the notification
                 Stage stage = (Stage) actionSection.getScene().getWindow();
                 stage.close(); // Close NotificationPage
             } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "Failed to load FriendPage: " + ex.getMessage());
+                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
                 ex.printStackTrace();
             }
             
         } else if (notification.getType().equals("NewPost") && notification.getUserId().equals(userId) ) {
             try {
-                FriendsPage friendPage = new FriendsPage();
-                friendPage.start(userId); // Open FriendPage
+                GroupPage groupPage = new GroupPage();
+                groupPage.start(userId, notification.getGroupId()); // Open the group page with the group ID from the notification
                 Stage stage = (Stage) actionSection.getScene().getWindow();
                 stage.close(); // Close NotificationPage
             } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "Failed to load FriendPage: " + ex.getMessage());
+                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
                 ex.printStackTrace();
             }
             

@@ -37,6 +37,8 @@ public class NotificationDatabase {
     // Get notifications for a specific user
     public List<NotificationSystem> getNotificationsForUser(String userId) {
         List<NotificationSystem> userNotifications = new ArrayList<>();
+        notifications.clear();
+        loadNotificationsFromFile();
         for (NotificationSystem notification : notifications) {
             if (notification.getUserId().equals(userId)) {
                 userNotifications.add(notification);

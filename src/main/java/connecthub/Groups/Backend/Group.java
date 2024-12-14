@@ -1,5 +1,6 @@
 package connecthub.Groups.Backend;
 
+import connecthub.NotificationSystem.backend.NotificationManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -14,6 +15,7 @@ public class Group {private String name;
     private ArrayList<String> membersId;
     private ArrayList<GroupPost> groupPosts;
     private ArrayList<String> joinRequests;
+    NotificationManager notificationManager = NotificationManager.getInstance();
 
     public Group(String name, String description, String photo, String creator) {
         this.name = name;
@@ -38,6 +40,10 @@ public class Group {private String name;
 
                 group.getMembersId().add(userId);
                 gdb.saveGroupsToJsonFile(); // Save the updated groups to the JSON file
+                
+                for (String memberId : group.getMembersId()) {
+                    notificationManager.sendGroupActivityNotification(memberId, groupId, "User joined group " + group.getName());
+                }
                 System.out.println("User with ID " + userId + " has been added to group " + groupId + ".");
                 return ;
             }
@@ -128,6 +134,9 @@ public class Group {private String name;
                         .anyMatch(p -> p.getPostId().equals(post.getPostId()));
                 if (!postExists) {
                     group.groupPosts.add(post);
+                    for (String memberId : group.getMembersId()) {
+                        notificationManager.sendNewPostNotification(memberId, groupId);
+                    }
                     groupDatabase.saveGroupsToJsonFile();
                     return true;
                 }
@@ -191,6 +200,7 @@ public class Group {private String name;
             group.joinRequests.remove(memberId);
             if (!group.membersId.contains(memberId)) {
                 group.membersId.add(memberId);
+                notificationManager.sendGroupActivityNotification(memberId, groupId, "You have been approved to join group " + group.getName() );
             }
         } else {
             throw new IllegalArgumentException("No join request from user with ID '" + memberId + "' found.");
@@ -212,7 +222,7 @@ public class Group {private String name;
         if (!group.joinRequests.contains(memberId)) {
             throw new IllegalArgumentException("No join request from user with ID '" + memberId + "' found.");
         }
-
+        notificationManager.sendGroupActivityNotification(memberId, groupId, "Your join request has been rejected.");
         group.joinRequests.remove(memberId);
 
         saveGroupChanges(group);

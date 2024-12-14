@@ -9,4 +9,5 @@ public interface NotificationSystem {
     String getType();
     String getTimestamp();
     JSONObject toJson();
+    String getGroupId();
 }
