@@ -1,7 +1,18 @@
 [{
     "creator": "1",
-    "adminsId": ["1"],
-    "membersId": ["1"],
+    "adminsId": [
+        "1",
+        "1",
+        "1",
+        "1"
+    ],
+    "membersId": [
+        "1",
+        "1",
+        "1",
+        "1",
+        "3"
+    ],
     "joinRequests": [],
     "groupId": "Pizza_1",
     "name": "Pizza",

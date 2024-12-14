@@ -512,6 +512,7 @@ public class NewsFeedFront {
             Label groupLabel = new Label(group.getName());
             groupLabel.setOnMouseClicked(e -> {
                 GroupPage groupPage = new GroupPage();
+                stage.close();
                 groupPage.start(userID,group.getGroupId());
             });
             HBox singleGroup = new HBox(groupLabel);
@@ -528,6 +529,14 @@ public class NewsFeedFront {
             Button joinButton = new Button("Join");
             joinButton.setOnAction(e ->{
                 group.requestToJoinGroup(group.getGroupId(),userID);
+                AlertUtils.showInformationMessage("Join Group","A request is sent to join the group");
+                NewsFeedFront newsFeedFront = new NewsFeedFront();
+                try {
+                    stage.close();
+                    newsFeedFront.start(userID);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             });
             HBox singleGroup = new HBox(groupLabel,joinButton);
             suggestedGroups.getChildren().add(singleGroup);

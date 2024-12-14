@@ -45,8 +45,8 @@ public class GroupPage {
 
         //Group Info and Options
         VBox groupInfoBox = createGroupInfoBox(userID, groupID);
-        HBox optionsBox = createOptionsBox(userID,groupID,stage);
-        VBox topSection = new VBox(groupInfoBox,optionsBox);
+        HBox optionsBox = createOptionsBox(userID, groupID, stage);
+        VBox topSection = new VBox(groupInfoBox, optionsBox);
         mainLayout.setTop(topSection);
 
         // Members List
@@ -54,17 +54,17 @@ public class GroupPage {
         mainLayout.setLeft(groupMembersList);
 
         // Creator and Admins List
-        VBox groupAdminsList = createGroupAdmins(userID,groupID);
+        VBox groupAdminsList = createGroupAdmins(userID, groupID);
         mainLayout.setRight(groupAdminsList);
 
         // Posts Section
-        ScrollPane posts = createPosts(userID,groupID);
+        ScrollPane posts = createPosts(userID, groupID);
         mainLayout.setCenter(posts);
         // Scene setup
         Scene scene = new Scene(mainLayout, 1280, 720);
         scene.getStylesheets().add(getClass().getResource("GroupPage.css").toExternalForm());
         stage.setScene(scene);
-        stage.setOnCloseRequest( e -> {
+        stage.setOnCloseRequest(e -> {
             User user = userDatabase.getUserById(userID);
             LogUser logUser = new LogUser();
             logUser.logout(user.getEmail());
@@ -79,6 +79,7 @@ public class GroupPage {
         Group group = groupDatabase.getGroupById(groupID);
         ArrayList<String> memberIDs = group.getMembersId();
         for (String memberID : memberIDs) {
+            if (group.isCreator(memberID) || group.isAdmin(memberID)) continue;
             User member = userDatabase.getUserById(memberID);
             HBox singleMemberBox = new HBox();
             File memberImageFile = new File("src/main/resources" + profileDatabase.getProfile(member.getUserId()).getProfilePhotoPath());
@@ -89,8 +90,8 @@ public class GroupPage {
             singleMemberBox.getChildren().addAll(memberImage, memberName);
             if (group.isAdmin(userID) || group.isCreator(userID)) {
                 Button removeMemberButton = new Button("Remove");
-                removeMemberButton.setOnAction(e ->{
-                    group.removeMember(groupID,memberID,userID);
+                removeMemberButton.setOnAction(e -> {
+                    group.removeMember(groupID, memberID, userID);
                 });
                 // Handle remove click
                 singleMemberBox.getChildren().add(removeMemberButton);
@@ -98,7 +99,7 @@ public class GroupPage {
             if (group.isCreator(userID)) {
                 Button promoteMemberButton = new Button("Promote");
                 promoteMemberButton.setOnAction(e -> {
-                    group.promoteToAdmin(groupID,memberID,userID);
+                    group.promoteToAdmin(groupID, memberID, userID);
                 });
                 singleMemberBox.getChildren().add(promoteMemberButton);
                 // Handle promote click
@@ -131,7 +132,7 @@ public class GroupPage {
         return groupInfoBox;
     }
 
-    public VBox createGroupAdmins(String userID , String groupID) {
+    public VBox createGroupAdmins(String userID, String groupID) {
         Label groupCreator = new Label("Creator");
         VBox creatorAndAdmins = new VBox(groupCreator);
         Group group = groupDatabase.getGroupById(groupID);
@@ -142,13 +143,14 @@ public class GroupPage {
         creatorImage.setFitWidth(35);
         creatorImage.setFitHeight(35);
         Label groupCreatorName = new Label(creator.getUsername());
-        singleCreatorBox.getChildren().addAll(creatorImage,groupCreatorName);
+        singleCreatorBox.getChildren().addAll(creatorImage, groupCreatorName);
         creatorAndAdmins.getChildren().add(singleCreatorBox);
 
         Label groupAdmins = new Label("Admins");
         creatorAndAdmins.getChildren().add(groupAdmins);
         ArrayList<String> adminIDs = group.getAdminsId();
-        for(String adminID : adminIDs){
+        for (String adminID : adminIDs) {
+            if(group.isCreator(adminID)) continue;
             HBox singleAdminBox = new HBox();
             User admin = userDatabase.getUserById(adminID);
             File adminImageFile = new File("src/main/resources" + profileDatabase.getProfile(admin.getUserId()).getProfilePhotoPath());
@@ -156,12 +158,12 @@ public class GroupPage {
             adminImage.setFitWidth(35);
             adminImage.setFitHeight(35);
             Label adminName = new Label(admin.getUsername());
-            singleAdminBox.getChildren().addAll(adminImage,adminName);
-            if(group.isCreator(userID)){
+            singleAdminBox.getChildren().addAll(adminImage, adminName);
+            if (group.isCreator(userID)) {
                 Button demoteButton = new Button("Demote");
                 // handle demoteButton
                 demoteButton.setOnAction(e -> {
-                    group.demoteToMember(groupID,userID,adminID);
+                    group.demoteToMember(groupID, userID, adminID);
                 });
                 singleAdminBox.getChildren().add(demoteButton);
 
@@ -172,12 +174,13 @@ public class GroupPage {
         }
         return creatorAndAdmins;
     }
-    public HBox createOptionsBox(String userID , String groupID,Stage stage){
+
+    public HBox createOptionsBox(String userID, String groupID, Stage stage) {
         Group group = groupDatabase.getGroupById(groupID);
         HBox optionsBox = new HBox();
 
         Button newsFeedButton = new Button("NewsFeed");
-        newsFeedButton.setOnAction(e->{
+        newsFeedButton.setOnAction(e -> {
             NewsFeedFront newsFeedFront = new NewsFeedFront();
             try {
                 stage.close();
@@ -192,13 +195,13 @@ public class GroupPage {
         Button postButton = new Button("Add Post");
         // handle Post Button click
 
-        postButton.setOnAction(e ->{
+        postButton.setOnAction(e -> {
             AddGroupPost addGroupPost = new AddGroupPost();
-            addGroupPost.start(userID,groupID);
+            addGroupPost.start(userID, groupID);
             GroupPage groupPage = new GroupPage();
             try {
                 stage.close();
-                groupPage.start(userID , groupID);
+                groupPage.start(userID, groupID);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -211,18 +214,18 @@ public class GroupPage {
             GroupPage groupPage = new GroupPage();
             try {
                 stage.close();
-                groupPage.start(groupID,userID);
+                groupPage.start(groupID, userID);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
         });
 
-        optionsBox.getChildren().addAll(postButton,refreshButton);
-        if(!group.isCreator(userID)){
+        optionsBox.getChildren().addAll(postButton, refreshButton);
+        if (!group.isCreator(userID)) {
             Button leaveGroupButton = new Button("Leave");
-            leaveGroupButton.setOnAction(e ->{
-                group.leaveGroup(groupID,userID);
-                AlertUtils.showInformationMessage("Group Left","You left the " + group.getName() +" group!");
+            leaveGroupButton.setOnAction(e -> {
+                group.leaveGroup(groupID, userID);
+                AlertUtils.showInformationMessage("Group Left", "You left the " + group.getName() + " group!");
                 NewsFeedFront newsFeedFront = new NewsFeedFront();
                 try {
                     stage.close();
@@ -234,14 +237,15 @@ public class GroupPage {
             });
             optionsBox.getChildren().add(leaveGroupButton);
         }
-        if(group.isCreator(userID) || group.isAdmin(userID)){
+        if (group.isCreator(userID) || group.isAdmin(userID)) {
             Button requests = new Button("Requests");
             requests.setOnAction(e -> {
                 GroupRequests groupRequests = new GroupRequests();
-                groupRequests.start(userID,groupID);
+                groupRequests.start(userID, groupID);
             });
+            optionsBox.getChildren().add(requests);
         }
-        if(group.isCreator(userID)){
+        if (group.isCreator(userID)) {
             Button changeGroupImage = new Button("Change Image");
             // handle Change group Image
             changeGroupImage.setOnAction(event -> {
@@ -253,7 +257,7 @@ public class GroupPage {
 
                     try {
                         stage.close();
-                        groupPage.start(userID,groupID);
+                        groupPage.start(userID, groupID);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -266,7 +270,7 @@ public class GroupPage {
             Button deleteGroupButton = new Button("Delete Group");
             deleteGroupButton.setOnAction(e -> {
                 groupDatabase.removeGroup(groupID);
-                AlertUtils.showInformationMessage("Delete Group","Group Deleted!");
+                AlertUtils.showInformationMessage("Delete Group", "Group Deleted!");
                 NewsFeedFront newsFeedFront = new NewsFeedFront();
                 try {
                     stage.close();
@@ -282,7 +286,7 @@ public class GroupPage {
         return optionsBox;
     }
 
-    private ScrollPane createPosts(String userID , String groupID) {
+    private ScrollPane createPosts(String userID, String groupID) {
         Group group = groupDatabase.getGroupById(groupID);
 
         VBox postsBox = new VBox();
@@ -307,7 +311,7 @@ public class GroupPage {
             username.getStyleClass().add("post-authorname");
             Label time = new Label(TimestampFormatter.formatTimestamp(post.getTimestamp()));
             time.getStyleClass().add("post-time");
-            HBox imageAndName = new HBox(authorImage,username);
+            HBox imageAndName = new HBox(authorImage, username);
             imageAndName.getStyleClass().add("image-and-name");
 
 
@@ -329,15 +333,15 @@ public class GroupPage {
             editPost.setOnAction(e -> {
                 Optional<String> result = handleEditPost();
                 result.ifPresent(newPost -> {
-                    group.editPost(groupID,post.getPostId(),post.getAuthorId(), String.valueOf(result));
+                    group.editPost(groupID, post.getPostId(), post.getAuthorId(), String.valueOf(result));
                 });
             });
             singlePost.getChildren().add(editPost);
-            if(group.isAdmin(userID) || group.isCreator(userID)){
+            if (group.isAdmin(userID) || group.isCreator(userID)) {
 
                 Button deletePost = new Button("Delete");
                 deletePost.setOnAction(e -> {
-                    group.removePost(groupID,post.getPostId(),userID);
+                    group.removePost(groupID, post.getPostId(), userID);
                 });
                 // handle delete Post;
 
@@ -383,6 +387,7 @@ public class GroupPage {
 
         return scrollPane;
     }
+
     private String openImageChooser(Stage primaryStage) {
         // Create a FileChooser to filter image files
         FileChooser fileChooser = new FileChooser();
@@ -427,6 +432,7 @@ public class GroupPage {
         // Return null if no image is selected
         return null;
     }
+
     private Optional<String> handleEditPost() {
         TextInputDialog dialog = new TextInputDialog("Enter New Post");
         dialog.setTitle("Edit Post");
