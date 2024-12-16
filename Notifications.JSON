@@ -1,1 +1,294 @@
-[]
+[
+    {
+        "senderId": "7",
+        "notificationId": "1",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.275854661"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "2",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.277492349"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "3",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.278453284"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "4",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.278516455"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "5",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.278541193"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "6",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.278573544"
+    },
+    {
+        "groupId": "demo1GRoup_7",
+        "notificationId": "7",
+        "message": "New post added in Group ID: demo1GRoup_7",
+        "type": "NewPost",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.279426409"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "8",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "9",
+        "timestamp": "2024-12-16T16:21:38.279497158"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "9",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.279523811"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "10",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.279546202"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "11",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.279572564"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "12",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.279596081"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "13",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.279618112"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "14",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.279644290"
+    },
+    {
+        "groupId": "demo1GRoup_7",
+        "notificationId": "15",
+        "message": "New post added in Group ID: demo1GRoup_7",
+        "type": "NewPost",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.279666688"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "16",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "9",
+        "timestamp": "2024-12-16T16:21:38.279692419"
+    },
+    {
+        "groupId": "demo1GRoup_7",
+        "notificationId": "17",
+        "message": "New post added in Group ID: demo1GRoup_7",
+        "type": "NewPost",
+        "userId": "9",
+        "timestamp": "2024-12-16T16:21:38.279714804"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "18",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280411141"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "19",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280443436"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "20",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280475555"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "21",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280500710"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "22",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280522375"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "23",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280548065"
+    },
+    {
+        "groupId": "demo1GRoup_7",
+        "notificationId": "24",
+        "message": "New post added in Group ID: demo1GRoup_7",
+        "type": "NewPost",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280570942"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "25",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "9",
+        "timestamp": "2024-12-16T16:21:38.280596662"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "26",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280618373"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "27",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280639692"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "28",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280664953"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "29",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280686624"
+    },
+    {
+        "senderId": "7",
+        "notificationId": "30",
+        "message": "You received a friend request from user ID: 7",
+        "type": "FriendRequest",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280707887"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "31",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280733501"
+    },
+    {
+        "groupId": "demo1GRoup_7",
+        "notificationId": "32",
+        "message": "New post added in Group ID: demo1GRoup_7",
+        "type": "NewPost",
+        "userId": "8",
+        "timestamp": "2024-12-16T16:21:38.280755588"
+    },
+    {
+        "activity": "You have been approved to join group demo1GRoup",
+        "groupId": "demo1GRoup_7",
+        "notificationId": "33",
+        "message": "Group Activity: You have been approved to join group demo1GRoup in Group ID: demo1GRoup_7",
+        "type": "GroupActivity",
+        "userId": "9",
+        "timestamp": "2024-12-16T16:21:38.280781184"
+    },
+    {
+        "groupId": "demo1GRoup_7",
+        "notificationId": "34",
+        "message": "New post added in Group ID: demo1GRoup_7",
+        "type": "NewPost",
+        "userId": "9",
+        "timestamp": "2024-12-16T16:21:38.280803269"
+    },
+    {
+        "senderId": "9",
+        "notificationId": "35",
+        "message": "You received a friend request from user ID: 9",
+        "type": "FriendRequest",
+        "userId": "7",
+        "timestamp": "2024-12-16T16:21:47.981600653"
+    }
+]

@@ -1,26 +1,36 @@
-[{
-    "creator": "1",
-    "adminsId": ["4"],
-    "membersId": [],
-    "joinRequests": ["5"],
-    "groupId": "Group _1",
-    "name": "Group ",
-    "description": "Test",
-    "photo": "/Images/ProfileAvatar.png",
-    "groupPosts": [
-        {
+[
+    {
+        "creator": "1",
+        "adminsId": [],
+        "membersId": [],
+        "joinRequests": [],
+        "groupId": "New Group_1",
+        "name": "New Group",
+        "description": "Test",
+        "photo": "/Images/DefaultCoverPhoto.png",
+        "groupPosts": [{
             "imagePath": "",
-            "postId": "1_2024-12-14T18:07:07.141906",
+            "postId": "1_2024-12-14T22:58:01.216168738",
             "authorId": "1",
-            "content": "New Post",
-            "timestamp": "2024-12-14T18:07:07.141906"
-        },
-        {
+            "content": "Post from Group\t\t",
+            "timestamp": "2024-12-14T22:58:01.216168738"
+        }]
+    },
+    {
+        "creator": "7",
+        "adminsId": [],
+        "membersId": [],
+        "joinRequests": [],
+        "groupId": "demo1GRoup_7",
+        "name": "demo1GRoup",
+        "description": "Demo1groupdescription",
+        "photo": "/Images/ProfileAvatar.png",
+        "groupPosts": [{
             "imagePath": "",
-            "postId": "4_2024-12-14T18:34:20.613661100",
-            "authorId": "4",
-            "content": "Doma edited dama's post",
-            "timestamp": "2024-12-14T18:34:20.613661100"
-        }
-    ]
-}]
+            "postId": "8_2024-12-16T16:17:40.035044859",
+            "authorId": "8",
+            "content": "Post DEmo2\t\t",
+            "timestamp": "2024-12-16T16:17:40.035044859"
+        }]
+    }
+]
