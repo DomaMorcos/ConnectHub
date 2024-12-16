@@ -1,0 +1,32 @@
+.root {
+    -fx-background-color: #85a98f;
+    -fx-alignment: center;
+    -fx-spacing: 40px;
+    -fx-padding: 20px;
+}
+#Title {
+    -fx-text-fill: Black;
+    -fx-font-size: 60px;
+}
+#Components {
+    -fx-spacing: 40px;
+}
+TextField {
+    -fx-max-width: 200px;
+    -fx-border-radius: 50px;
+}
+#EmailValidaitonLabel {
+    -fx-max-height: 20px;
+}
+PasswordField {
+    -fx-max-width: 200px;
+    -fx-border-radius: 50px;
+}
+Button{
+
+    -fx-text-fill: White;
+    -fx-background-color: Black;
+    -fx-min-width: 100px;
+    -fx-background-radius: 30px;
+}
+

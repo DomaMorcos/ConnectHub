@@ -1,0 +1,124 @@
+/* General Styles */
+* {
+    -fx-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.root {
+    -fx-background-color: #f5f7fa; /* Softer background color */
+}
+
+/* Stories Section */
+.story-image {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 8, 0, 0, 0);
+    -fx-border-color: #3498db;
+    -fx-border-width: 3;
+    -fx-background-radius: 50%; /* Optional, purely stylistic */
+    -fx-border-radius: 50%;
+}
+.single-story{
+    -fx-border-color:black;
+    -fx-border-width:1;
+    -fx-padding:15;
+    -fx-spacing:15;
+    -fx-alignment:center;
+}
+.stories-section{
+    -fx-padding:15;
+    -fx-spacing:15;
+    -fx-border-color:black;
+    -fx-border-width:3;
+    -fx-background-color:#48ab8d;
+}
+.stories-label{
+    -fx-padding:20;
+    -fx-alignment:center;
+    -fx-font-size: 18px; /* Slightly larger heading */
+    -fx-font-weight: bold;
+    -fx-text-fill: #1c1e21;
+}
+.stories-scroll-pane{
+    -fx-padding:10;
+    -fx-spacing:10;
+    -fx-border-color:black;
+    -fx-border-width:2;
+    -fx-background-color:#48ab8d;
+    -fx-border-radius:20;
+}
+.stories-list{
+    -fx-padding:10;
+    -fx-spacing:10;
+    -fx-background-color:#48ab8d;
+}
+
+.content-creation-area{
+    -fx-border-color:black;
+    -fx-border-width:3;
+    -fx-padding:15;
+    -fx-alignment:center;
+    -fx-spacing:40;
+    -fx-background-color:#40a6f5;
+}
+.button{
+    -fx-background-color:orange;
+    -fx-text-fill: white;
+    -fx-border-radius:10;
+    -fx-min-width:50
+}
+.posts-label{
+    -fx-padding:20;
+    -fx-alignment:center;
+    -fx-font-size: 18px; /* Slightly larger heading */
+    -fx-font-weight: bold;
+    -fx-text-fill: #1c1e21;
+    -fx-background-color:#94d42f;
+}
+.posts{
+    -fx-padding:15;
+    -fx-spacing:15;
+    -fx-border-color:black;
+    -fx-border-width:2;
+    -fx-background-color:#94d42f;
+}
+.image-and-name{
+    -fx-padding:15;
+    -fx-spacing:10;
+}
+.post-authorname{
+    -fx-font-size: 18px; /* Slightly larger heading */
+    -fx-font-weight: bold;
+    -fx-text-fill: #1c1e21;
+}
+.post-time{
+    -fx-text-fill:gray;
+    -fx-font-size:11px;
+}
+.image-box{
+    -fx-padding:5;
+    -fx-alignment:center;
+}
+.post-scroll-pane{
+    -fx-background-color:#94d42f;
+    -fx-border-color:black;
+    -fx-border-width:2;
+    -fx-padding:10;
+    -fx-spacing:10;
+}
+.single-post{
+        -fx-background-color:#94d42f;
+        -fx-border-color:black;
+        -fx-border-width:1;
+        -fx-padding:5;
+        -fx-spacing:5;
+        -fx-border-radius:10;
+}
+.post-text{
+        -fx-background-color:#94d42f;
+        -fx-border-radius:10;
+        -fx-padding:5;
+        -fx-font-size:14px;
+}
+.posts-box{
+        -fx-background-color:#94d42f;
+        -fx-padding:5;
+        -fx-spacing:5;
+}
