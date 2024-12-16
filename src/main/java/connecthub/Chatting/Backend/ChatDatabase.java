@@ -74,6 +74,7 @@ public class ChatDatabase {
     public List<ChatMessage> getChatHistory(String userId1, String userId2) {
         List<ChatMessage> userMessages = new ArrayList<>();
         for (ChatMessage message : messages) {
+            //user1 , user2 == user2 , user1
             if ((message.getSenderId().equals(userId1) && message.getReceiverId().equals(userId2)) ||
                     (message.getSenderId().equals(userId2) && message.getReceiverId().equals(userId1))) {
                 userMessages.add(message);
@@ -98,12 +99,11 @@ public class ChatDatabase {
     }
 
     public boolean deleteMessage(String senderId, LocalDateTime timestamp) {
-        for (int i = 0; i < messages.size(); i++) {
-            ChatMessage message = messages.get(i);
+        for (ChatMessage message : messages) {
             if (message.getSenderId().equals(senderId) && message.getTimestamp().equals(timestamp)) {
                 if (isInTimeLimit(message.getTimestamp())) {
                     //messages.remove(i);
-                    messages.get(i).setMessage("This message has been deleted");
+                    message.setMessage("#* This message has been deleted *#");
                     saveMessagesToFile();
                     return true;
                 } else {
