@@ -28,6 +28,8 @@ public class Group {private String name;
         this.groupPosts = new ArrayList<>();
         this.joinRequests = new ArrayList<>();
     }
+    public Group() {
+    }
 
     public void addMemberToGroup(String groupId, String userId) {
         GroupDatabase gdb = GroupDatabase.getInstance();

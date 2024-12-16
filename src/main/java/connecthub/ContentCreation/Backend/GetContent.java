@@ -114,4 +114,21 @@ public class GetContent {
         }
         return contentsForUser;
     }
+
+    public ArrayList<Post> getAllCommentsForPost(Post post) {
+        //load
+        ArrayList<Content> contents = contentDatabase.loadContents();
+        if (contents != null) {
+            for (Content content : contents) {
+                if (content instanceof Post wantedPost) {
+                    //if post is found
+                    if (Objects.equals(wantedPost.getContentId(), post.getContentId())) {
+                        return wantedPost.getPostComments();
+                    }
+                }
+            }
+        }
+        //if not found
+        return new ArrayList<>();
+    }
 }
