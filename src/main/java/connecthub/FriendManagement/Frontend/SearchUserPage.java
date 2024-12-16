@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-public class SearchPage {
+public class SearchUserPage {
     private TextField searchField;
     private Button backButton;
     private ListView<String> listView;
@@ -30,7 +30,7 @@ public class SearchPage {
 
     public void start(String userID) {
         Stage stage = new Stage();
-        stage.setTitle("Search Page");
+        stage.setTitle("Search User Page");
 
         searchField = new TextField();
         searchField.setPromptText("Search for users");
@@ -70,8 +70,6 @@ public class SearchPage {
         // Add selection listener to listView
         listView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && !newValue.equals("No users found")) {
-                // Perform functionality for the selected user
-                UserProfilePage userProfilePage = new UserProfilePage();
                 try {
                     handleUserSelection(newValue, userID);
                 } catch (Exception e) {
