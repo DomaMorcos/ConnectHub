@@ -8,7 +8,7 @@
             "5"
         ],
         "userId": "1",
-        "friends": []
+        "friends": ["7"]
     },
     {
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
@@ -58,7 +58,8 @@
         "userId": "7",
         "friends": [
             "8",
-            "9"
+            "9",
+            "1"
         ]
     },
     {

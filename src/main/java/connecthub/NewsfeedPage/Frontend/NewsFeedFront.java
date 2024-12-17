@@ -368,13 +368,14 @@ public class NewsFeedFront {
 
         for (GroupPost post : groupDatabase.getAllPostsForAllGroupsForUser(userID)) {
             VBox singlePost = new VBox();
+            User postAuthor = userDatabase.getUserById(post.getAuthorId());
             singlePost.getStyleClass().add("single-post");
             // Author image and username
             File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(user.getUserId()).getProfilePhotoPath());
             ImageView authorImage = new ImageView(new Image(authorImageFile.toURI().toString()));
             authorImage.setFitWidth(35);
             authorImage.setFitHeight(35);
-            Label username = new Label(user.getUsername());
+            Label username = new Label(postAuthor.getUsername());
             username.getStyleClass().add("post-authorname");
             Label groupName = new Label("Group - "+ post.getPostId());
             Label time = new Label(TimestampFormatter.formatTimestamp(post.getTimestamp()));

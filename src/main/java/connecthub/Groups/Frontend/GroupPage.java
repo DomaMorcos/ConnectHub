@@ -344,7 +344,6 @@ public class GroupPage {
         postsLabel.getStyleClass().add("posts-label");
         postsBox.getChildren().add(postsLabel);
 
-        User user = userDatabase.getUserById(userID);
 
         for (GroupPost post : group.getGroupPosts()) {
             User postAuthor = userDatabase.getUserById(post.getAuthorId());
