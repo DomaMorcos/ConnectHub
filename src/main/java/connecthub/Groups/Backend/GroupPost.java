@@ -9,9 +9,10 @@ public class GroupPost {
     private String postId;
     private String authorId;
     private String content;
-    private String imagePath; // Optional field for image path
+    private String imagePath;
     private String timestamp;
     private ArrayList<GroupPost> groupPostComments;
+    private ArrayList<String> likedGroupUsers;
 
     public GroupPost(String postId, String authorId, String content, String imagePath, String timestamp) {
         this.postId = postId;
@@ -20,6 +21,7 @@ public class GroupPost {
         this.imagePath = imagePath;
         this.timestamp = timestamp;
         this.groupPostComments = new ArrayList<GroupPost>();
+        this.likedGroupUsers = new ArrayList<>();
     }
 
     public GroupPost(String authorId, String content, String imagePath, String timestamp) {
@@ -29,6 +31,31 @@ public class GroupPost {
         this.imagePath = imagePath;
         this.timestamp = timestamp;
         this.groupPostComments = new ArrayList<GroupPost>();
+        this.likedGroupUsers = new ArrayList<>();
+    }
+
+    public boolean hasLiked(String userId) {
+        return likedGroupUsers.contains(userId);
+    }
+
+    public void addGroupLike(String userId) {
+        if (!hasLiked(userId)) {
+            likedGroupUsers.add(userId);
+        }
+    }
+
+    public void removeGroupLike(String userId) {
+        if (hasLiked(userId)) {
+            likedGroupUsers.remove(userId);
+        }
+    }
+
+    public ArrayList<String> getGroupLikedUsers() {
+        return likedGroupUsers;
+    }
+
+    public void setGroupLikedUsers(ArrayList<String> likedUsers) {
+        this.likedGroupUsers = likedUsers;
     }
 
     public ArrayList<GroupPost> getGroupPostComments() {
@@ -124,6 +151,8 @@ public class GroupPost {
         }
         jsonObject.put("groupPostComments", commentsArray);
 
+        JSONArray likedUsersArray = new JSONArray(likedGroupUsers);
+        jsonObject.put("likedGroupUsers", likedUsersArray);
         return jsonObject;
     }
 
@@ -149,6 +178,13 @@ public class GroupPost {
                 groupPost.addGroupPostComment(comment);
             }
         }
+
+        JSONArray likedUsersArray = jsonObject.optJSONArray("likedGroupUsers");
+        if (likedUsersArray != null) {
+            for (int i = 0; i < likedUsersArray.length(); i++) {
+                groupPost.likedGroupUsers.add(likedUsersArray.getString(i));
+            }
+        }
         return groupPost;
     }
 
@@ -161,6 +197,7 @@ public class GroupPost {
                 .append(", content='").append(content != null ? content : "null").append('\'')
                 .append(", imagePath='").append(imagePath != null ? imagePath : "null").append('\'')
                 .append(", timestamp='").append(timestamp != null ? timestamp : "null").append('\'')
+                .append(", likedUsers=").append(likedGroupUsers)
                 .append(", groupPostComments=[");
 
         for (GroupPost comment : groupPostComments) {
