@@ -28,6 +28,8 @@ public class Group {private String name;
         this.groupPosts = new ArrayList<>();
         this.joinRequests = new ArrayList<>();
     }
+    public Group() {
+    }
 
     public void addMemberToGroup(String groupId, String userId) {
         GroupDatabase gdb = GroupDatabase.getInstance();
@@ -40,7 +42,7 @@ public class Group {private String name;
 
                 group.getMembersId().add(userId);
                 gdb.saveGroupsToJsonFile(); // Save the updated groups to the JSON file
-                
+
                 for (String memberId : group.getMembersId()) {
                     notificationManager.sendGroupActivityNotification(memberId, groupId, "User joined group " + group.getName());
                 }
