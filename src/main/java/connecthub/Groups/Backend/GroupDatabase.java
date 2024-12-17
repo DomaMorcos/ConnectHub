@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GroupDatabase implements GroupPersistence {
 
@@ -95,7 +96,7 @@ public class GroupDatabase implements GroupPersistence {
     public ArrayList<GroupPost> getAllPostsForAllGroupsForUser(String userId) {
         ArrayList<GroupPost> allPosts = new ArrayList<>();
         for (Group group : groups) {
-            if (group.getMembersId().contains(userId) || group.getAdminsId().contains(userId)) {
+            if (group.isCreator(userId)||group.isAdmin(userId)||group.isMember(userId)) {
                 allPosts.addAll(group.getGroupPosts());
             }
         }
@@ -167,5 +168,20 @@ public class GroupDatabase implements GroupPersistence {
     public void removeGroup(String groupId) {
         groups.removeIf(group -> group.getGroupId().equals(groupId));
         saveGroupsToJsonFile();
+    }
+
+    public ArrayList<GroupPost> getAllCommentsForGroupPost(GroupPost post) {
+        //load
+        Group group = new Group();
+        if (group.getGroupPosts() != null) {
+            for (GroupPost groupPost : group.getGroupPosts()) {
+                //if post is found
+                if (Objects.equals(groupPost.getPostId(), post.getPostId())) {
+                    return groupPost.getGroupPostComments();
+                }
+            }
+        }
+        //if not found
+        return new ArrayList<>();
     }
 }
