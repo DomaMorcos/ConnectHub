@@ -295,7 +295,6 @@ public class Group {private String name;
                 try {
                     group.groupPosts.add(GroupPost.fromJson(postsArray.getJSONObject(i)));
                 } catch (Exception e) {
-                    System.err.println("Skipping malformed post: " + e.getMessage());
                 }
             }
         }

@@ -69,26 +69,19 @@ public class ChatDatabase {
         ChatMessage message = new ChatMessage(senderId, receiverId, messageContent, LocalDateTime.now());
         messages.add(message);
         saveMessagesToFile();
-    }
-
-    public List<ChatMessage> getChatHistory(String userId1, String userId2) {
-        List<ChatMessage> userMessages = new ArrayList<>();
-        for (ChatMessage message : messages) {
-            //user1 , user2 == user2 , user1
-            if ((message.getSenderId().equals(userId1) && message.getReceiverId().equals(userId2)) ||
-                    (message.getSenderId().equals(userId2) && message.getReceiverId().equals(userId1))) {
-                userMessages.add(message);
-            }
-        }
-        return userMessages;
+        //websocket
+        ChatWebSocket.broadcastMessage("New message from " + senderId + " to " + receiverId + ": " + messageContent);
     }
 
     public boolean editMessage(String senderId, LocalDateTime timestamp, String newContent) {
         for (ChatMessage message : messages) {
             if (message.getSenderId().equals(senderId) && message.getTimestamp().equals(timestamp)) {
                 if (isInTimeLimit(message.getTimestamp())) {
+                    newContent = newContent + "\n*Edited message*";
                     message.setMessage(newContent);
                     saveMessagesToFile();
+                    //websocket
+                    ChatWebSocket.broadcastMessage("Message edited by " + senderId + ": " + newContent);
                     return true;
                 } else {
                     return false;
@@ -102,9 +95,10 @@ public class ChatDatabase {
         for (ChatMessage message : messages) {
             if (message.getSenderId().equals(senderId) && message.getTimestamp().equals(timestamp)) {
                 if (isInTimeLimit(message.getTimestamp())) {
-                    //messages.remove(i);
                     message.setMessage("#* This message has been deleted *#");
                     saveMessagesToFile();
+                    //websocket
+                    ChatWebSocket.broadcastMessage("Message deleted by " + senderId);
                     return true;
                 } else {
                     return false;
@@ -112,6 +106,19 @@ public class ChatDatabase {
             }
         }
         return false;
+    }
+
+
+    public List<ChatMessage> getChatHistory(String userId1, String userId2) {
+        List<ChatMessage> userMessages = new ArrayList<>();
+        for (ChatMessage message : messages) {
+            //user1 , user2 == user2 , user1
+            if ((message.getSenderId().equals(userId1) && message.getReceiverId().equals(userId2)) ||
+                    (message.getSenderId().equals(userId2) && message.getReceiverId().equals(userId1))) {
+                userMessages.add(message);
+            }
+        }
+        return userMessages;
     }
 
     private boolean isInTimeLimit(LocalDateTime timestamp) {

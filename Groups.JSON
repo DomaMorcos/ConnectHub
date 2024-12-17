@@ -1,0 +1,24 @@
+[
+    {
+        "creator": "1",
+        "adminsId": [],
+        "membersId": [],
+        "joinRequests": [],
+        "groupId": "d_1",
+        "name": "d",
+        "description": "ca",
+        "photo": "/Images/DefaultCoverPhoto.png",
+        "groupPosts": []
+    },
+    {
+        "creator": "1",
+        "adminsId": [],
+        "membersId": [],
+        "joinRequests": [],
+        "groupId": "dd_1",
+        "name": "dd",
+        "description": "s",
+        "photo": "/Images/DefaultCoverPhoto.png",
+        "groupPosts": []
+    }
+]
