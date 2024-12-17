@@ -7,10 +7,36 @@ import java.util.ArrayList;
 
 public class Post extends AbstractContent {
     private ArrayList<Post> postComments;
+    private ArrayList<String> likedUsers;
 
     public Post(String contentId, String authorId, String content, String imagePath, String timestamp) {
         super(contentId, authorId, content, imagePath, timestamp);
-        this.postComments = new ArrayList<Post>();
+        this.postComments = new ArrayList<>();
+        this.likedUsers = new ArrayList<>();
+    }
+
+    public boolean hasLiked(String userId) {
+        return likedUsers.contains(userId);
+    }
+
+    public void addLike(String userId) {
+        if (!hasLiked(userId)) {
+            likedUsers.add(userId);
+        }
+    }
+
+    public void removeLike(String userId) {
+        if (hasLiked(userId)) {
+            likedUsers.remove(userId);
+        }
+    }
+
+    public ArrayList<String> getLikedUsers() {
+        return likedUsers;
+    }
+
+    public void setLikedUsers(ArrayList<String> likedUsers) {
+        this.likedUsers = likedUsers;
     }
 
     public ArrayList<Post> getPostComments() {
@@ -47,10 +73,8 @@ public class Post extends AbstractContent {
 
     @Override
     public JSONObject toJson() {
-        JSONObject obj = super.toJson(); // Get the basic fields from AbstractContent
-        obj.put("type", "post"); // Add a type field to distinguish Post objects
-
-        // Serialize comments into a JSON array
+        JSONObject obj = super.toJson();
+        obj.put("type", "post");
         JSONArray commentsArray = new JSONArray();
         for (Post comment : postComments) {
             JSONObject commentJson = new JSONObject();
@@ -62,11 +86,13 @@ public class Post extends AbstractContent {
             commentsArray.put(commentJson);
         }
         obj.put("postComments", commentsArray);
+        JSONArray likedUsersArray = new JSONArray(likedUsers);
+        obj.put("likedUsers", likedUsersArray);
 
         return obj;
     }
 
-    
+
     public static Post readFromJson(JSONObject jsonObject) {
         // Basic fields
         String contentId = jsonObject.optString("contentId", "");
@@ -74,11 +100,7 @@ public class Post extends AbstractContent {
         String content = jsonObject.optString("content", "");
         String imagePath = jsonObject.optString("imagePath", "");
         String timestamp = jsonObject.optString("timestamp", "");
-
-        // Create the main Post object
         Post post = new Post(contentId, authorId, content, imagePath, timestamp);
-
-        // Deserialize comments
         JSONArray commentsArray = jsonObject.optJSONArray("postComments");
         if (commentsArray != null) {
             for (int i = 0; i < commentsArray.length(); i++) {
@@ -88,10 +110,14 @@ public class Post extends AbstractContent {
                 String commentContent = commentJson.optString("content", "");
                 String commentImagePath = commentJson.optString("imagePath", "");
                 String commentTimestamp = commentJson.optString("timestamp", "");
-
-                // Create a Post object for the comment
                 Post comment = new Post(commentId, commentAuthorId, commentContent, commentImagePath, commentTimestamp);
                 post.postComments.add(comment);
+            }
+        }
+        JSONArray likedUsersArray = jsonObject.optJSONArray("likedUsers");
+        if (likedUsersArray != null) {
+            for (int i = 0; i < likedUsersArray.length(); i++) {
+                post.likedUsers.add(likedUsersArray.getString(i));
             }
         }
 
@@ -107,6 +133,7 @@ public class Post extends AbstractContent {
                 .append(", content='").append(getContent() != null ? getContent() : "null").append('\'')
                 .append(", imagePath='").append(getImagePath() != null ? getImagePath() : "null").append('\'')
                 .append(", timestamp='").append(getTimestamp() != null ? getTimestamp() : "null").append('\'')
+                .append(", likedUsers=").append(likedUsers)
                 .append(", comments=[");
 
         for (Post comment : postComments) {
