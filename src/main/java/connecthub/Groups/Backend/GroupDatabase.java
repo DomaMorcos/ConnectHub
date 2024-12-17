@@ -115,11 +115,8 @@ public class GroupDatabase implements GroupPersistence {
                 groupSuggestions.add(group);
             }
         }
-<<<<<<< HEAD
+
         groupSuggestions.removeIf(group -> group.getJoinRequests().contains(userId)); // Remove leftGroups from Suggestions
-=======
-        groupSuggestions.removeIf(group -> group.getJoinRequests().contains(userId));
->>>>>>> Comments
         return groupSuggestions;
     }
 
