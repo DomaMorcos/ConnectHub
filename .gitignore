@@ -2,7 +2,13 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-
+Class Diagram.pdf
+Diagram.drawio (1).pdf
+content.JSON
+FriendRequests.JSON
+Profiles.JSON
+User.JSON
+module-info.java
 ### IntelliJ IDEA ###
 .idea/modules.xml
 .idea/jarRepositories.xml

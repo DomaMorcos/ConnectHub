@@ -1,6 +1,5 @@
 package connecthub.UserAccountManagement.Backend;
 
-import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -118,5 +117,14 @@ public class UserDatabase {
         for (User user : userDB.users) {
             System.out.println(user.toString());
         }
+    }
+
+    public User getUserByUsername(String username) {
+        UserDatabase userDB = UserDatabase.getInstance();
+        for (User user : userDB.users) {
+            if (user.getUsername().equals(username))
+                return user;
+        }
+        return null;
     }
 }
