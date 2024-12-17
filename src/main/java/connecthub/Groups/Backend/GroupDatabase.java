@@ -100,7 +100,7 @@ public class GroupDatabase implements GroupPersistence {
         ArrayList<Group> userGroups = new ArrayList<>();
 
         for (Group group : groups) {
-            if (group.getMembersId().contains(userId) || group.getAdminsId().contains(userId) || group.isCreator(userId)) {
+            if (group.isCreator(userId)||group.isAdmin(userId)||group.isMember(userId)) {
                 userGroups.add(group);
             }
         }
@@ -111,11 +111,15 @@ public class GroupDatabase implements GroupPersistence {
     public ArrayList<Group> getGroupSuggestionsForUser(String userId) {
         ArrayList<Group> groupSuggestions = new ArrayList<>();
         for (Group group : groups) {
-            if (!group.getMembersId().contains(userId) && !group.getAdminsId().contains(userId) && !group.isCreator(userId)) {
+            if (!group.getMembersId().contains(userId) && !group.getAdminsId().contains(userId) && !group.getCreator().equals(userId)) {
                 groupSuggestions.add(group);
             }
         }
+<<<<<<< HEAD
         groupSuggestions.removeIf(group -> group.getJoinRequests().contains(userId)); // Remove leftGroups from Suggestions
+=======
+        groupSuggestions.removeIf(group -> group.getJoinRequests().contains(userId));
+>>>>>>> Comments
         return groupSuggestions;
     }
 

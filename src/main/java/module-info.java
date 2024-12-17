@@ -5,7 +5,9 @@ module connecthub {
     requires org.json;
     requires java.desktop;
     requires javax.websocket.api;
-    //requires jakarta.websocket.api;
+
+//    requires jakarta.websocket.api;
+
     requires tyrus.server;
 
 

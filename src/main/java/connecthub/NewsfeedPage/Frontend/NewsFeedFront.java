@@ -367,6 +367,7 @@ public class NewsFeedFront {
         }
 
         for (GroupPost post : groupDatabase.getAllPostsForAllGroupsForUser(userID)) {
+            User postAuthor = userDatabase.getUserById(post.getAuthorId());
             VBox singlePost = new VBox();
             User postAuthor = userDatabase.getUserById(post.getAuthorId());
             singlePost.getStyleClass().add("single-post");
@@ -604,6 +605,7 @@ public class NewsFeedFront {
         VBox joinedGroups = new VBox();
         Label joinedGroupsLabel = new Label("Groups Joined");
         joinedGroups.getChildren().add(joinedGroupsLabel);
+        System.out.println(groupDatabase.getGroupsForUser(userID));
         for(Group group : groupDatabase.getGroupsForUser(userID)){
             Label groupLabel = new Label(group.getName());
             groupLabel.setOnMouseClicked(e -> {

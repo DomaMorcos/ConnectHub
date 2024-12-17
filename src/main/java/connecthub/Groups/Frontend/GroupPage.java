@@ -2,6 +2,8 @@ package connecthub.Groups.Frontend;
 
 import connecthub.AlertUtils;
 import connecthub.ContentCreation.Backend.Post;
+import connecthub.FriendManagement.Frontend.SearchGroupPage;
+import connecthub.FriendManagement.Frontend.SearchUserPage;
 import connecthub.Groups.Backend.Group;
 import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Backend.GroupPost;
@@ -35,7 +37,7 @@ public class GroupPage {
     ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
     GroupDatabase groupDatabase = GroupDatabase.getInstance();
     UserDatabase userDatabase = UserDatabase.getInstance();
-    private VBox memberList,groupInfoBox,creatorAndAdmins,postsBox;
+    private VBox memberList, groupInfoBox, creatorAndAdmins, postsBox;
     private HBox optionsBox;
     private static final String DESTINATION_FOLDER = "src/main/resources/Images/";
 
@@ -157,7 +159,7 @@ public class GroupPage {
 
         // Iterate through the admins and update the UI
         for (String adminID : adminIDs) {
-            if(group.isCreator(adminID)) continue;
+            if (group.isCreator(adminID)) continue;
 
             HBox singleAdminBox = new HBox();
             User admin = userDatabase.getUserById(adminID);
@@ -189,6 +191,7 @@ public class GroupPage {
         refreshInfoBox(userID, groupID);
         return groupInfoBox;
     }
+
     private void refreshInfoBox(String userID, String groupID) {
         groupInfoBox.getChildren().clear();
         Group group = groupDatabase.getGroupById(groupID);
@@ -218,11 +221,12 @@ public class GroupPage {
     public HBox createOptionsBox(String userID, String groupID, Stage stage) {
         optionsBox = new HBox();
 
-        refreshOptionsBox(userID, groupID,stage);
+        refreshOptionsBox(userID, groupID, stage);
 
         return optionsBox;
     }
-    private void refreshOptionsBox(String userID, String groupID,Stage stage) {
+
+    private void refreshOptionsBox(String userID, String groupID, Stage stage) {
         optionsBox.getChildren().clear();
         Group group = groupDatabase.getGroupById(groupID);
 
@@ -245,7 +249,7 @@ public class GroupPage {
         postButton.setOnAction(e -> {
             AddGroupPost addGroupPost = new AddGroupPost();
             addGroupPost.start(groupID, userID);
-            refreshPosts(userID,groupID);
+            refreshPosts(userID, groupID);
             //Add Refresh Post here
         });
 
@@ -253,11 +257,11 @@ public class GroupPage {
         Button refreshButton = new Button("Refresh");
         // handle Refresh button click
         refreshButton.setOnAction(e -> {
-            refreshAdminsBox(userID,groupID);
-            refreshInfoBox(userID,groupID);
-            refreshPosts(userID,groupID);
-            refreshOptionsBox(userID,groupID,stage);
-            refreshGroupMembers(userID,groupID);
+            refreshAdminsBox(userID, groupID);
+            refreshInfoBox(userID, groupID);
+            refreshPosts(userID, groupID);
+            refreshOptionsBox(userID, groupID, stage);
+            refreshGroupMembers(userID, groupID);
 
 
         });
@@ -324,7 +328,7 @@ public class GroupPage {
         postsBox = new VBox();
 
 
-        refreshPosts(userID,groupID);
+        refreshPosts(userID, groupID);
         // Create a ScrollPane to make posts scrollable
         ScrollPane scrollPane = new ScrollPane(postsBox);
         scrollPane.setFitToWidth(true); // Ensure the ScrollPane stretches to fit the width of the postsBox
@@ -334,7 +338,8 @@ public class GroupPage {
 
         return scrollPane;
     }
-    private void refreshPosts(String userID , String groupID) {
+
+    private void refreshPosts(String userID, String groupID) {
         postsBox.getChildren().clear();
         Group group = groupDatabase.getGroupById(groupID);
         System.out.println(group.getGroupId());
@@ -374,24 +379,25 @@ public class GroupPage {
             // Add components to the single post VBox
             singlePost.getChildren().addAll(imageAndName);
             singlePost.getChildren().add(time);
-
-            Button editPost = new Button("Edit");
-            //handle Edit Post;
-            editPost.setOnAction(e -> {
-                Optional<String> result = handleEditPost();
-                result.ifPresent(newPost -> {
-                    group.editPost(groupID, post.getPostId(), post.getAuthorId(), newPost);
-                    refreshPosts(userID, groupID);
+            if(post.getAuthorId().equals(userID) || group.isCreator(userID) || group.isAdmin(userID)) {
+                Button editPost = new Button("Edit");
+                //handle Edit Post;
+                editPost.setOnAction(e -> {
+                    Optional<String> result = handleEditPost();
+                    result.ifPresent(newPost -> {
+                        group.editPost(groupID, post.getPostId(), post.getAuthorId(), newPost);
+                        refreshPosts(userID, groupID);
+                    });
                 });
-            });
 
-            singlePost.getChildren().add(editPost);
+                singlePost.getChildren().add(editPost);
+            }
             if (group.isAdmin(userID) || group.isCreator(userID)) {
 
                 Button deletePost = new Button("Delete");
                 deletePost.setOnAction(e -> {
                     group.removePost(groupID, post.getPostId(), userID);
-                    refreshPosts(userID,groupID);
+                    refreshPosts(userID, groupID);
                 });
                 // handle delete Post;
 
@@ -423,6 +429,68 @@ public class GroupPage {
             }
 
             singlePost.getChildren().add(postText);
+            Button likeButton = new Button("Like");
+            Button commentsButton = new Button("Comments");
+            boolean[] isClicked = {false}; // Mutable flag
+            likeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
+            likeButton.setOnAction(event -> {
+                if (isClicked[0]) {
+                    likeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
+                } else {
+                    likeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
+                }
+                isClicked[0] = !isClicked[0]; // Toggle flag
+            });
+
+
+            commentsButton.setOnAction(e -> {
+                // Create a new dialog for search options
+                Dialog<String> searchDialog = new Dialog<>();
+                searchDialog.setTitle("Comments");
+                searchDialog.setHeaderText("Add / View Comments");
+
+                // Add buttons for choices
+                ButtonType addComments = new ButtonType("Add Comment");
+                ButtonType viewComments = new ButtonType("View Comments");
+                ButtonType cancel = ButtonType.CANCEL;
+
+                searchDialog.getDialogPane().getButtonTypes().addAll(addComments, viewComments, cancel);
+
+                // Handle button clicks
+                searchDialog.setResultConverter(dialogButton -> {
+                    if (dialogButton == addComments) {
+                        return "add";
+                    } else if (dialogButton == viewComments) {
+                        return "view";
+                    }
+                    return null;
+
+                });
+                searchDialog.showAndWait().ifPresent(result -> {
+                    if ("group".equals(result)) {
+                        // Navigate to Search by Group
+                        SearchGroupPage searchGroupPage = new SearchGroupPage();
+                        try {
+                            searchGroupPage.start(userID); // Pass userID to the new page
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else if ("user".equals(result)) {
+                        // Navigate to Search by User
+                        SearchUserPage searchUserPage = new SearchUserPage(); //
+                        try {
+
+                            searchUserPage.start(userID); // Pass userID to the new page
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                });
+
+
+            });
+            HBox likesAndCommentsBar = new HBox(likeButton, commentsButton);
+            singlePost.getChildren().add(likesAndCommentsBar);
             // Add the single post to the postsBox
             postsBox.getChildren().add(singlePost);
         }
