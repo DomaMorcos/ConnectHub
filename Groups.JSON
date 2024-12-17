@@ -1,0 +1,31 @@
+[
+    {
+        "creator": "1",
+        "adminsId": [],
+        "membersId": [],
+        "joinRequests": [],
+        "groupId": "doma Group_1",
+        "name": "doma Group",
+        "description": "doma group description",
+        "photo": "/Images/DefaultCoverPhoto.png",
+        "groupPosts": []
+    },
+    {
+        "creator": "1",
+        "adminsId": [],
+        "membersId": [],
+        "joinRequests": [],
+        "groupId": "N_1",
+        "name": "N",
+        "description": "N",
+        "photo": "/Images/DefaultCoverPhoto.png",
+        "groupPosts": [{
+            "imagePath": "",
+            "postId": "1_2024-12-17T19:39:44.854310600",
+            "authorId": "1",
+            "groupPostComments": [],
+            "content": "Post in group\t",
+            "timestamp": "2024-12-17T19:39:44.854310600"
+        }]
+    }
+]

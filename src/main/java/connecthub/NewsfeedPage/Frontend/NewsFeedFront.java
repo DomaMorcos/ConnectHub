@@ -367,6 +367,7 @@ public class NewsFeedFront {
         }
 
         for (GroupPost post : groupDatabase.getAllPostsForAllGroupsForUser(userID)) {
+            User postAuthor = userDatabase.getUserById(post.getAuthorId());
             VBox singlePost = new VBox();
             singlePost.getStyleClass().add("single-post");
             // Author image and username
@@ -374,7 +375,7 @@ public class NewsFeedFront {
             ImageView authorImage = new ImageView(new Image(authorImageFile.toURI().toString()));
             authorImage.setFitWidth(35);
             authorImage.setFitHeight(35);
-            Label username = new Label(user.getUsername());
+            Label username = new Label(postAuthor.getUsername());
             username.getStyleClass().add("post-authorname");
             Label groupName = new Label("Group - "+ post.getPostId());
             Label time = new Label(TimestampFormatter.formatTimestamp(post.getTimestamp()));
@@ -603,6 +604,7 @@ public class NewsFeedFront {
         VBox joinedGroups = new VBox();
         Label joinedGroupsLabel = new Label("Groups Joined");
         joinedGroups.getChildren().add(joinedGroupsLabel);
+        System.out.println(groupDatabase.getGroupsForUser(userID));
         for(Group group : groupDatabase.getGroupsForUser(userID)){
             Label groupLabel = new Label(group.getName());
             groupLabel.setOnMouseClicked(e -> {
