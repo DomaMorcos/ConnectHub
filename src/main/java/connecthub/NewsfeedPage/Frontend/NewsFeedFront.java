@@ -369,7 +369,6 @@ public class NewsFeedFront {
         for (GroupPost post : groupDatabase.getAllPostsForAllGroupsForUser(userID)) {
             User postAuthor = userDatabase.getUserById(post.getAuthorId());
             VBox singlePost = new VBox();
-            User postAuthor = userDatabase.getUserById(post.getAuthorId());
             singlePost.getStyleClass().add("single-post");
             // Author image and username
             File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(user.getUserId()).getProfilePhotoPath());
