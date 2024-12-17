@@ -34,6 +34,10 @@ public class GroupPost {
         this.likedGroupUsers = new ArrayList<>();
     }
 
+    public int getGroupNumberLikes() {
+        return likedGroupUsers.size();
+    }
+
     public boolean hasLiked(String userId) {
         return likedGroupUsers.contains(userId);
     }

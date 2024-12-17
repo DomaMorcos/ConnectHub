@@ -15,6 +15,10 @@ public class Post extends AbstractContent {
         this.likedUsers = new ArrayList<>();
     }
 
+    public int getNumberLikes() {
+        return likedUsers.size();
+    }
+
     public boolean hasLiked(String userId) {
         return likedUsers.contains(userId);
     }
