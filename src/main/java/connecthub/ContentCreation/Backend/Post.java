@@ -44,53 +44,79 @@ public class Post extends AbstractContent {
         }
     }
 
+
     @Override
     public JSONObject toJson() {
-        //add to the json object the type
-        JSONObject obj = super.toJson();
-        obj.put("type", "post");
+        JSONObject obj = super.toJson(); // Get the basic fields from AbstractContent
+        obj.put("type", "post"); // Add a type field to distinguish Post objects
+
+        // Serialize comments into a JSON array
         JSONArray commentsArray = new JSONArray();
         for (Post comment : postComments) {
-            commentsArray.put(comment.toJson());
+            JSONObject commentJson = new JSONObject();
+            commentJson.put("contentId", comment.getContentId());
+            commentJson.put("authorId", comment.getAuthorId());
+            commentJson.put("content", comment.getContent());
+            commentJson.put("timestamp", comment.getTimestamp());
+            commentJson.put("imagePath", comment.getImagePath());
+            commentsArray.put(commentJson);
         }
         obj.put("postComments", commentsArray);
+
         return obj;
     }
 
+    
     public static Post readFromJson(JSONObject jsonObject) {
-        // make post from json object
+        // Basic fields
         String contentId = jsonObject.optString("contentId", "");
         String authorId = jsonObject.optString("authorId", "unknown");
         String content = jsonObject.optString("content", "");
         String imagePath = jsonObject.optString("imagePath", "");
         String timestamp = jsonObject.optString("timestamp", "");
+
+        // Create the main Post object
         Post post = new Post(contentId, authorId, content, imagePath, timestamp);
+
+        // Deserialize comments
         JSONArray commentsArray = jsonObject.optJSONArray("postComments");
         if (commentsArray != null) {
             for (int i = 0; i < commentsArray.length(); i++) {
                 JSONObject commentJson = commentsArray.getJSONObject(i);
-                Post comment = Post.readFromJson(commentJson);
+                String commentId = commentJson.optString("contentId", "");
+                String commentAuthorId = commentJson.optString("authorId", "unknown");
+                String commentContent = commentJson.optString("content", "");
+                String commentImagePath = commentJson.optString("imagePath", "");
+                String commentTimestamp = commentJson.optString("timestamp", "");
+
+                // Create a Post object for the comment
+                Post comment = new Post(commentId, commentAuthorId, commentContent, commentImagePath, commentTimestamp);
                 post.postComments.add(comment);
             }
         }
+
         return post;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Post{contentId='").append(getContentId())
-                .append("', content='").append(getContent())
-                .append("', authorId='").append(getAuthorId())
-                .append("', imagePath='").append(getImagePath())
-                .append("', timestamp='").append(getTimestamp())
-                .append("', comments=[");
+        sb.append("Post{")
+                .append("contentId='").append(getContentId() != null ? getContentId() : "null").append('\'')
+                .append(", authorId='").append(getAuthorId() != null ? getAuthorId() : "null").append('\'')
+                .append(", content='").append(getContent() != null ? getContent() : "null").append('\'')
+                .append(", imagePath='").append(getImagePath() != null ? getImagePath() : "null").append('\'')
+                .append(", timestamp='").append(getTimestamp() != null ? getTimestamp() : "null").append('\'')
+                .append(", comments=[");
+
         for (Post comment : postComments) {
-            sb.append(comment.toString()).append(", ");
+            sb.append(comment.getContentId()).append(", ");
         }
+
         if (!postComments.isEmpty()) {
             sb.setLength(sb.length() - 2);
         }
+
         sb.append("]}");
         return sb.toString();
     }
