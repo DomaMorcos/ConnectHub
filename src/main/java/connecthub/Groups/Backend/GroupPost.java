@@ -9,9 +9,10 @@ public class GroupPost {
     private String postId;
     private String authorId;
     private String content;
-    private String imagePath; // Optional field for image path
+    private String imagePath;
     private String timestamp;
     private ArrayList<GroupPost> groupPostComments;
+    private ArrayList<String> likedGroupUsers;
 
     public GroupPost(String postId, String authorId, String content, String imagePath, String timestamp) {
         this.postId = postId;
@@ -20,6 +21,7 @@ public class GroupPost {
         this.imagePath = imagePath;
         this.timestamp = timestamp;
         this.groupPostComments = new ArrayList<GroupPost>();
+        this.likedGroupUsers = new ArrayList<>();
     }
 
     public GroupPost(String authorId, String content, String imagePath, String timestamp) {
@@ -29,6 +31,31 @@ public class GroupPost {
         this.imagePath = imagePath;
         this.timestamp = timestamp;
         this.groupPostComments = new ArrayList<GroupPost>();
+        this.likedGroupUsers = new ArrayList<>();
+    }
+
+    public boolean hasLiked(String userId) {
+        return likedGroupUsers.contains(userId);
+    }
+
+    public void addGroupLike(String userId) {
+        if (!hasLiked(userId)) {
+            likedGroupUsers.add(userId);
+        }
+    }
+
+    public void removeGroupLike(String userId) {
+        if (hasLiked(userId)) {
+            likedGroupUsers.remove(userId);
+        }
+    }
+
+    public ArrayList<String> getGroupLikedUsers() {
+        return likedGroupUsers;
+    }
+
+    public void setGroupLikedUsers(ArrayList<String> likedUsers) {
+        this.likedGroupUsers = likedUsers;
     }
 
     public ArrayList<GroupPost> getGroupPostComments() {
@@ -103,6 +130,7 @@ public class GroupPost {
         this.timestamp = timestamp;
     }
 
+
     public JSONObject toJson() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("postId", postId != null ? postId : "");
@@ -110,28 +138,51 @@ public class GroupPost {
         jsonObject.put("content", content != null ? content : "");
         jsonObject.put("imagePath", imagePath != null ? imagePath : "");
         jsonObject.put("timestamp", timestamp != null ? timestamp : "");
+
+        // Convert comments to JSON
         JSONArray commentsArray = new JSONArray();
         for (GroupPost comment : groupPostComments) {
-            commentsArray.put(comment.toJson());
+            JSONObject commentJson = new JSONObject();
+            commentJson.put("postId", comment.getPostId());
+            commentJson.put("authorId", comment.getAuthorId());
+            commentJson.put("content", comment.getContent());
+            commentJson.put("timestamp", comment.getTimestamp());
+            commentsArray.put(commentJson);
         }
         jsonObject.put("groupPostComments", commentsArray);
+
+        JSONArray likedUsersArray = new JSONArray(likedGroupUsers);
+        jsonObject.put("likedGroupUsers", likedUsersArray);
         return jsonObject;
     }
 
     public static GroupPost fromJson(JSONObject jsonObject) {
-        String postId = jsonObject.getString("postId");
-        String authorId = jsonObject.getString("authorId");
-        String content = jsonObject.getString("content");
+        String postId = jsonObject.optString("postId", "");
+        String authorId = jsonObject.optString("authorId", "");
+        String content = jsonObject.optString("content", "");
         String imagePath = jsonObject.optString("imagePath", "");
-        String timestamp = jsonObject.getString("timestamp");
+        String timestamp = jsonObject.optString("timestamp", "");
 
         GroupPost groupPost = new GroupPost(postId, authorId, content, imagePath, timestamp);
-        JSONArray commentsArray = jsonObject.optJSONArray("postComments");
+
+        // Parse comments from JSON
+        JSONArray commentsArray = jsonObject.optJSONArray("groupPostComments");
         if (commentsArray != null) {
             for (int i = 0; i < commentsArray.length(); i++) {
                 JSONObject commentJson = commentsArray.getJSONObject(i);
-                GroupPost comment = GroupPost.fromJson(commentJson);
-                groupPost.groupPostComments.add(comment);
+                String commentId = commentJson.optString("postId", "");
+                String commentAuthorId = commentJson.optString("authorId", "");
+                String commentContent = commentJson.optString("content", "");
+                String commentTimestamp = commentJson.optString("timestamp", "");
+                GroupPost comment = new GroupPost(commentId, commentAuthorId, commentContent, null, commentTimestamp);
+                groupPost.addGroupPostComment(comment);
+            }
+        }
+
+        JSONArray likedUsersArray = jsonObject.optJSONArray("likedGroupUsers");
+        if (likedUsersArray != null) {
+            for (int i = 0; i < likedUsersArray.length(); i++) {
+                groupPost.likedGroupUsers.add(likedUsersArray.getString(i));
             }
         }
         return groupPost;
@@ -140,19 +191,23 @@ public class GroupPost {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Post{contentId='").append(getPostId())
-                .append("', author='").append(getAuthorId())
-                .append("', content='").append(getContent())
-                .append("', imagePath='").append(getImagePath())
-                .append("', timestamp='").append(getTimestamp())
-                .append("', comments=[");
+        sb.append("GroupPost{")
+                .append("postId='").append(postId != null ? postId : "null").append('\'')
+                .append(", authorId='").append(authorId != null ? authorId : "null").append('\'')
+                .append(", content='").append(content != null ? content : "null").append('\'')
+                .append(", imagePath='").append(imagePath != null ? imagePath : "null").append('\'')
+                .append(", timestamp='").append(timestamp != null ? timestamp : "null").append('\'')
+                .append(", likedUsers=").append(likedGroupUsers)
+                .append(", groupPostComments=[");
+
         for (GroupPost comment : groupPostComments) {
-            sb.append(comment.toString()).append(", ");
+            sb.append(comment.getPostId()).append(", ");
         }
         if (!groupPostComments.isEmpty()) {
             sb.setLength(sb.length() - 2);
         }
         sb.append("]}");
+
         return sb.toString();
     }
 }
