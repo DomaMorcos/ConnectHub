@@ -11,16 +11,62 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-<junit.version>5.10.2</junit.version>  </properties>
+    <junit.version>5.10.2</junit.version>
+  </properties>
 
   <dependencies>
+    <!-- Tyrus Dependencies -->
+    <dependency>
+      <groupId>org.glassfish.tyrus</groupId>
+      <artifactId>tyrus-server</artifactId>
+      <version>1.15</version>
+      <exclusions>
+        <exclusion>
+          <groupId>jakarta.websocket</groupId>
+          <artifactId>jakarta.websocket-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
+    <dependency>
+      <groupId>org.glassfish.tyrus</groupId>
+      <artifactId>tyrus-core</artifactId>
+      <version>1.15</version>
+      <exclusions>
+        <exclusion>
+          <groupId>jakarta.websocket</groupId>
+          <artifactId>jakarta.websocket-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.glassfish.tyrus</groupId>
+      <artifactId>tyrus-client</artifactId>
+      <version>1.15</version>
+      <exclusions>
+        <exclusion>
+          <groupId>jakarta.websocket</groupId>
+          <artifactId>jakarta.websocket-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Javax WebSocket API -->
+    <dependency>
+      <groupId>javax.websocket</groupId>
+      <artifactId>javax.websocket-api</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <!-- JSON Processing -->
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>javax.json</artifactId>
       <version>1.1.4</version>
     </dependency>
 
+    <!-- JavaFX Dependencies -->
     <dependency>
       <groupId>org.openjfx</groupId>
       <artifactId>javafx-controls</artifactId>
@@ -32,7 +78,8 @@
       <version>22.0.1</version>
     </dependency>
 
-<dependency>
+    <!-- JUnit 5 -->
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <version>${junit.version}</version>
@@ -43,7 +90,8 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
-    </dependency>  </dependencies>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
@@ -54,7 +102,7 @@
         <configuration>
           <source>22</source>
           <target>22</target>
-            <compilerArgs>--enable-preview</compilerArgs>
+          <compilerArgs>--enable-preview</compilerArgs>
         </configuration>
       </plugin>
       <plugin>
@@ -63,7 +111,6 @@
         <version>0.0.8</version>
         <executions>
           <execution>
-            <!-- Default configuration for running with: mvn clean javafx:run -->
             <id>default-cli</id>
             <configuration>
               <mainClass>connecthub.connecthub/connecthub.connecthub.HelloApplication</mainClass>
