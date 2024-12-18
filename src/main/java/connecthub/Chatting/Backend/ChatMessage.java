@@ -1,8 +1,5 @@
 package connecthub.Chatting.Backend;
 
-import connecthub.UserAccountManagement.Backend.User;
-import connecthub.UserAccountManagement.Backend.UserDatabase;
-
 import java.time.LocalDateTime;
 
 public class ChatMessage {
@@ -10,7 +7,6 @@ public class ChatMessage {
     private String receiverId;
     private String message;
     private LocalDateTime timestamp;
-    UserDatabase userDatabase = UserDatabase.getInstance();
 
     public ChatMessage(String senderId, String receiverId, String message, LocalDateTime timestamp) {
         this.senderId = senderId;
@@ -22,12 +18,6 @@ public class ChatMessage {
     public String getSenderId() {
         return senderId;
     }
-
-    public String getSenderUsername () {
-        User user = userDatabase.getUserById(senderId);
-        return user.getUsername();
-    }
-
 
     public String getReceiverId() {
         return receiverId;

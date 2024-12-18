@@ -76,21 +76,6 @@ public class ChatDatabase {
         saveMessagesToFile();
     }
 
-    public boolean editMessage(String senderId, LocalDateTime timestamp, String newContent) {
-        for (ChatMessage message : messages) {
-            if (message.getSenderId().equals(senderId) && message.getTimestamp().equals(timestamp)) {
-                if (isInTimeLimit(message.getTimestamp())) {
-                    newContent = newContent + "\n*Edited message*";
-                    message.setMessage(newContent);
-                    saveMessagesToFile();
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
 
     public boolean deleteMessage(String senderId, LocalDateTime timestamp) {
         for (ChatMessage message : messages) {
