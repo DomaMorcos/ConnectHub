@@ -1,20 +1,15 @@
 package connecthub.Groups.Frontend;
 
 import connecthub.AlertUtils;
-import connecthub.ContentCreation.Backend.Post;
-import connecthub.FriendManagement.Frontend.SearchGroupPage;
-import connecthub.FriendManagement.Frontend.SearchUserPage;
 import connecthub.Groups.Backend.Group;
 import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Backend.GroupPost;
 import connecthub.NewsfeedPage.Frontend.NewsFeedFront;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
-import connecthub.ProfileManagement.Frontend.ProfilePage;
 import connecthub.TimestampFormatter;
 import connecthub.UserAccountManagement.Backend.LogUser;
 import connecthub.UserAccountManagement.Backend.User;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
-import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -74,6 +69,12 @@ public class GroupPage {
             logUser.logout(user.getEmail());
         });
         stage.setTitle("Group Page");
+        stage.setOnCloseRequest( e -> {
+            User user = userDatabase.getUserById(userID);
+            LogUser logUser = new LogUser();
+            logUser.logout(user.getEmail());
+        });
+
         stage.show();
     }
 
@@ -197,8 +198,8 @@ public class GroupPage {
         Group group = groupDatabase.getGroupById(groupID);
         File groupImageFile = new File("src/main/resources" + group.getPhoto());
         ImageView groupImage = new ImageView(new Image(groupImageFile.toURI().toString()));
-        groupImage.setFitWidth(35);
-        groupImage.setFitHeight(35);
+        groupImage.setFitWidth(300);
+        groupImage.setFitHeight(100);
         Label groupName = new Label(group.getName());
 
         TextArea groupDescriptionText = new TextArea(group.getDescription());
@@ -209,7 +210,7 @@ public class GroupPage {
         groupDescriptionText.setPrefWidth(400); // Set fixed width
         groupDescriptionText.setScrollTop(0); // Ensure the content is scrollable
 
-        groupInfoBox.getChildren().addAll(groupName, groupDescriptionText);
+        groupInfoBox.getChildren().addAll(groupImage,groupName, groupDescriptionText);
     }
 
     public VBox createGroupAdmins(String userID, String groupID) {
@@ -257,6 +258,7 @@ public class GroupPage {
         Button refreshButton = new Button("Refresh");
         // handle Refresh button click
         refreshButton.setOnAction(e -> {
+            groupDatabase.loadGroupsFromJsonFile();
             refreshAdminsBox(userID, groupID);
             refreshInfoBox(userID, groupID);
             refreshPosts(userID, groupID);
@@ -342,7 +344,7 @@ public class GroupPage {
     private void refreshPosts(String userID, String groupID) {
         postsBox.getChildren().clear();
         Group group = groupDatabase.getGroupById(groupID);
-        System.out.println(group.getGroupId());
+//        System.out.println(group.getGroupId());
         postsBox.getStyleClass().add("posts-box");
 
         Label postsLabel = new Label("Recent Posts");
@@ -429,15 +431,24 @@ public class GroupPage {
             }
 
             singlePost.getChildren().add(postText);
+            Label numOfLikes = new Label(String.valueOf(post.getGroupNumberLikes()));
             Button likeButton = new Button("Like");
             Button commentsButton = new Button("Comments");
-            boolean[] isClicked = {false}; // Mutable flag
-            likeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
+            boolean[] isClicked = {post.hasLiked(userID)}; // Mutable flag
+            if(isClicked[0]){
+                likeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
+            } else {
+                likeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
+            }
             likeButton.setOnAction(event -> {
                 if (isClicked[0]) {
                     likeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
+                    post.removeGroupLike(userID);
+                    refreshPosts(userID,groupID);
                 } else {
                     likeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
+                    post.addGroupLike(userID);
+                    refreshPosts(userID,groupID);
                 }
                 isClicked[0] = !isClicked[0]; // Toggle flag
             });
@@ -467,29 +478,20 @@ public class GroupPage {
 
                 });
                 searchDialog.showAndWait().ifPresent(result -> {
-                    if ("group".equals(result)) {
+                    if ("add".equals(result)) {
                         // Navigate to Search by Group
-                        SearchGroupPage searchGroupPage = new SearchGroupPage();
-                        try {
-                            searchGroupPage.start(userID); // Pass userID to the new page
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    } else if ("user".equals(result)) {
+                        AddGroupPostComment addGroupPostComment = new AddGroupPostComment();
+                        addGroupPostComment.start(groupID,userID,post);
+                    } else if ("view".equals(result)) {
                         // Navigate to Search by User
-                        SearchUserPage searchUserPage = new SearchUserPage(); //
-                        try {
-
-                            searchUserPage.start(userID); // Pass userID to the new page
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        DisplayGroupPostComments displayGroupPostComments = new DisplayGroupPostComments();
+                        displayGroupPostComments.start(userID,groupID,post);
                     }
                 });
 
 
             });
-            HBox likesAndCommentsBar = new HBox(likeButton, commentsButton);
+            HBox likesAndCommentsBar = new HBox(numOfLikes,likeButton, commentsButton);
             singlePost.getChildren().add(likesAndCommentsBar);
             // Add the single post to the postsBox
             postsBox.getChildren().add(singlePost);

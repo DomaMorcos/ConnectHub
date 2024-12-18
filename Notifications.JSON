@@ -1,8 +1,154 @@
-[{
-    "senderId": "1",
-    "notificationId": "1",
-    "message": "You received a friend request from user ID: 1",
-    "type": "FriendRequest",
-    "userId": "7",
-    "timestamp": "2024-12-17T23:42:51.480762400"
-}]
+[
+    {
+        "senderId": "1",
+        "notificationId": "1",
+        "message": "You received a friend request from user ID: 1",
+        "type": "FriendRequest",
+        "userId": "7",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "senderId": "1",
+        "notificationId": "2",
+        "message": "You received a friend request from user ID: 1",
+        "type": "FriendRequest",
+        "userId": "7",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "activity": "You have been approved to join group Doma Group",
+        "groupId": "Doma Group_1",
+        "notificationId": "3",
+        "message": "Group Activity: You have been approved to join group Doma Group in Group ID: Doma Group_1",
+        "type": "GroupActivity",
+        "userId": "2",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "senderId": "1",
+        "notificationId": "4",
+        "message": "You received a friend request from user ID: 1",
+        "type": "FriendRequest",
+        "userId": "7",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "senderId": "1",
+        "notificationId": "5",
+        "message": "You received a friend request from user ID: 1",
+        "type": "FriendRequest",
+        "userId": "7",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "activity": "You have been approved to join group Doma Group",
+        "groupId": "Doma Group_1",
+        "notificationId": "6",
+        "message": "Group Activity: You have been approved to join group Doma Group in Group ID: Doma Group_1",
+        "type": "GroupActivity",
+        "userId": "2",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "activity": "Your join request has been rejected.",
+        "groupId": "Doma Group_1",
+        "notificationId": "7",
+        "message": "Group Activity: Your join request has been rejected. in Group ID: Doma Group_1",
+        "type": "GroupActivity",
+        "userId": "3",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "activity": "You have been approved to join group Doma Group",
+        "groupId": "Doma Group_1",
+        "notificationId": "8",
+        "message": "Group Activity: You have been approved to join group Doma Group in Group ID: Doma Group_1",
+        "type": "GroupActivity",
+        "userId": "3",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "senderId": "1",
+        "notificationId": "9",
+        "message": "You received a friend request from user ID: 1",
+        "type": "FriendRequest",
+        "userId": "7",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "senderId": "1",
+        "notificationId": "10",
+        "message": "You received a friend request from user ID: 1",
+        "type": "FriendRequest",
+        "userId": "7",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "activity": "You have been approved to join group Doma Group",
+        "groupId": "Doma Group_1",
+        "notificationId": "11",
+        "message": "Group Activity: You have been approved to join group Doma Group in Group ID: Doma Group_1",
+        "type": "GroupActivity",
+        "userId": "2",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "senderId": "1",
+        "notificationId": "12",
+        "message": "You received a friend request from user ID: 1",
+        "type": "FriendRequest",
+        "userId": "7",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "senderId": "1",
+        "notificationId": "13",
+        "message": "You received a friend request from user ID: 1",
+        "type": "FriendRequest",
+        "userId": "7",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "activity": "You have been approved to join group Doma Group",
+        "groupId": "Doma Group_1",
+        "notificationId": "14",
+        "message": "Group Activity: You have been approved to join group Doma Group in Group ID: Doma Group_1",
+        "type": "GroupActivity",
+        "userId": "2",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "activity": "Your join request has been rejected.",
+        "groupId": "Doma Group_1",
+        "notificationId": "15",
+        "message": "Group Activity: Your join request has been rejected. in Group ID: Doma Group_1",
+        "type": "GroupActivity",
+        "userId": "3",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "activity": "You have been approved to join group Doma Group",
+        "groupId": "Doma Group_1",
+        "notificationId": "16",
+        "message": "Group Activity: You have been approved to join group Doma Group in Group ID: Doma Group_1",
+        "type": "GroupActivity",
+        "userId": "3",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "senderId": "10",
+        "notificationId": "17",
+        "message": "You received a friend request from user ID: 10",
+        "type": "FriendRequest",
+        "userId": "1",
+        "timestamp": "2024-12-18T12:00:01.930256900"
+    },
+    {
+        "senderId": "1",
+        "notificationId": "18",
+        "message": "You received a friend request from user ID: 1",
+        "type": "FriendRequest",
+        "userId": "10",
+        "timestamp": "2024-12-18T12:00:09.434966300"
+    }
+]

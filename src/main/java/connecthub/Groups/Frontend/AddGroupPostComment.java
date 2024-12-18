@@ -1,7 +1,7 @@
 package connecthub.Groups.Frontend;
 
+
 import connecthub.AlertUtils;
-import connecthub.ContentCreation.Backend.ContentFactory;
 import connecthub.Groups.Backend.Group;
 import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Backend.GroupPost;
@@ -22,7 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 
-public class AddGroupPost {
+public class AddGroupPostComment {
     GroupDatabase groupDatabase = GroupDatabase.getInstance();
     // Declare attributes
     private TextArea postTextArea;
@@ -35,25 +35,25 @@ public class AddGroupPost {
     private static final String DESTINATION_FOLDER = "src/main/resources/Images/";
 
     // Constructor to initialize the UI
-    public void start(String groupID , String userID) {
+    public void start(String groupID , String userID , GroupPost post) {
         // Initialize components
         Stage stage = new Stage();
         postTextArea = new TextArea();
-        postTextArea.setPromptText("Write your Post here...");
+        postTextArea.setPromptText("Write your Comment here...");
         postTextArea.setWrapText(true); // Allow text wrapping
         postTextArea.setPrefHeight(50); // Set fixed height
         postTextArea.setPrefWidth(400); // Set fixed width
         postTextArea.setScrollTop(0); // Ensure the content is scrollable
 
-        textLabel = new Label("Post Text:");
+        textLabel = new Label("Comment Text:");
         imageLabel = new Label("Add an Image:");
         uploadButton = new Button("Choose Image");
-        createPostButton = new Button("Add Post");
+        createPostButton = new Button("Add Comment");
 
         // Action for the upload button to open FileChooser and choose an image
         uploadButton.setOnAction(e -> openImageChooser(stage));
         createPostButton.setOnAction(e -> {
-            handleAddPost(stage,groupID,userID);
+            handleAddComment(stage,groupID,userID,post);
         });
 
         // Layout for the page
@@ -64,12 +64,12 @@ public class AddGroupPost {
         // Scene setup
         Scene scene = new Scene(layout, 400, 400);
 //        scene.getStylesheets().add(getClass().getResource("AddWindow.css").toExternalForm());
-        stage.setTitle("Add a Post");
+        stage.setTitle("Add a Comment");
         stage.setScene(scene);
         stage.showAndWait();
     }
 
-    public void handleAddPost(Stage stage,String groupID ,String userID) {
+    public void handleAddComment(Stage stage,String groupID ,String userID,GroupPost post) {
         Group group = groupDatabase.getGroupById(groupID);
         String postText = postTextArea.getText();
 
@@ -81,8 +81,8 @@ public class AddGroupPost {
         } else {
             // Create the post content
             String time = LocalDateTime.now().toString();
-            GroupPost groupPost = new GroupPost(userID,postText,imagePath,time,group.getGroupId(),true);
-            group.addPost(groupID,groupPost);
+            GroupPost comment = new GroupPost(userID,postText,imagePath,time,groupID,true);
+            post.addGroupPostComment(comment);
             AlertUtils.showInformationMessage("Post created", "Post Created Successfully!");
             stage.close();
         }

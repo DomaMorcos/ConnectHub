@@ -25,13 +25,17 @@ public class Post extends AbstractContent {
 
     public void addLike(String userId) {
         if (!hasLiked(userId)) {
+            ContentDatabase cdb = ContentDatabase.getInstance();
             likedUsers.add(userId);
+            cdb.saveContents();
         }
     }
 
     public void removeLike(String userId) {
         if (hasLiked(userId)) {
+            ContentDatabase cdb = ContentDatabase.getInstance();
             likedUsers.remove(userId);
+            cdb.saveContents();
         }
     }
 
@@ -52,8 +56,8 @@ public class Post extends AbstractContent {
     }
 
     public void addPostComment(Post postComment) {
-        postComments.add(postComment);
         ContentDatabase cdb = ContentDatabase.getInstance();
+        postComments.add(postComment);
         cdb.saveContents();
     }
 

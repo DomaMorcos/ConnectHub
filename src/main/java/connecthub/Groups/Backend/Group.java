@@ -16,6 +16,7 @@ public class Group {private String name;
     private ArrayList<GroupPost> groupPosts;
     private ArrayList<String> joinRequests;
     NotificationManager notificationManager = NotificationManager.getInstance();
+    GroupDatabase groupDatabase = GroupDatabase.getInstance();
 
     public Group(String name, String description, String photo, String creator) {
         this.name = name;
@@ -230,13 +231,13 @@ public class Group {private String name;
         saveGroupChanges(group);
     }
 
-    public ArrayList<String> getJoinRequests(String groupId) {
-        Group group = GroupDatabase.getInstance().getGroupById(groupId);
-        if (group == null) {
-            throw new IllegalArgumentException("Group " + groupId + " does not exist.");
-        }
-        return new ArrayList<>(group.joinRequests);
-    }
+//    public ArrayList<String> getJoinRequests(String groupId) {
+//        Group group = GroupDatabase.getInstance().getGroupById(groupId);
+//        if (group == null) {
+//            throw new IllegalArgumentException("Group " + groupId + " does not exist.");
+//        }
+//        return new ArrayList<>(group.joinRequests);
+//    }
 
     public void saveGroupChanges(Group group) {
         GroupDatabase groupDatabase = GroupDatabase.getInstance();
@@ -374,6 +375,7 @@ public class Group {private String name;
     }
 
     public ArrayList<String> getJoinRequests() {
+        groupDatabase.loadGroupsFromJsonFile();
         return joinRequests;
     }
 

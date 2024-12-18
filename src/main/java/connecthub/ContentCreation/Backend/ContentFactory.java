@@ -41,4 +41,11 @@ public class ContentFactory {
             contentDatabase.saveContents();
         }
     }
+    public Post createComment(String authorId, String content, String imagePath){
+        String time = LocalDateTime.now().toString();
+        String contentId = generateId(authorId);
+        contentId = "C" + contentId;
+        Post comment = new Post(contentId, authorId, content, imagePath, time);
+        return comment;
+    }
 }
