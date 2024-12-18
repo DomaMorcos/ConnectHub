@@ -45,7 +45,8 @@ public class NewsFeedFront {
     ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
     ImplementedNewsfeedBack newsfeed = new ImplementedNewsfeedBack();
     GroupDatabase groupDatabase = GroupDatabase.getInstance();
-    private VBox postsBox;
+    private VBox postsBox , friendSuggestionsVBox,friendsVBox;
+    private HBox storiesContainer;
 
     public void start(String userID) throws Exception {
         Stage primaryStage = new Stage();
@@ -105,7 +106,14 @@ public class NewsFeedFront {
 
     private HBox createStoriesSection(String userID) {
         // Container for all stories
-        HBox storiesContainer = new HBox();
+        storiesContainer = new HBox();
+
+        refreshStoriesSection(userID);
+
+        return storiesContainer;
+    }
+    private void refreshStoriesSection(String userID) {
+        storiesContainer.getChildren().clear();
         storiesContainer.getStyleClass().add("stories-container");
 //        storiesContainer.setPadding(new Insets(10));
 //        storiesContainer.setSpacing(10);
@@ -186,7 +194,6 @@ public class NewsFeedFront {
             singleStory.getChildren().addAll(storyImage, username, storyDate);
             storiesList.getChildren().add(singleStory);
         }
-
         // Wrap the stories list in a horizontal ScrollPane
         ScrollPane storiesScrollPane = new ScrollPane(storiesList);
         storiesScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Enable horizontal scrolling
@@ -199,20 +206,18 @@ public class NewsFeedFront {
         // Add the label and scroll pane to the container
         storiesContainer.getChildren().addAll(storiesLabel, storiesScrollPane);
 
-        return storiesContainer;
     }
 
-
     private VBox createFriendList(Stage stage, String userID) {
-        VBox friendsVBox = new VBox(10);
+        friendsVBox = new VBox(10);
         friendsVBox.setPadding(new Insets(10));
 
-        refreshFriendList(friendsVBox, userID);
+        refreshFriendList(userID);
         stage.close();
         return friendsVBox;
     }
 
-    private void refreshFriendList(VBox friendsVBox, String userID) {
+    private void refreshFriendList(String userID) {
         friendsVBox.getChildren().clear(); // Clear existing children to refresh the list
 
         Label friendsLabel = new Label("My Friends");
@@ -622,7 +627,13 @@ public class NewsFeedFront {
 
 
     private VBox createFriendSuggestions(Stage stage, String userID) {
-        VBox friendSuggestionsVBox = new VBox(10);
+        friendSuggestionsVBox = new VBox(10);
+
+        refreshFriendSuggestions(userID);
+        return friendSuggestionsVBox;
+    }
+    private void refreshFriendSuggestions(String userID){
+        friendSuggestionsVBox.getChildren().clear();
         friendSuggestionsVBox.setPadding(new Insets(10));
 
         Label suggestionsLabel = new Label("Friend Suggestions");
@@ -644,10 +655,7 @@ public class NewsFeedFront {
             suggestionBox.getChildren().addAll(username, sendFriendRequest);
             friendSuggestionsVBox.getChildren().add(suggestionBox);
         }
-
-        return friendSuggestionsVBox;
     }
-
     private HBox createContentCreationArea(Stage stage, String userID) {
         HBox contentCreationArea = new HBox();
         contentCreationArea.setPadding(new Insets(10));
@@ -694,15 +702,10 @@ public class NewsFeedFront {
         refreshButton.getStyleClass().add("button");
         refreshButton.setOnAction(e -> {
             groupDatabase.saveGroupsToJsonFile();
-            NewsFeedFront newsFeedFront = new NewsFeedFront();
-            try {
-                stage.close();
-                profileDatabase.loadProfiles();
-                userDatabase.readUsersFromJsonFile();
-                newsFeedFront.start(userID);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            refreshFriendSuggestions(userID);
+            refreshStoriesSection(userID);
+            refreshFriendList(userID);
+            refreshFriendSuggestions(userID);
         });
         contentCreationArea.getChildren().add(refreshButton);
 

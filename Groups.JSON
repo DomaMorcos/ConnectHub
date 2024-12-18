@@ -9,7 +9,7 @@
     "photo": "/Images/DefaultCoverPhoto.png",
     "groupPosts": [{
         "imagePath": "",
-        "likedGroupUsers": [],
+        "likedGroupUsers": ["1"],
         "postId": "1_2024-12-18T15:19:37.328009300",
         "authorId": "1",
         "groupPostComments": [],
