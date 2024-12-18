@@ -2,43 +2,62 @@ package connecthub.Chatting.Backend;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.net.URI;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @ServerEndpoint("/chat")
 public class ChatWebSocket {
-    private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
+    private Session session;
+    private final URI serverUri;
+    private final String userID;
+
+    public ChatWebSocketClient(URI serverUri, String userID) {
+        this.serverUri = serverUri;
+        this.userID = userID;
+    }
+
+    public void connect() {
+        try {
+            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            container.connectToServer(this, serverUri); // Use the provided URI
+        } catch (Exception e) {
+            System.err.println("WebSocket connection failed: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     @OnOpen
     public void onOpen(Session session) {
-        sessions.add(session);
-        System.out.println("New connection: " + session.getId());
+        this.session = session;
+        System.out.println("Connected to WebSocket as " + userID);
     }
 
     @OnMessage
-    public void onMessage(String message, Session session) {
-        System.out.println("Message received from " + session.getId() + ": " + message);
-        broadcastMessage("Server: " + message);
+    public void onMessage(String message) {
+        System.out.println("WebSocket message received: " + message);
     }
 
     @OnClose
     public void onClose(Session session) {
-        sessions.remove(session);
-        System.out.println("Connection closed: " + session.getId());
+        System.out.println("WebSocket connection closed.");
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
-        System.out.println("Error on connection " + session.getId() + ": " + throwable.getMessage());
+        System.err.println("WebSocket error: " + throwable.getMessage());
     }
 
-    public static void broadcastMessage(String message) {
-        for (Session session : sessions) {
-            try {
+    public void sendMessage(String message) {
+        try {
+            if (session != null && session.isOpen()) {
                 session.getBasicRemote().sendText(message);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                System.err.println("WebSocket session is not open.");
             }
+        } catch (Exception e) {
+            System.err.println("Failed to send WebSocket message: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }
