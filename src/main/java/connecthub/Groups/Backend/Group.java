@@ -201,10 +201,10 @@ public class Group {private String name;
         }
         if (group.joinRequests.contains(memberId)) {
             group.joinRequests.remove(memberId);
-            if (!group.membersId.contains(memberId)) {
+
                 group.membersId.add(memberId);
                 notificationManager.sendGroupActivityNotification(memberId, groupId, "You have been approved to join group " + group.getName() );
-            }
+
         } else {
             throw new IllegalArgumentException("No join request from user with ID '" + memberId + "' found.");
         }

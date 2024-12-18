@@ -258,6 +258,8 @@ public class GroupPage {
         Button refreshButton = new Button("Refresh");
         // handle Refresh button click
         refreshButton.setOnAction(e -> {
+            groupDatabase.saveGroupsToJsonFile();
+            groupDatabase.loadGroupsFromJsonFile();
             refreshAdminsBox(userID, groupID);
             refreshInfoBox(userID, groupID);
             refreshPosts(userID, groupID);

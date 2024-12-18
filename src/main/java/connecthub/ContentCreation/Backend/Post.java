@@ -79,10 +79,20 @@ public class Post extends AbstractContent {
 
     @Override
     public JSONObject toJson() {
-        JSONObject obj = super.toJson();
+        JSONObject obj = super.toJson(); // Assuming this initializes common fields
         obj.put("type", "post");
+
+        // Debug: Print current post details
+        System.out.println("Converting post to JSON: " + this);
+
+        // Debug: Print postComments
+        System.out.println("PostComments in toJson(): " + postComments);
+
         JSONArray commentsArray = new JSONArray();
         for (Post comment : postComments) {
+            // Debug: Print each comment being processed
+            System.out.println("Processing comment: " + comment);
+
             JSONObject commentJson = new JSONObject();
             commentJson.put("contentId", comment.getContentId());
             commentJson.put("authorId", comment.getAuthorId());
@@ -92,11 +102,16 @@ public class Post extends AbstractContent {
             commentsArray.put(commentJson);
         }
         obj.put("postComments", commentsArray);
+
+        // Debug: Print final post JSON
+        System.out.println("Final JSON for post: " + obj.toString(4));
+
         JSONArray likedUsersArray = new JSONArray(likedUsers);
         obj.put("likedUsers", likedUsersArray);
 
         return obj;
     }
+
 
 
     public static Post readFromJson(JSONObject jsonObject) {

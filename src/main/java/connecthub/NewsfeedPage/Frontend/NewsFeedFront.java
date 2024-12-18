@@ -337,13 +337,18 @@ public class NewsFeedFront {
                 if (isClicked[0]) {
                     myPostLikeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
                     post.removeLike(userID);
+                    contentDatabase.saveContents();
                     myPostNumOfLikes.setText(String.valueOf(post.getNumberLikes())); // Update like count
+
 //                    refreshPosts(userID, stage);
                 } else {
                     myPostLikeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
                     post.addLike(userID);
+                    contentDatabase.saveContents();
 //                    refreshPosts(userID, stage);
                     myPostNumOfLikes.setText(String.valueOf(post.getNumberLikes())); // Update like count
+
+
 
                 }
                 isClicked[0] = !isClicked[0]; // Toggle flag
@@ -457,14 +462,21 @@ public class NewsFeedFront {
                 if (isClicked[0]) {
                     friendsPostLikeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
                     post.removeLike(userID);
+                    contentDatabase.saveContents();
 //                    refreshPosts(userID, stage);
                     friendsPostNumOfLikes.setText(String.valueOf(post.getNumberLikes())); // Update like count
+
+
+
 
                 } else {
                     friendsPostLikeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
                     post.addLike(userID);
+                    contentDatabase.saveContents();
+
 //                    refreshPosts(userID, stage);
                     friendsPostNumOfLikes.setText(String.valueOf(post.getNumberLikes())); // Update like count
+
 
                 }
                 isClicked[0] = !isClicked[0]; // Toggle flag
@@ -708,6 +720,8 @@ public class NewsFeedFront {
         refreshButton.getStyleClass().add("button");
         refreshButton.setOnAction(e -> {
             groupDatabase.saveGroupsToJsonFile();
+            contentDatabase.getContents().clear();
+//            groupDatabase.loadGroupsFromJsonFile();
             refreshFriendSuggestions(userID);
             refreshStoriesSection(userID);
             refreshFriendList(userID);
@@ -823,13 +837,7 @@ public class NewsFeedFront {
             joinButton.setOnAction(e -> {
                 group.requestToJoinGroup(group.getGroupId(), userID);
                 AlertUtils.showInformationMessage("Join Group", "A request is sent to join the group");
-                NewsFeedFront newsFeedFront = new NewsFeedFront();
-                try {
-                    stage.close();
-                    newsFeedFront.start(userID);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
+                refreshFriendSuggestions(userID);
             });
             HBox singleGroup = new HBox(groupLabel, joinButton);
             suggestedGroups.getChildren().add(singleGroup);
@@ -837,11 +845,4 @@ public class NewsFeedFront {
         return suggestedGroups;
     }
 
-    public void refresh(Stage stage, String userID) throws Exception {
-        groupDatabase.saveGroupsToJsonFile();
-        NewsFeedFront newsFeedFront = new NewsFeedFront();
-        stage.close();
-        newsFeedFront.start(userID);
-
-    }
 }

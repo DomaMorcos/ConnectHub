@@ -19,7 +19,7 @@ public class ContentTest {
         post.addLike("user3");
 
         // Add comments to the post
-        Post comment1 = (Post) contentFactory.createContent("Comment", "user4", "This is a test comment", null);
+        Post comment1 = (Post) contentFactory.createContent("Comment", "10", "Test Comment", null);
         post.addPostComment(comment1);
 
         Post comment2 = (Post) contentFactory.createContent("Comment", "user5", "Another comment", null);
@@ -37,15 +37,15 @@ public class ContentTest {
             if (content instanceof Post) {
                 Post loadedPost = (Post) content;
 
-                System.out.println("Loaded Post: " + loadedPost.toJson().toString(4));
-                System.out.println("Number of likes: " + loadedPost.getLikedUsers().size());
-                System.out.println("Number of comments: " + loadedPost.getPostComments().size());
+//                System.out.println("Loaded Post: " + loadedPost.toJson().toString(4));
+//                System.out.println("Number of likes: " + loadedPost.getLikedUsers().size());
+//                System.out.println("Number of comments: " + loadedPost.getPostComments().size());
 
                 ArrayList<String> likedUsers = loadedPost.getLikedUsers();
-                System.out.println("Liked Users: " + likedUsers);
+//                System.out.println("Liked Users: " + likedUsers);
 
                 for (Post comment : loadedPost.getPostComments()) {
-                    System.out.println("Comment: " + comment.getContent());
+//                    System.out.println("Comment: " + comment.getContent());
                 }
             }
         }

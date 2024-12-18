@@ -72,7 +72,7 @@ public class AddPostComments {
         stage.showAndWait();
     }
 
-    public void handleAddComment(Stage stage,String userID,Post post) {
+    public void handleAddComment(Stage stage, String userID,Post post) {
         String postText = postTextArea.getText();
 
         // Set imagePath to an empty string if no image is selected
@@ -81,14 +81,26 @@ public class AddPostComments {
         if (postText == null || postText.trim().isEmpty()) {
             AlertUtils.showErrorMessage("Empty text", "Please enter text for your post.");
         } else {
-            // Create the post content
+            // Create the comment content
             ContentFactory contentFactory = ContentFactory.getInstance();
-            post.addPostComment((Post)(contentFactory.createContent("Comment", userID,postText,imagePath)));
+            Post comment = (Post) contentFactory.createContent("Comment", userID, postText, null);
+            post.addPostComment(comment);
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            System.out.println("Post hashCode: " + post.hashCode());
+            System.out.println("Comment hashCode: " + comment.hashCode());
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+            System.out.println(post.getPostComments());
+            System.out.println(post);
+            // Save and reload the database
             contentDatabase.saveContents();
+            contentDatabase.getContents().clear();
+            contentDatabase.loadContents();
+
             AlertUtils.showInformationMessage("Comment created", "Comment Created Successfully!");
             stage.close();
         }
     }
+
 
     private void openImageChooser(Stage primaryStage) {
         // Create a FileChooser to filter image files

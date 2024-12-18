@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,15 +39,23 @@ public class ContentDatabase {
         JSONArray jsonArray = new JSONArray();
         for (Content content : contentDB.contents) {
             JSONObject jsonObject = content.toJson();
-            System.out.println("Saving content: " + jsonObject.toString(4)); // DEBUG
+
+            // Debug: Print the content being saved
+//            System.out.println("Saving content: " + jsonObject.toString(4));
+
             jsonArray.put(jsonObject);
         }
         try (FileWriter file = new FileWriter(CONTENT_FILEPATH)) {
+            // Debug: Print the final JSON before writing to the file
+//            System.out.println("Final JSON to be saved: " + jsonArray.toString(4));
+
             file.write(jsonArray.toString(4));
         } catch (Exception e) {
             System.out.println("Error saving contents: " + e.getMessage());
         }
     }
+
+
 
     public ArrayList<Content> loadContents() {
         ContentDatabase contentDB = getInstance();
@@ -61,7 +70,7 @@ public class ContentDatabase {
             JSONArray jsonArray = new JSONArray(json);
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                System.out.println("Loading content: " + jsonObject.toString(4)); // DEBUG
+//                System.out.println("Loading content: " + jsonObject.toString(4)); // DEBUG
                 if (jsonObject.getString("type").equals("post")) {
                     contentDB.contents.add(Post.readFromJson(jsonObject));
                 } else if (jsonObject.getString("type").equals("story")) {
