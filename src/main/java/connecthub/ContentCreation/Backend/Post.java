@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class Post extends AbstractContent {
     private ArrayList<Post> postComments;
     private ArrayList<String> likedUsers;
-
+    ContentDatabase cdb = ContentDatabase.getInstance();
     public Post(String contentId, String authorId, String content, String imagePath, String timestamp) {
         super(contentId, authorId, content, imagePath, timestamp);
         this.postComments = new ArrayList<>();
@@ -25,16 +25,17 @@ public class Post extends AbstractContent {
 
     public void addLike(String userId) {
         if (!hasLiked(userId)) {
-            ContentDatabase cdb = ContentDatabase.getInstance();
+
             likedUsers.add(userId);
             cdb.saveContents();
+            System.out.println(userId + "Liked this post");
         }
     }
 
     public void removeLike(String userId) {
         if (hasLiked(userId)) {
-            ContentDatabase cdb = ContentDatabase.getInstance();
             likedUsers.remove(userId);
+            System.out.println(userId + "unLiked this post");
             cdb.saveContents();
         }
     }
@@ -56,14 +57,12 @@ public class Post extends AbstractContent {
     }
 
     public void addPostComment(Post postComment) {
-        ContentDatabase cdb = ContentDatabase.getInstance();
         postComments.add(postComment);
         cdb.saveContents();
     }
 
     public void removePostComment(Post postComment) {
         postComments.removeIf(comment -> comment.getContentId().equals(postComment.getContentId()));
-        ContentDatabase cdb = ContentDatabase.getInstance();
         cdb.saveContents();
     }
 
@@ -71,7 +70,6 @@ public class Post extends AbstractContent {
         for (Post comment : postComments) {
             if (comment.getContentId().equals(postComment.getContentId())) {
                 comment.setContent(newContent);
-                ContentDatabase cdb = ContentDatabase.getInstance();
                 cdb.saveContents();
                 return;
             }

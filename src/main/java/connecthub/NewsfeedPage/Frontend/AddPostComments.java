@@ -26,7 +26,7 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 
 public class AddPostComments {
-
+    ContentDatabase contentDatabase = ContentDatabase.getInstance();
     // Declare attributes
     private TextArea postTextArea;
     private Button uploadButton, createPostButton;
@@ -83,7 +83,8 @@ public class AddPostComments {
         } else {
             // Create the post content
             ContentFactory contentFactory = ContentFactory.getInstance();
-            post.addPostComment(contentFactory.createComment(userID, postText, imagePath));
+            post.addPostComment((Post)(contentFactory.createContent("Comment", userID,postText,imagePath)));
+            contentDatabase.saveContents();
             AlertUtils.showInformationMessage("Comment created", "Comment Created Successfully!");
             stage.close();
         }

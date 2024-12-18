@@ -324,24 +324,27 @@ public class NewsFeedFront {
             }
 
             singlePost.getChildren().add(postText);
-            Label numOfLikes = new Label(String.valueOf(post.getNumberLikes()));
-            Button likeButton = new Button("Like");
+            Label myPostNumOfLikes = new Label(String.valueOf(post.getNumberLikes()));
+            Button myPostLikeButton = new Button("Like");
             Button commentsButton = new Button("Comments");
             boolean[] isClicked = {post.hasLiked(userID)}; // Mutable flag
             if (isClicked[0]) {
-                likeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
+                myPostLikeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
             } else {
-                likeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
+                myPostLikeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
             }
-            likeButton.setOnAction(event -> {
+            myPostLikeButton.setOnAction(event -> {
                 if (isClicked[0]) {
-                    likeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
+                    myPostLikeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
                     post.removeLike(userID);
-                    refreshPosts(userID, stage);
+                    myPostNumOfLikes.setText(String.valueOf(post.getNumberLikes())); // Update like count
+//                    refreshPosts(userID, stage);
                 } else {
-                    likeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
+                    myPostLikeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
                     post.addLike(userID);
-                    refreshPosts(userID, stage);
+//                    refreshPosts(userID, stage);
+                    myPostNumOfLikes.setText(String.valueOf(post.getNumberLikes())); // Update like count
+
                 }
                 isClicked[0] = !isClicked[0]; // Toggle flag
             });
@@ -380,7 +383,7 @@ public class NewsFeedFront {
                 });
             });
 
-            HBox likesAndCommentsBar = new HBox(numOfLikes, likeButton, commentsButton);
+            HBox likesAndCommentsBar = new HBox(myPostNumOfLikes, myPostLikeButton, commentsButton);
             singlePost.getChildren().add(likesAndCommentsBar);
             // Add the single post to the postsBox
             postsBox.getChildren().add(singlePost);
@@ -441,24 +444,28 @@ public class NewsFeedFront {
             }
 
             singlePost.getChildren().add(postText);
-            Label numOfLikes = new Label(String.valueOf(post.getNumberLikes()));
-            Button likeButton = new Button("Like");
+            Label friendsPostNumOfLikes = new Label(String.valueOf(post.getNumberLikes()));
+            Button friendsPostLikeButton = new Button("Like");
             Button commentsButton = new Button("Comments");
             boolean[] isClicked = {post.hasLiked(userID)}; // Mutable flag
             if (isClicked[0]) {
-                likeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
+                friendsPostLikeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
             } else {
-                likeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
+                friendsPostLikeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
             }
-            likeButton.setOnAction(event -> {
+            friendsPostLikeButton.setOnAction(event -> {
                 if (isClicked[0]) {
-                    likeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
+                    friendsPostLikeButton.setStyle("-fx-background-color: lightblue; -fx-text-fill: black;");
                     post.removeLike(userID);
-                    refreshPosts(userID, stage);
+//                    refreshPosts(userID, stage);
+                    friendsPostNumOfLikes.setText(String.valueOf(post.getNumberLikes())); // Update like count
+
                 } else {
-                    likeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
+                    friendsPostLikeButton.setStyle("-fx-background-color: yellow; -fx-text-fill: red;");
                     post.addLike(userID);
-                    refreshPosts(userID, stage);
+//                    refreshPosts(userID, stage);
+                    friendsPostNumOfLikes.setText(String.valueOf(post.getNumberLikes())); // Update like count
+
                 }
                 isClicked[0] = !isClicked[0]; // Toggle flag
             });
@@ -497,7 +504,7 @@ public class NewsFeedFront {
                 });
             });
 
-            HBox likesAndCommentsBar = new HBox(numOfLikes, likeButton, commentsButton);
+            HBox likesAndCommentsBar = new HBox(friendsPostNumOfLikes, friendsPostLikeButton, commentsButton);
             singlePost.getChildren().add(likesAndCommentsBar);
             // Add the single post to the postsBox
             postsBox.getChildren().add(singlePost);
