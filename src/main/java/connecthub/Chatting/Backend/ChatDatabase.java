@@ -18,13 +18,12 @@ public class ChatDatabase {
     private final List<ChatMessage> messages = new ArrayList<>();
 
     private ChatDatabase() {
-
+        loadMessagesFromFile(); // Load messages when the instance is created
     }
 
     public static ChatDatabase getInstance() {
         if (chatDatabase == null) {
             chatDatabase = new ChatDatabase();
-            chatDatabase.loadMessagesFromFile();
         }
         return chatDatabase;
     }
@@ -47,6 +46,7 @@ public class ChatDatabase {
     }
 
     private void loadMessagesFromFile() {
+        messages.clear(); // Clear existing messages before loading
         try {
             String json = new String(Files.readAllBytes(Paths.get(FILEPATH)));
             JSONArray messagesArray = new JSONArray(json);
@@ -65,12 +65,15 @@ public class ChatDatabase {
         }
     }
 
+    // New method to reload messages from the file
+    public void reloadMessages() {
+        loadMessagesFromFile();
+    }
+
     public void sendMessage(String senderId, String receiverId, String messageContent) {
         ChatMessage message = new ChatMessage(senderId, receiverId, messageContent, LocalDateTime.now());
         messages.add(message);
         saveMessagesToFile();
-        //websocket
-        ChatWebSocket.broadcastMessage("New message from " + senderId + " to " + receiverId + ": " + messageContent);
     }
 
     public boolean editMessage(String senderId, LocalDateTime timestamp, String newContent) {
@@ -80,8 +83,6 @@ public class ChatDatabase {
                     newContent = newContent + "\n*Edited message*";
                     message.setMessage(newContent);
                     saveMessagesToFile();
-                    //websocket
-                    ChatWebSocket.broadcastMessage("Message edited by " + senderId + ": " + newContent);
                     return true;
                 } else {
                     return false;
@@ -97,8 +98,6 @@ public class ChatDatabase {
                 if (isInTimeLimit(message.getTimestamp())) {
                     message.setMessage("#* This message has been deleted *#");
                     saveMessagesToFile();
-                    //websocket
-                    ChatWebSocket.broadcastMessage("Message deleted by " + senderId);
                     return true;
                 } else {
                     return false;
@@ -108,11 +107,10 @@ public class ChatDatabase {
         return false;
     }
 
-
     public List<ChatMessage> getChatHistory(String userId1, String userId2) {
         List<ChatMessage> userMessages = new ArrayList<>();
         for (ChatMessage message : messages) {
-            //user1 , user2 == user2 , user1
+            // Check if the message is between the two users
             if ((message.getSenderId().equals(userId1) && message.getReceiverId().equals(userId2)) ||
                     (message.getSenderId().equals(userId2) && message.getReceiverId().equals(userId1))) {
                 userMessages.add(message);

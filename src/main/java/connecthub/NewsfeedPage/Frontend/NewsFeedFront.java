@@ -1,6 +1,7 @@
 package connecthub.NewsfeedPage.Frontend;
 
 import connecthub.AlertUtils;
+import connecthub.Chatting.Frontend.ChattingPage;
 import connecthub.ContentCreation.Backend.ContentDatabase;
 import connecthub.ContentCreation.Backend.GetContent;
 import connecthub.ContentCreation.Backend.Post;
@@ -232,7 +233,17 @@ public class NewsFeedFront {
             friendImage.setFitHeight(25);
 
             Label status = new Label(friend.getStatus());
-            HBox userFriend = new HBox(friendImage, friendName, statusImage, status);
+            Button Chatting = new Button("Chatting");
+            Chatting.setOnAction(e -> {
+                ChattingPage chattingPage = new ChattingPage();
+                try {
+                    chattingPage.start(userID,friend.getUserId());
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+                //stage.close();
+            });
+            HBox userFriend = new HBox(friendImage, friendName, statusImage, status ,Chatting);
             userFriend.setSpacing(10);
 
             friendsVBox.getChildren().add(userFriend);
