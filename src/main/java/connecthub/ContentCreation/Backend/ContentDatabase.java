@@ -34,55 +34,44 @@ public class ContentDatabase {
     }
 
     public void saveContents() {
-        //loop on contents and make them json object
         ContentDatabase contentDB = getInstance();
         JSONArray jsonArray = new JSONArray();
         for (Content content : contentDB.contents) {
-            jsonArray.put(content.toJson());
+            JSONObject jsonObject = content.toJson();
+            jsonArray.put(jsonObject);
         }
-        //write in json file
-        try {
-            FileWriter file = new FileWriter(CONTENT_FILEPATH);
+        try (FileWriter file = new FileWriter(CONTENT_FILEPATH)) {
             file.write(jsonArray.toString(4));
-            file.close();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Error saving contents: " + e.getMessage());
         }
     }
 
-    public  ArrayList<Content> loadContents() {
-        // Clear the old one
+    public ArrayList<Content> loadContents() {
         ContentDatabase contentDB = getInstance();
         contentDB.contents.clear();
         try {
             Path pathFile = Paths.get(CONTENT_FILEPATH);
-            // check the file exist
             if (!Files.exists(pathFile)) {
                 Files.createFile(pathFile);
                 return contentDB.contents;
             }
-            // read the file
             String json = new String(Files.readAllBytes(pathFile));
-            //make jsonArray
             JSONArray jsonArray = new JSONArray(json);
-            // Loop on every json object
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                // If post add to the contents a new post
+                System.out.println("Loading content: " + jsonObject.toString(4)); // DEBUG
                 if (jsonObject.getString("type").equals("post")) {
                     contentDB.contents.add(Post.readFromJson(jsonObject));
-                    // If story add to the contents a new story
                 } else if (jsonObject.getString("type").equals("story")) {
                     contentDB.contents.add(Story.readFromJson(jsonObject));
                 }
             }
-            // After loading all remove expired
             removeExpiredStories();
             return contentDB.contents;
-        }catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Error loading contents: " + e.getMessage());
         }
-
         return contentDB.contents;
     }
 
