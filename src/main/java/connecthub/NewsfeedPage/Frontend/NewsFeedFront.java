@@ -18,6 +18,7 @@ import connecthub.Groups.Frontend.CreateGroup;
 import connecthub.Groups.Frontend.GroupPage;
 import connecthub.NewsfeedPage.Backend.ImplementedNewsfeedBack;
 import connecthub.NotificationSystem.frontend.NotificationPage;
+import connecthub.NotificationSystem.frontend.NotificationPage2;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Frontend.ProfilePage;
 import connecthub.TimestampFormatter;
@@ -369,7 +370,6 @@ public class NewsFeedFront {
         for (GroupPost post : groupDatabase.getAllPostsForAllGroupsForUser(userID)) {
             User postAuthor = userDatabase.getUserById(post.getAuthorId());
             VBox singlePost = new VBox();
-            User postAuthor = userDatabase.getUserById(post.getAuthorId());
             singlePost.getStyleClass().add("single-post");
             // Author image and username
             File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(user.getUserId()).getProfilePhotoPath());
@@ -588,7 +588,7 @@ public class NewsFeedFront {
         Button notificationButton = new Button("Notifications");
         notificationButton.getStyleClass().add("button");
         notificationButton.setOnAction(e -> {
-            NotificationPage notificationPage = new NotificationPage(); // Needs to be implemented.
+            NotificationPage2 notificationPage = new NotificationPage2(); // Needs to be implemented.
             try {
                 stage.close();
                 notificationPage.start(userID); // Open the notification page.

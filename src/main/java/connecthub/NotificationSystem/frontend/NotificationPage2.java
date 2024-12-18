@@ -1,18 +1,18 @@
 package connecthub.NotificationSystem.frontend;
 
 import connecthub.AlertUtils;
-import connecthub.Chatting.Frontend.ChattingWindow;
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.FriendManagement.Frontend.FriendsPage;
 import connecthub.Groups.Backend.GroupDatabase;
-import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Frontend.GroupPage;
 import connecthub.NotificationSystem.backend.NotificationDatabase;
-import connecthub.NotificationSystem.backend.NotificationSystem;
 import connecthub.NotificationSystem.backend.NotificationManager;
+import connecthub.NotificationSystem.backend.NotificationSystem;
 import connecthub.NewsfeedPage.Frontend.NewsFeedFront;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -22,19 +22,23 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
-public class NotificationPage {
+public class NotificationPage2 implements Runnable {
 
-    private  FriendManager friendManager;
+    private FriendManager friendManager;
     private GroupDatabase groupManager;
     private NotificationDatabase notificationDatabase = NotificationDatabase.getInstance();
 
     private VBox notificationsList;
     private VBox actionSection;
 
-    public NotificationPage() {
-    }
+    private boolean running = true;
+    private String userId;
+
+    public NotificationPage2() {}
 
     public void start(String userId) {
+        this.userId = userId;
+
         Stage primaryStage = new Stage();
         primaryStage.setTitle("Notifications");
 
@@ -46,7 +50,13 @@ public class NotificationPage {
 
         primaryStage.setScene(scene);
 
+        // Start background thread for real-time updates
+        Thread notificationThread = new Thread(this);
+        notificationThread.setDaemon(true); // Ensure the thread stops when the application closes
+        notificationThread.start();
+
         primaryStage.setOnCloseRequest(event -> {
+            running = false; // Stop the thread
             NewsFeedFront newsFeedFront = new NewsFeedFront();
             try {
                 newsFeedFront.start(userId);
@@ -57,8 +67,6 @@ public class NotificationPage {
 
         primaryStage.show();
     }
-
-
 
     private VBox createMainLayout(String userId) {
         VBox mainLayout = new VBox(15);
@@ -81,9 +89,7 @@ public class NotificationPage {
 
         Button refreshButton = new Button("Refresh");
         refreshButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold;");
-        refreshButton.setOnAction(e -> {
-            fetchAndDisplayNotifications(userId);
-        });
+        refreshButton.setOnAction(e -> fetchAndDisplayNotifications(userId));
 
         mainLayout.getChildren().addAll(refreshButton, notificationsHeader, notificationsScrollPane, actionHeader, actionScrollPane);
         return mainLayout;
@@ -108,7 +114,7 @@ public class NotificationPage {
         actionSection.getChildren().clear();
 
         try {
-            List<NotificationSystem> notifications =  notificationDatabase.getNotificationsForUser(userId);
+            List<NotificationSystem> notifications = notificationDatabase.getNotificationsForUser(userId);
 
             for (NotificationSystem notification : notifications) {
                 VBox notificationCard = new VBox(5);
@@ -140,133 +146,54 @@ public class NotificationPage {
 
         Label actionLabel = new Label("Action for: " + notification.getMessage());
         actionLabel.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
-        
-        if(notification.getType().equals("FriendRequest")) {
+
+        if (notification.getType().equals("FriendRequest")) {
             try {
                 FriendsPage friendPage = new FriendsPage();
-                friendPage.start(userId); // Open FriendPage
-                Stage stage = (Stage) actionSection.getScene().getWindow();
-                stage.close(); // Close NotificationPage
+                friendPage.start(userId);
             } catch (Exception ex) {
                 AlertUtils.showErrorMessage("Error", "Failed to load FriendPage: " + ex.getMessage());
-                ex.printStackTrace();
             }
         } else if (notification.getType().equals("GroupActivity")) {
             try {
                 GroupPage groupPage = new GroupPage();
-                groupPage.start(userId, notification.getGroupId()); // Open the group page with the group ID from the notification
-                Stage stage = (Stage) actionSection.getScene().getWindow();
-                stage.close(); // Close NotificationPage
+                groupPage.start(userId, notification.getGroupId());
             } catch (Exception ex) {
                 AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
-                ex.printStackTrace();
             }
-            
-        } else if (notification.getType().equals("NewPost") && notification.getUserId().equals(userId) ) {
-            try {
-                GroupPage groupPage = new GroupPage();
-                groupPage.start(userId, notification.getGroupId()); // Open the group page with the group ID from the notification
-                Stage stage = (Stage) actionSection.getScene().getWindow();
-                stage.close(); // Close NotificationPage
-            } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
-                ex.printStackTrace();
-            }
-            
-        }else if (notification.getType().equals("Chat") && notification.getUserId().equals(userId) ) {
-            try {
-                ChattingWindow chattingWindow = new ChattingWindow();
-                chattingWindow.start(userId, notification.getSenderId());
-                Stage stage = (Stage) actionSection.getScene().getWindow();
-                stage.close(); // Close NotificationPage
-            } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
-                ex.printStackTrace();
-            }
-
-        }else if (notification.getType().equals("Comment") && notification.getUserId().equals(userId) ) {
-            try {
-                NewsFeedFront newsFeedFront = new NewsFeedFront();
-                newsFeedFront.start(userId);
-                Stage stage = (Stage) actionSection.getScene().getWindow();
-                stage.close(); // Close NotificationPage
-            } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
-                ex.printStackTrace();
-            }
-
         }
 
         actionSection.getChildren().add(actionLabel);
     }
-
-    private HBox createFriendRequestButtons(String senderId, String receiverId) {
-        HBox buttonBox = new HBox(10);
-
-        Button acceptButton = new Button("Accept");
-        Button declineButton = new Button("Decline");
-
-        acceptButton.setOnAction(e -> {
-            try {
-                if (friendManager.handleFriendRequest(receiverId, senderId, true)) {
-                    AlertUtils.showInformationMessage("Request Accepted", "You are now friends with " + senderId + "!");
-                } else {
-                    AlertUtils.showErrorMessage("Error", "Failed to accept the request.");
-                }
-            } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "An error occurred: " + ex.getMessage());
-                ex.printStackTrace();
-            }
+    public void showAlert(String message) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("New Notification");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
         });
-
-        declineButton.setOnAction(e -> {
-            try {
-                if (friendManager.handleFriendRequest(receiverId, senderId, false)) {
-                    AlertUtils.showInformationMessage("Request Declined", "Friend request declined successfully.");
-                } else {
-                    AlertUtils.showErrorMessage("Error", "Failed to decline the request.");
-                }
-            } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "An error occurred: " + ex.getMessage());
-                ex.printStackTrace();
-            }
-        });
-
-        buttonBox.getChildren().addAll(acceptButton, declineButton);
-        return buttonBox;
     }
 
-    private HBox createGroupActivityButton(String userId, String groupId) {
-        HBox buttonBox = new HBox(10);
-
-        Button viewGroupButton = new Button("View Group");
-        viewGroupButton.setOnAction(e -> {
+    @Override
+    public void run() {
+        while (running) {
             try {
-                AlertUtils.showInformationMessage("Group Activity", "Navigating to group updates...");
-            } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "Failed to process group activity.");
-                ex.printStackTrace();
+                // Fetch new notifications every 5 seconds
+                Thread.sleep(5000);
+
+                // Check for new notifications
+                List<NotificationSystem> newNotifications = notificationDatabase.getNotificationsForUser(userId);
+
+                if (!newNotifications.isEmpty()) {
+                    Platform.runLater(() -> fetchAndDisplayNotifications(userId)); // Update UI on JavaFX Application Thread
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.out.println("Notification thread interrupted.");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
-
-        buttonBox.getChildren().add(viewGroupButton);
-        return buttonBox;
-    }
-
-    private HBox createViewPostButton(String groupId) {
-        HBox buttonBox = new HBox(10);
-
-        Button viewPostButton = new Button("View Post");
-        viewPostButton.setOnAction(e -> {
-            try {
-                AlertUtils.showInformationMessage("View Post", "Post content is now accessible!");
-            } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "Failed to view post.");
-                ex.printStackTrace();
-            }
-        });
-
-        buttonBox.getChildren().add(viewPostButton);
-        return buttonBox;
+        }
     }
 }

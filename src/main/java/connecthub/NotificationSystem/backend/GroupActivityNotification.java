@@ -30,6 +30,11 @@ public class GroupActivityNotification extends Notification {
         return groupId;
     }
 
+    @Override
+    public String getSenderId() {
+        return "";
+    }
+
     public String getActivity() {
         return activity;
     }
