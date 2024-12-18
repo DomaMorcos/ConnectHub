@@ -3,17 +3,22 @@
     "adminsId": [],
     "membersId": [],
     "joinRequests": [],
-    "groupId": "Dama Group_1",
-    "name": "Dama Group",
-    "description": "Dama Group",
+    "groupId": "D_1",
+    "name": "D",
+    "description": "d",
     "photo": "/Images/DefaultCoverPhoto.png",
     "groupPosts": [{
         "imagePath": "",
         "likedGroupUsers": ["1"],
-        "postId": "1_2024-12-18T15:19:37.328009300",
+        "postId": "1_2024-12-18T19:03:48.486034600",
         "authorId": "1",
-        "groupPostComments": [],
-        "content": "Post From Dama Group",
-        "timestamp": "2024-12-18T15:19:37.328009300"
+        "groupPostComments": [{
+            "postId": "1_2024-12-18T19:03:53.453763900",
+            "authorId": "1",
+            "content": "D",
+            "timestamp": "2024-12-18T19:03:53.453763900"
+        }],
+        "content": "d",
+        "timestamp": "2024-12-18T19:03:48.486034600"
     }]
 }]

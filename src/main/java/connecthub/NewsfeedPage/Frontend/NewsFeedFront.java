@@ -266,7 +266,6 @@ public class NewsFeedFront {
 
     private void refreshPosts(String userID, Stage stage) {
         postsBox.getChildren().clear();
-        groupDatabase.loadGroupsFromJsonFile();
         postsBox.getStyleClass().add("posts-box");
 
         Label postsLabel = new Label("Recent Posts");
@@ -794,7 +793,6 @@ public class NewsFeedFront {
         VBox joinedGroups = new VBox();
         Label joinedGroupsLabel = new Label("Groups Joined");
         joinedGroups.getChildren().add(joinedGroupsLabel);
-        groupDatabase.loadGroupsFromJsonFile();
         for (Group group : groupDatabase.getGroupsForUser(userID)) {
             Label groupLabel = new Label(group.getName());
             groupLabel.setOnMouseClicked(e -> {
@@ -812,7 +810,6 @@ public class NewsFeedFront {
         VBox suggestedGroups = new VBox();
         Label suggestedGroupsLabel = new Label("Groups Suggestions");
         suggestedGroups.getChildren().add(suggestedGroupsLabel);
-        groupDatabase.loadGroupsFromJsonFile();
         for (Group group : groupDatabase.getGroupSuggestionsForUser(userID)) {
             Label groupLabel = new Label(group.getName());
             Button joinButton = new Button("Join");
