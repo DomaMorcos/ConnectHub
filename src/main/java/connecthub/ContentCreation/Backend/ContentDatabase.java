@@ -38,6 +38,7 @@ public class ContentDatabase {
         JSONArray jsonArray = new JSONArray();
         for (Content content : contentDB.contents) {
             JSONObject jsonObject = content.toJson();
+            System.out.println("Saving content: " + jsonObject.toString(4)); // DEBUG
             jsonArray.put(jsonObject);
         }
         try (FileWriter file = new FileWriter(CONTENT_FILEPATH)) {
