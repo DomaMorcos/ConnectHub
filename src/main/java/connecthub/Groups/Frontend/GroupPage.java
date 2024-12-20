@@ -258,7 +258,6 @@ public class GroupPage {
         Button refreshButton = new Button("Refresh");
         // handle Refresh button click
         refreshButton.setOnAction(e -> {
-            groupDatabase.saveGroupsToJsonFile();
             groupDatabase.loadGroupsFromJsonFile();
             refreshAdminsBox(userID, groupID);
             refreshInfoBox(userID, groupID);
@@ -278,7 +277,6 @@ public class GroupPage {
                 NewsFeedFront newsFeedFront = new NewsFeedFront();
                 try {
                     stage.close();
-                    groupDatabase.saveGroupsToJsonFile();
                     newsFeedFront.start(userID);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);

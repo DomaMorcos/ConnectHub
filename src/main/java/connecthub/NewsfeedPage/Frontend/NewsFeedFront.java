@@ -46,7 +46,7 @@ public class NewsFeedFront {
     ProfileDatabase profileDatabase = ProfileDatabase.getInstance();
     ImplementedNewsfeedBack newsfeed = new ImplementedNewsfeedBack();
     GroupDatabase groupDatabase = GroupDatabase.getInstance();
-    private VBox postsBox , friendSuggestionsVBox,friendsVBox;
+    private VBox postsBox , friendSuggestionsVBox,friendsVBox,joinedGroups,suggestedGroups;
     private HBox storiesContainer;
 
     public void start(String userID) throws Exception {
@@ -539,7 +539,7 @@ public class NewsFeedFront {
             VBox singlePost = new VBox();
             singlePost.getStyleClass().add("single-post");
             // Author image and username
-            File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(user.getUserId()).getProfilePhotoPath());
+            File authorImageFile = new File("src/main/resources" + profileDatabase.getProfile(postAuthor.getUserId()).getProfilePhotoPath());
             ImageView authorImage = new ImageView(new Image(authorImageFile.toURI().toString()));
             authorImage.setFitWidth(35);
             authorImage.setFitHeight(35);
@@ -730,13 +730,15 @@ public class NewsFeedFront {
         Button refreshButton = new Button("Refresh");
         refreshButton.getStyleClass().add("button");
         refreshButton.setOnAction(e -> {
-            groupDatabase.saveGroupsToJsonFile();
+            contentDatabase.saveContents();
             contentDatabase.getContents().clear();
             contentDatabase.loadContents();
             refreshFriendSuggestions(userID);
             refreshStoriesSection(userID);
             refreshFriendList(userID);
             refreshFriendSuggestions(userID);
+            refreshSuggestedGroups(stage,userID);
+            refreshJoinedGroups(stage,userID);
         });
         contentCreationArea.getChildren().add(refreshButton);
 
@@ -822,7 +824,13 @@ public class NewsFeedFront {
     }
 
     private VBox createJoinedGroups(Stage stage, String userID) {
-        VBox joinedGroups = new VBox();
+        joinedGroups = new VBox();
+        refreshJoinedGroups(stage,userID);
+        return joinedGroups;
+    }
+    private void refreshJoinedGroups(Stage stage, String userID) {
+        joinedGroups.getChildren().clear();
+        groupDatabase.loadGroupsFromJsonFile();
         Label joinedGroupsLabel = new Label("Groups Joined");
         joinedGroups.getChildren().add(joinedGroupsLabel);
         for (Group group : groupDatabase.getGroupsForUser(userID)) {
@@ -835,11 +843,16 @@ public class NewsFeedFront {
             HBox singleGroup = new HBox(groupLabel);
             joinedGroups.getChildren().add(singleGroup);
         }
-        return joinedGroups;
     }
 
     private VBox createSuggestedGroup(Stage stage, String userID) {
-        VBox suggestedGroups = new VBox();
+        suggestedGroups = new VBox();
+        refreshSuggestedGroups(stage,userID);
+        return suggestedGroups;
+    }
+    private void refreshSuggestedGroups(Stage stage , String userID){
+        suggestedGroups.getChildren().clear();
+        groupDatabase.loadGroupsFromJsonFile();
         Label suggestedGroupsLabel = new Label("Groups Suggestions");
         suggestedGroups.getChildren().add(suggestedGroupsLabel);
         for (Group group : groupDatabase.getGroupSuggestionsForUser(userID)) {
@@ -848,12 +861,11 @@ public class NewsFeedFront {
             joinButton.setOnAction(e -> {
                 group.requestToJoinGroup(group.getGroupId(), userID);
                 AlertUtils.showInformationMessage("Join Group", "A request is sent to join the group");
-                refreshFriendSuggestions(userID);
+                refreshSuggestedGroups(stage, userID);
             });
             HBox singleGroup = new HBox(groupLabel, joinButton);
             suggestedGroups.getChildren().add(singleGroup);
         }
-        return suggestedGroups;
     }
 
 }
