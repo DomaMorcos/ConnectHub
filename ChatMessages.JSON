@@ -178,5 +178,23 @@
         "receiverId": "7",
         "message": "hi",
         "timestamp": "2024-12-20T22:05:29.338746400"
+    },
+    {
+        "senderId": "10",
+        "receiverId": "1",
+        "message": "testing chat",
+        "timestamp": "2024-12-20T23:06:53.809550100"
+    },
+    {
+        "senderId": "1",
+        "receiverId": "10",
+        "message": "new notif",
+        "timestamp": "2024-12-20T23:10:08.529502800"
+    },
+    {
+        "senderId": "10",
+        "receiverId": "1",
+        "message": "Yalla beena",
+        "timestamp": "2024-12-20T23:24:12.040862200"
     }
 ]

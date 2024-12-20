@@ -1,139 +1,19 @@
 [
     {
-        "senderId": "1",
         "notificationId": "1",
-        "message": "doma",
-        "type": "Chat",
-        "userId": "7",
-        "timestamp": "2024-12-20T23:02:49.777755200"
+        "comment": "Comment Keda",
+        "message": "New comment from oka: Comment Keda",
+        "type": "Comment",
+        "userId": "1",
+        "commenterId": "10",
+        "timestamp": "2024-12-20T23:21:44.160217900"
     },
     {
-        "senderId": "1",
+        "senderId": "10",
         "notificationId": "2",
-        "message": "hi",
+        "message": "Yalla beena",
         "type": "Chat",
-        "userId": "7",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "notificationId": "3",
-        "comment": "good",
-        "message": "New comment from 7: good",
-        "type": "Comment",
         "userId": "1",
-        "commenterId": "7",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "notificationId": "4",
-        "comment": "excellent",
-        "message": "New comment from 7: excellent",
-        "type": "Comment",
-        "userId": "1",
-        "commenterId": "7",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "notificationId": "5",
-        "comment": "zay el fol",
-        "message": "New comment from 7: zay el fol",
-        "type": "Comment",
-        "userId": "1",
-        "commenterId": "7",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "notificationId": "6",
-        "comment": "zay el fol",
-        "message": "New comment from 7: zay el fol",
-        "type": "Comment",
-        "userId": "1",
-        "commenterId": "7",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "notificationId": "7",
-        "comment": "Test",
-        "message": "New comment from 7: Test",
-        "type": "Comment",
-        "userId": "1",
-        "commenterId": "7",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "notificationId": "8",
-        "comment": "New Comment By demo",
-        "message": "New comment from 7: New Comment By demo",
-        "type": "Comment",
-        "userId": "1",
-        "commenterId": "7",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "activity": "You have been approved to join group Test",
-        "groupId": "Test_1",
-        "notificationId": "9",
-        "message": "Group Activity: You have been approved to join group Test in Group ID: Test_1",
-        "type": "GroupActivity",
-        "userId": "10",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "activity": "You have been approved to join group Test",
-        "groupId": "Test_1",
-        "notificationId": "10",
-        "message": "Group Activity: You have been approved to join group Test in Group ID: Test_1",
-        "type": "GroupActivity",
-        "userId": "10",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "activity": "You have been approved to join group Test",
-        "groupId": "Test_1",
-        "notificationId": "11",
-        "message": "Group Activity: You have been approved to join group Test in Group ID: Test_1",
-        "type": "GroupActivity",
-        "userId": "10",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "groupId": "Test_1",
-        "notificationId": "12",
-        "message": "New post added in Group ID: Test_1",
-        "type": "NewPost",
-        "userId": "10",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "groupId": "Test_1",
-        "notificationId": "13",
-        "message": "New post added in Group ID: Test_1",
-        "type": "NewPost",
-        "userId": "10",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "groupId": "Test_1",
-        "notificationId": "14",
-        "message": "New post added in Group ID: Test_1",
-        "type": "NewPost",
-        "userId": "10",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "groupId": "Test_1",
-        "notificationId": "15",
-        "message": "New post added in Group ID: Test_1",
-        "type": "NewPost",
-        "userId": "10",
-        "timestamp": "2024-12-20T23:02:49.777755200"
-    },
-    {
-        "groupId": "Test_1",
-        "notificationId": "16",
-        "message": "New post added in Group ID: Test_1",
-        "type": "NewPost",
-        "userId": "10",
-        "timestamp": "2024-12-20T23:03:14.385658100"
+        "timestamp": "2024-12-20T23:24:12.042862200"
     }
 ]

@@ -730,15 +730,13 @@ public class NewsFeedFront {
         Button refreshButton = new Button("Refresh");
         refreshButton.getStyleClass().add("button");
         refreshButton.setOnAction(e -> {
-            contentDatabase.saveContents();
-            contentDatabase.getContents().clear();
             contentDatabase.loadContents();
             refreshFriendSuggestions(userID);
             refreshStoriesSection(userID);
             refreshFriendList(userID);
-            refreshFriendSuggestions(userID);
             refreshSuggestedGroups(stage,userID);
             refreshJoinedGroups(stage,userID);
+            refreshPosts(userID,stage);
         });
         contentCreationArea.getChildren().add(refreshButton);
 
