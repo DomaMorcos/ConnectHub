@@ -1,14 +1,17 @@
 
 package connecthub.NotificationSystem.backend;
 
+import connecthub.UserAccountManagement.Backend.UserDatabase;
 import org.json.JSONObject;
+
 
 public class CommentNotification extends Notification {
     private String commenterId;
     private String comment;
 
     public CommentNotification(String userId, String commenterId, String comment) {
-        super(userId, "New comment from " + commenterId + ": " + comment);
+        UserDatabase userDatabase = UserDatabase.getInstance();
+        super(userId, "New comment from " + userDatabase.getUserById(commenterId).getUsername() + ": " + comment);
         this.commenterId = commenterId;
         this.comment = comment;
     }

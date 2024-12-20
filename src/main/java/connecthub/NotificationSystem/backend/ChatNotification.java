@@ -1,5 +1,6 @@
 package connecthub.NotificationSystem.backend;
 
+import connecthub.UserAccountManagement.Backend.UserDatabase;
 import org.json.JSONObject;
 
 public class ChatNotification extends Notification {
@@ -7,7 +8,8 @@ public class ChatNotification extends Notification {
     private String message;
 
     public ChatNotification(String userId, String senderId, String message) {
-        super(userId, "New message from " + senderId + ": " + message);
+        UserDatabase userDatabase = UserDatabase.getInstance();
+        super(userId, "New message from " + userDatabase.getUserById(senderId).getUsername() + ": " + message);
         this.senderId = senderId;
         this.message = message;
     }
