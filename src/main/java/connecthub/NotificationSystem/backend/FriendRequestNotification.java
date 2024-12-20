@@ -1,12 +1,15 @@
 package connecthub.NotificationSystem.backend;
 
+import connecthub.UserAccountManagement.Backend.UserDatabase;
 import org.json.JSONObject;
 
 public class FriendRequestNotification extends Notification {
     private String senderId;
+    UserDatabase userDatabase = UserDatabase.getInstance();
 
     public FriendRequestNotification(String userId, String senderId) {
-        super(userId, "You received a friend request from user ID: " + senderId);
+        UserDatabase userDatabase = UserDatabase.getInstance();
+        super(userId, "You received a friend request from username: " + userDatabase.getUserById(senderId).getUsername());
         this.senderId = senderId;
     }
 
