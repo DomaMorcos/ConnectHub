@@ -8,6 +8,7 @@ import connecthub.ContentCreation.Backend.Post;
 import connecthub.Groups.Backend.Group;
 import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Backend.GroupPost;
+import connecthub.NotificationSystem.backend.NotificationManager;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -85,12 +86,8 @@ public class AddPostComments {
             ContentFactory contentFactory = ContentFactory.getInstance();
             Post comment = (Post) contentFactory.createContent("Comment", userID, postText, null);
             post.addPostComment(comment);
-            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-            System.out.println("Post hashCode: " + post.hashCode());
-            System.out.println("Comment hashCode: " + comment.hashCode());
-            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
-            System.out.println(post.getPostComments());
-            System.out.println(post);
+            NotificationManager notificationManager = NotificationManager.getInstance();
+            notificationManager.sendCommentNotification(post.getAuthorId(),userID,comment.getContent());
             // Save and reload the database
             contentDatabase.saveContents();
             contentDatabase.getContents().clear();

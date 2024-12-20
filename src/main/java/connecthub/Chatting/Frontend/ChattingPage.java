@@ -2,6 +2,7 @@ package connecthub.Chatting.Frontend;
 
 import connecthub.Chatting.Backend.ChatDatabase;
 import connecthub.Chatting.Backend.ChatMessage;
+import connecthub.NotificationSystem.backend.NotificationManager;
 import connecthub.TimestampFormatter;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
 import javafx.geometry.Insets;
@@ -137,6 +138,8 @@ public class ChattingPage {
         String messageContent = messageField.getText().trim();
         if (!messageContent.isEmpty()) {
             chatDatabase.sendMessage(userID, friendID, messageContent);
+            NotificationManager notificationManager = NotificationManager.getInstance();
+            notificationManager.sendChatNotification(friendID,userID,messageContent);
             messageField.clear();
             refreshChatHistory(userID, friendID);
         } else {

@@ -1,7 +1,7 @@
 package connecthub.NotificationSystem.frontend;
 
 import connecthub.AlertUtils;
-import connecthub.Chatting.Frontend.ChattingWindow;
+import connecthub.Chatting.Frontend.ChattingPage;
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.FriendManagement.Frontend.FriendsPage;
 import connecthub.Groups.Backend.GroupDatabase;
@@ -175,8 +175,8 @@ public class NotificationPage {
             
         }else if (notification.getType().equals("Chat") && notification.getUserId().equals(userId) ) {
             try {
-                ChattingWindow chattingWindow = new ChattingWindow();
-                chattingWindow.start(userId, notification.getSenderId());
+                ChattingPage chattingPage = new ChattingPage();
+                chattingPage.start(userId, notification.getSenderId());
                 Stage stage = (Stage) actionSection.getScene().getWindow();
                 stage.close(); // Close NotificationPage
             } catch (Exception ex) {

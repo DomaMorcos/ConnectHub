@@ -134,8 +134,4 @@ public class AddPost {
             imageLabel.setText("No image selected.");
         }
     }
-
-
-
-
 }
