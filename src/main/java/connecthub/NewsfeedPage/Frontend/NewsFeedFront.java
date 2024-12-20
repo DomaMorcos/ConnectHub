@@ -20,7 +20,6 @@ import connecthub.Groups.Frontend.CreateGroup;
 import connecthub.Groups.Frontend.DisplayGroupPostComments;
 import connecthub.Groups.Frontend.GroupPage;
 import connecthub.NewsfeedPage.Backend.ImplementedNewsfeedBack;
-import connecthub.NotificationSystem.frontend.NotificationPage;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Frontend.ProfilePage;
 import connecthub.TimestampFormatter;
@@ -807,7 +806,7 @@ public class NewsFeedFront {
         Button notificationButton = new Button("Notifications");
         notificationButton.getStyleClass().add("button");
         notificationButton.setOnAction(e -> {
-            NotificationPage notificationPage = new NotificationPage(); // Needs to be implemented.
+            NotificationPage2 notificationPage = new NotificationPage2(); // Needs to be implemented.
             try {
                 stage.close();
                 notificationPage.start(userID); // Open the notification page.

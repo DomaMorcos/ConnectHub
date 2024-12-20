@@ -26,4 +26,9 @@ public class NewPostNotification extends Notification {
     public String getGroupId() {
         return groupId;
     }
+
+    @Override
+    public String getSenderId() {
+        return "";
+    }
 }
