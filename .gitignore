@@ -8,6 +8,8 @@ content.JSON
 FriendRequests.JSON
 Profiles.JSON
 User.JSON
+Groups.JSON
+Notification.JSON
 module-info.java
 ### IntelliJ IDEA ###
 .idea/modules.xml

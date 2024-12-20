@@ -8,11 +8,15 @@ import java.util.ArrayList;
 public class Post extends AbstractContent {
     private ArrayList<Post> postComments;
     private ArrayList<String> likedUsers;
-
+    ContentDatabase cdb = ContentDatabase.getInstance();
     public Post(String contentId, String authorId, String content, String imagePath, String timestamp) {
         super(contentId, authorId, content, imagePath, timestamp);
         this.postComments = new ArrayList<>();
         this.likedUsers = new ArrayList<>();
+    }
+
+    public int getNumberLikes() {
+        return likedUsers.size();
     }
 
     public boolean hasLiked(String userId) {
@@ -21,13 +25,18 @@ public class Post extends AbstractContent {
 
     public void addLike(String userId) {
         if (!hasLiked(userId)) {
+
             likedUsers.add(userId);
+            cdb.saveContents();
+            System.out.println(userId + "Liked this post");
         }
     }
 
     public void removeLike(String userId) {
         if (hasLiked(userId)) {
             likedUsers.remove(userId);
+            System.out.println(userId + "unLiked this post");
+            cdb.saveContents();
         }
     }
 
@@ -49,13 +58,11 @@ public class Post extends AbstractContent {
 
     public void addPostComment(Post postComment) {
         postComments.add(postComment);
-        ContentDatabase cdb = ContentDatabase.getInstance();
         cdb.saveContents();
     }
 
     public void removePostComment(Post postComment) {
         postComments.removeIf(comment -> comment.getContentId().equals(postComment.getContentId()));
-        ContentDatabase cdb = ContentDatabase.getInstance();
         cdb.saveContents();
     }
 
@@ -63,7 +70,6 @@ public class Post extends AbstractContent {
         for (Post comment : postComments) {
             if (comment.getContentId().equals(postComment.getContentId())) {
                 comment.setContent(newContent);
-                ContentDatabase cdb = ContentDatabase.getInstance();
                 cdb.saveContents();
                 return;
             }
@@ -73,10 +79,20 @@ public class Post extends AbstractContent {
 
     @Override
     public JSONObject toJson() {
-        JSONObject obj = super.toJson();
+        JSONObject obj = super.toJson(); // Assuming this initializes common fields
         obj.put("type", "post");
+
+        // Debug: Print current post details
+        System.out.println("Converting post to JSON: " + this);
+
+        // Debug: Print postComments
+        System.out.println("PostComments in toJson(): " + postComments);
+
         JSONArray commentsArray = new JSONArray();
         for (Post comment : postComments) {
+            // Debug: Print each comment being processed
+            System.out.println("Processing comment: " + comment);
+
             JSONObject commentJson = new JSONObject();
             commentJson.put("contentId", comment.getContentId());
             commentJson.put("authorId", comment.getAuthorId());
@@ -86,11 +102,16 @@ public class Post extends AbstractContent {
             commentsArray.put(commentJson);
         }
         obj.put("postComments", commentsArray);
+
+        // Debug: Print final post JSON
+        System.out.println("Final JSON for post: " + obj.toString(4));
+
         JSONArray likedUsersArray = new JSONArray(likedUsers);
         obj.put("likedUsers", likedUsersArray);
 
         return obj;
     }
+
 
 
     public static Post readFromJson(JSONObject jsonObject) {

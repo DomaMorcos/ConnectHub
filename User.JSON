@@ -21,7 +21,7 @@
         "userId": "3",
         "email": "ahmed@yahoo.com",
         "username": "Ahmed",
-        "status": "online"
+        "status": "offline"
     },
     {
         "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
@@ -37,7 +37,7 @@
         "userId": "5",
         "email": "ali@yahoo.com",
         "username": "Ali",
-        "status": "online"
+        "status": "offline"
     },
     {
         "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
@@ -61,7 +61,7 @@
         "userId": "8",
         "email": "demo2@yahoo.com",
         "username": "demo2",
-        "status": "online"
+        "status": "offline"
     },
     {
         "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
@@ -69,6 +69,14 @@
         "userId": "9",
         "email": "demo3@yahoo.com",
         "username": "demo3",
+        "status": "offline"
+    },
+    {
+        "password": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+        "dateOfBirth": "2024-12-09",
+        "userId": "10",
+        "email": "oka@yahoo.com",
+        "username": "oka",
         "status": "offline"
     }
 ]

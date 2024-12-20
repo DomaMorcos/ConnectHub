@@ -16,6 +16,7 @@ public class Group {private String name;
     private ArrayList<GroupPost> groupPosts;
     private ArrayList<String> joinRequests;
     NotificationManager notificationManager = NotificationManager.getInstance();
+    GroupDatabase groupDatabase = GroupDatabase.getInstance();
 
     public Group(String name, String description, String photo, String creator) {
         this.name = name;
@@ -200,10 +201,10 @@ public class Group {private String name;
         }
         if (group.joinRequests.contains(memberId)) {
             group.joinRequests.remove(memberId);
-            if (!group.membersId.contains(memberId)) {
+
                 group.membersId.add(memberId);
                 notificationManager.sendGroupActivityNotification(memberId, groupId, "You have been approved to join group " + group.getName() );
-            }
+
         } else {
             throw new IllegalArgumentException("No join request from user with ID '" + memberId + "' found.");
         }
@@ -230,13 +231,13 @@ public class Group {private String name;
         saveGroupChanges(group);
     }
 
-    public ArrayList<String> getJoinRequests(String groupId) {
-        Group group = GroupDatabase.getInstance().getGroupById(groupId);
-        if (group == null) {
-            throw new IllegalArgumentException("Group " + groupId + " does not exist.");
-        }
-        return new ArrayList<>(group.joinRequests);
-    }
+//    public ArrayList<String> getJoinRequests(String groupId) {
+//        Group group = GroupDatabase.getInstance().getGroupById(groupId);
+//        if (group == null) {
+//            throw new IllegalArgumentException("Group " + groupId + " does not exist.");
+//        }
+//        return new ArrayList<>(group.joinRequests);
+//    }
 
     public void saveGroupChanges(Group group) {
         GroupDatabase groupDatabase = GroupDatabase.getInstance();
@@ -374,6 +375,7 @@ public class Group {private String name;
     }
 
     public ArrayList<String> getJoinRequests() {
+        groupDatabase.loadGroupsFromJsonFile();
         return joinRequests;
     }
 
