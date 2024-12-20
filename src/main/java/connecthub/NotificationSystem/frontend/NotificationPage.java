@@ -1,6 +1,7 @@
 package connecthub.NotificationSystem.frontend;
 
 import connecthub.AlertUtils;
+import connecthub.Chatting.Frontend.ChattingWindow;
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.FriendManagement.Frontend.FriendsPage;
 import connecthub.Groups.Backend.GroupDatabase;
@@ -102,7 +103,7 @@ public class NotificationPage {
         return actionSection;
     }
 
-    private void fetchAndDisplayNotifications(String userId) {
+    public void fetchAndDisplayNotifications(String userId) {
         notificationsList.getChildren().clear();
         actionSection.getChildren().clear();
 
@@ -172,6 +173,28 @@ public class NotificationPage {
                 ex.printStackTrace();
             }
             
+        }else if (notification.getType().equals("Chat") && notification.getUserId().equals(userId) ) {
+            try {
+                ChattingWindow chattingWindow = new ChattingWindow();
+                chattingWindow.start(userId, notification.getSenderId());
+                Stage stage = (Stage) actionSection.getScene().getWindow();
+                stage.close(); // Close NotificationPage
+            } catch (Exception ex) {
+                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+
+        }else if (notification.getType().equals("Comment") && notification.getUserId().equals(userId) ) {
+            try {
+                NewsFeedFront newsFeedFront = new NewsFeedFront();
+                newsFeedFront.start(userId);
+                Stage stage = (Stage) actionSection.getScene().getWindow();
+                stage.close(); // Close NotificationPage
+            } catch (Exception ex) {
+                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+
         }
 
         actionSection.getChildren().add(actionLabel);

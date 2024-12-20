@@ -1,7 +1,10 @@
-package connecthub.Groups.Frontend;
+package connecthub.NewsfeedPage.Frontend;
 
 import connecthub.AlertUtils;
+import connecthub.ContentCreation.Backend.ContentDatabase;
 import connecthub.ContentCreation.Backend.ContentFactory;
+import connecthub.ContentCreation.Backend.GetContent;
+import connecthub.ContentCreation.Backend.Post;
 import connecthub.Groups.Backend.Group;
 import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Backend.GroupPost;
@@ -22,8 +25,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 
-public class AddGroupPost {
-    GroupDatabase groupDatabase = GroupDatabase.getInstance();
+public class AddPostComments {
+    ContentDatabase contentDatabase = ContentDatabase.getInstance();
     // Declare attributes
     private TextArea postTextArea;
     private Button uploadButton, createPostButton;
@@ -35,25 +38,25 @@ public class AddGroupPost {
     private static final String DESTINATION_FOLDER = "src/main/resources/Images/";
 
     // Constructor to initialize the UI
-    public void start(String groupID , String userID) {
+    public void start(String userID , Post post) {
         // Initialize components
         Stage stage = new Stage();
         postTextArea = new TextArea();
-        postTextArea.setPromptText("Write your Post here...");
+        postTextArea.setPromptText("Write your Comment here...");
         postTextArea.setWrapText(true); // Allow text wrapping
         postTextArea.setPrefHeight(50); // Set fixed height
         postTextArea.setPrefWidth(400); // Set fixed width
         postTextArea.setScrollTop(0); // Ensure the content is scrollable
 
-        textLabel = new Label("Post Text:");
+        textLabel = new Label("Comment Text:");
         imageLabel = new Label("Add an Image:");
         uploadButton = new Button("Choose Image");
-        createPostButton = new Button("Add Post");
+        createPostButton = new Button("Add Comment");
 
         // Action for the upload button to open FileChooser and choose an image
         uploadButton.setOnAction(e -> openImageChooser(stage));
         createPostButton.setOnAction(e -> {
-            handleAddPost(stage,groupID,userID);
+            handleAddComment(stage,userID,post);
         });
 
         // Layout for the page
@@ -64,13 +67,12 @@ public class AddGroupPost {
         // Scene setup
         Scene scene = new Scene(layout, 400, 400);
 //        scene.getStylesheets().add(getClass().getResource("AddWindow.css").toExternalForm());
-        stage.setTitle("Add a Post");
+        stage.setTitle("Add a Comment");
         stage.setScene(scene);
         stage.showAndWait();
     }
 
-    public void handleAddPost(Stage stage,String groupID ,String userID) {
-        Group group = groupDatabase.getGroupById(groupID);
+    public void handleAddComment(Stage stage, String userID,Post post) {
         String postText = postTextArea.getText();
 
         // Set imagePath to an empty string if no image is selected
@@ -79,14 +81,26 @@ public class AddGroupPost {
         if (postText == null || postText.trim().isEmpty()) {
             AlertUtils.showErrorMessage("Empty text", "Please enter text for your post.");
         } else {
-            // Create the post content
-            String time = LocalDateTime.now().toString();
-            GroupPost groupPost = new GroupPost(userID,postText,imagePath,time,group.getGroupId(),true);
-            group.addPost(groupID,groupPost);
-            AlertUtils.showInformationMessage("Post created", "Post Created Successfully!");
+            // Create the comment content
+            ContentFactory contentFactory = ContentFactory.getInstance();
+            Post comment = (Post) contentFactory.createContent("Comment", userID, postText, null);
+            post.addPostComment(comment);
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            System.out.println("Post hashCode: " + post.hashCode());
+            System.out.println("Comment hashCode: " + comment.hashCode());
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" );
+            System.out.println(post.getPostComments());
+            System.out.println(post);
+            // Save and reload the database
+            contentDatabase.saveContents();
+            contentDatabase.getContents().clear();
+            contentDatabase.loadContents();
+
+            AlertUtils.showInformationMessage("Comment created", "Comment Created Successfully!");
             stage.close();
         }
     }
+
 
     private void openImageChooser(Stage primaryStage) {
         // Create a FileChooser to filter image files

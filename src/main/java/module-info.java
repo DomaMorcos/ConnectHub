@@ -15,4 +15,5 @@ module connecthub {
     exports connecthub;
     exports connecthub.UserAccountManagement.Frontend;
     exports connecthub.NewsfeedPage.Frontend;
+    exports connecthub.ContentCreation.Backend;
 }

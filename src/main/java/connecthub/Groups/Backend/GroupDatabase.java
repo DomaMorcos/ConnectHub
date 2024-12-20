@@ -88,6 +88,7 @@ public class GroupDatabase implements GroupPersistence {
 
     public ArrayList<GroupPost> getAllPostsForAllGroupsForUser(String userId) {
         ArrayList<GroupPost> allPosts = new ArrayList<>();
+
         for (Group group : groups) {
             if (group.isCreator(userId)||group.isAdmin(userId)||group.isMember(userId)) {
                 allPosts.addAll(group.getGroupPosts());

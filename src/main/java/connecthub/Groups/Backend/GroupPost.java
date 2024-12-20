@@ -11,8 +11,10 @@ public class GroupPost {
     private String content;
     private String imagePath;
     private String timestamp;
+    private String groupID;
     private ArrayList<GroupPost> groupPostComments;
     private ArrayList<String> likedGroupUsers;
+    GroupDatabase gdb = GroupDatabase.getInstance();
 
     public GroupPost(String postId, String authorId, String content, String imagePath, String timestamp) {
         this.postId = postId;
@@ -24,7 +26,7 @@ public class GroupPost {
         this.likedGroupUsers = new ArrayList<>();
     }
 
-    public GroupPost(String authorId, String content, String imagePath, String timestamp) {
+    public GroupPost(String authorId, String content, String imagePath, String timestamp,String groupID,boolean trueF) {
         this.postId = authorId + "_" + timestamp;
         this.authorId = authorId;
         this.content = content;
@@ -32,6 +34,11 @@ public class GroupPost {
         this.timestamp = timestamp;
         this.groupPostComments = new ArrayList<GroupPost>();
         this.likedGroupUsers = new ArrayList<>();
+        this.groupID = groupID;
+    }
+
+    public int getGroupNumberLikes() {
+        return likedGroupUsers.size();
     }
 
     public boolean hasLiked(String userId) {
@@ -41,12 +48,16 @@ public class GroupPost {
     public void addGroupLike(String userId) {
         if (!hasLiked(userId)) {
             likedGroupUsers.add(userId);
+            gdb.saveGroupsToJsonFile();
+            System.out.println(userId + " liked this post");
         }
     }
 
     public void removeGroupLike(String userId) {
         if (hasLiked(userId)) {
             likedGroupUsers.remove(userId);
+            gdb.saveGroupsToJsonFile();
+            System.out.println(userId + " unliked this post");
         }
     }
 
@@ -64,11 +75,12 @@ public class GroupPost {
 
     public void setGroupPostComments(ArrayList<GroupPost> groupPostComments) {
         this.groupPostComments = groupPostComments;
+        gdb.saveGroupsToJsonFile();
     }
 
     public void addGroupPostComment(GroupPost groupPostComment) {
         groupPostComments.add(groupPostComment);
-        GroupDatabase gdb = GroupDatabase.getInstance();
+
         gdb.saveGroupsToJsonFile();
     }
 
@@ -209,5 +221,8 @@ public class GroupPost {
         sb.append("]}");
 
         return sb.toString();
+    }
+    public String getGroupID(){
+        return  groupID;
     }
 }
