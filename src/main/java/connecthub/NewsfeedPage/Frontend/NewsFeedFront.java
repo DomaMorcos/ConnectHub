@@ -17,8 +17,6 @@ import connecthub.Groups.Backend.GroupPost;
 import connecthub.Groups.Frontend.CreateGroup;
 import connecthub.Groups.Frontend.GroupPage;
 import connecthub.NewsfeedPage.Backend.ImplementedNewsfeedBack;
-import connecthub.NotificationSystem.frontend.NotificationPage;
-import connecthub.NotificationSystem.frontend.NotificationPage2;
 import connecthub.ProfileManagement.Backend.ProfileDatabase;
 import connecthub.ProfileManagement.Frontend.ProfilePage;
 import connecthub.TimestampFormatter;
