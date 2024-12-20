@@ -8,7 +8,11 @@
             "5"
         ],
         "userId": "1",
-        "friends": []
+        "friends": [
+            "7",
+            "3",
+            "10"
+        ]
     },
     {
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
@@ -24,7 +28,7 @@
         "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
         "blockedUsers": [],
         "userId": "3",
-        "friends": []
+        "friends": ["1"]
     },
     {
         "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
@@ -49,5 +53,41 @@
         "blockedUsers": [],
         "userId": "6",
         "friends": []
+    },
+    {
+        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "blockedUsers": [],
+        "userId": "7",
+        "friends": [
+            "8",
+            "9",
+            "1"
+        ]
+    },
+    {
+        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "blockedUsers": [],
+        "userId": "8",
+        "friends": ["7"]
+    },
+    {
+        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "blockedUsers": [],
+        "userId": "9",
+        "friends": ["7"]
+    },
+    {
+        "profilePhotoPath": "/Images/DefaultProfilePhoto.jpg",
+        "bio": "Click on Edit to edit Bio",
+        "coverPhotoPath": "/Images/DefaultCoverPhoto.png",
+        "blockedUsers": [],
+        "userId": "10",
+        "friends": ["1"]
     }
 ]

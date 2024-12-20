@@ -1,18 +1,17 @@
 package connecthub.NotificationSystem.backend;
 
-
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NotificationManager {
-    private static  NotificationDatabase notificationDatabase = NotificationDatabase.getInstance();
-    private static NotificationManager notificationManager = null;
+    private static final NotificationDatabase notificationDatabase = NotificationDatabase.getInstance();
+    private static NotificationManager notificationManager=null;
 
-    private NotificationManager(){
 
-    }
-    public static NotificationManager getInstance(){
+    private NotificationManager() {}
 
-        if(notificationManager == null){
+    public static  NotificationManager getInstance() {
+        if (notificationManager == null) {
             notificationManager = new NotificationManager();
             notificationDatabase.loadNotificationsFromFile();
             return notificationManager;
@@ -20,18 +19,29 @@ public class NotificationManager {
         return notificationManager;
     }
 
-    public void sendFriendRequestNotification(String ReceiverUserId, String senderId) {
-        FriendRequestNotification notification = new FriendRequestNotification(ReceiverUserId, senderId);
+    // Methods to send notifications to the database
+    public void sendFriendRequestNotification(String receiverUserId, String senderId) {
+        FriendRequestNotification notification = new FriendRequestNotification(receiverUserId, senderId);
         notificationDatabase.addNotification(notification);
     }
 
-    public void sendGroupActivityNotification(String ReceiverUserId, String groupId, String activity) {
-        GroupActivityNotification notification = new GroupActivityNotification(ReceiverUserId, groupId, activity);
+    public void sendGroupActivityNotification(String receiverUserId, String groupId, String activity) {
+        GroupActivityNotification notification = new GroupActivityNotification(receiverUserId, groupId, activity);
         notificationDatabase.addNotification(notification);
     }
 
-    public void sendNewPostNotification(String ReceiverUserId, String groupId) {
-        NewPostNotification notification = new NewPostNotification(ReceiverUserId, groupId);
+    public void sendNewPostNotification(String receiverUserId, String groupId) {
+        NewPostNotification notification = new NewPostNotification(receiverUserId, groupId);
+        notificationDatabase.addNotification(notification);
+    }
+
+    public void sendChatNotification(String receiverUserId, String senderUserId, String message) {
+        ChatNotification notification = new ChatNotification(receiverUserId, senderUserId, message);
+        notificationDatabase.addNotification(notification);
+    }
+
+    public void sendCommentNotification(String postOwnerId, String commenterId, String comment) {
+        CommentNotification notification = new CommentNotification(postOwnerId, commenterId, comment);
         notificationDatabase.addNotification(notification);
     }
 }

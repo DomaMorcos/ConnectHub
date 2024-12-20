@@ -1,1 +1,19 @@
-[]
+[
+    {
+        "notificationId": "1",
+        "comment": "Comment Keda",
+        "message": "New comment from oka: Comment Keda",
+        "type": "Comment",
+        "userId": "1",
+        "commenterId": "10",
+        "timestamp": "2024-12-20T23:21:44.160217900"
+    },
+    {
+        "senderId": "10",
+        "notificationId": "2",
+        "message": "Yalla beena",
+        "type": "Chat",
+        "userId": "1",
+        "timestamp": "2024-12-20T23:24:12.042862200"
+    }
+]

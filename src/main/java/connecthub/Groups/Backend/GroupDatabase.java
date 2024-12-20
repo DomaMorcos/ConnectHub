@@ -1,15 +1,18 @@
 package connecthub.Groups.Backend;
 
+import connecthub.UserAccountManagement.Backend.User;
+import connecthub.UserAccountManagement.Backend.UserDatabase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class GroupDatabase implements GroupPersistence {
 
@@ -39,9 +42,7 @@ public class GroupDatabase implements GroupPersistence {
 
         try (FileWriter file = new FileWriter(GROUP_FILEPATH)) {
             file.write(jsonArray.toString(4));
-            System.out.println("Groups saved to JSON file successfully.");
         } catch (IOException e) {
-            System.err.println("Failed to save groups to JSON file: " + e.getMessage());
         }
     }
 
@@ -53,13 +54,11 @@ public class GroupDatabase implements GroupPersistence {
 
         try {
             if (!Files.exists(pathFile)) {
-                System.out.println("Groups JSON file not found. Returning empty group list.");
                 return db.groups;
             }
 
             String json = Files.readString(pathFile);
             if (json.trim().isEmpty()) {
-                System.out.println("Groups JSON file is empty. Returning empty group list.");
                 return db.groups;
             }
 
@@ -68,17 +67,14 @@ public class GroupDatabase implements GroupPersistence {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 db.groups.add(Group.fromJson(jsonObject));
             }
-            System.out.println("Groups loaded from JSON file.");
-        } catch (IOException e) {
-            System.err.println("Error reading Groups JSON file: " + e.getMessage());
         } catch (Exception e) {
-            System.err.println("Invalid JSON content in Groups JSON file: " + e.getMessage());
+
         }
 
         return db.groups;
     }
 
-    public ArrayList<Group> getGroups() {
+    public ArrayList<Group> getAllGroups() {
         return new ArrayList<>(groups);
     }
 
@@ -92,8 +88,9 @@ public class GroupDatabase implements GroupPersistence {
 
     public ArrayList<GroupPost> getAllPostsForAllGroupsForUser(String userId) {
         ArrayList<GroupPost> allPosts = new ArrayList<>();
+
         for (Group group : groups) {
-            if (group.getMembersId().contains(userId) || group.getAdminsId().contains(userId)) {
+            if (group.isCreator(userId)||group.isAdmin(userId)||group.isMember(userId)) {
                 allPosts.addAll(group.getGroupPosts());
             }
         }
@@ -104,7 +101,7 @@ public class GroupDatabase implements GroupPersistence {
         ArrayList<Group> userGroups = new ArrayList<>();
 
         for (Group group : groups) {
-            if (group.getMembersId().contains(userId) || group.getAdminsId().contains(userId)) {
+            if (group.isCreator(userId)||group.isAdmin(userId)||group.isMember(userId)) {
                 userGroups.add(group);
             }
         }
@@ -115,11 +112,12 @@ public class GroupDatabase implements GroupPersistence {
     public ArrayList<Group> getGroupSuggestionsForUser(String userId) {
         ArrayList<Group> groupSuggestions = new ArrayList<>();
         for (Group group : groups) {
-            if (!group.getMembersId().contains(userId) && !group.getAdminsId().contains(userId)) {
+            if (!group.getMembersId().contains(userId) && !group.getAdminsId().contains(userId) && !group.getCreator().equals(userId)) {
                 groupSuggestions.add(group);
             }
         }
 
+        groupSuggestions.removeIf(group -> group.getJoinRequests().contains(userId)); // Remove leftGroups from Suggestions
         return groupSuggestions;
     }
 
@@ -131,20 +129,51 @@ public class GroupDatabase implements GroupPersistence {
         }
         return null;
     }
+    public Group getGroupByName(String groupName) {
+        for (Group group : groups) {
+            if (group.getName().equals(groupName)) {
+                return group;
+            }
+        }
+        return null;
+    }
+    public List<Group> getGroupsByName(String name) {
+        GroupDatabase groupDatabase = GroupDatabase.getInstance();
+        List<Group> matchedGroups = new ArrayList<>();
+        String lowerCaseName = name.toLowerCase(); // Normalize the search term to lowercase
+        for (Group group : groupDatabase.getAllGroups()) {
+            if (group.getName().toLowerCase().contains(lowerCaseName)) { // Normalize usernames and check
+                matchedGroups.add(group);
+            }
+        }
+        return matchedGroups;
+    }
 
     public void addGroup(Group group) {
         boolean groupExists = groups.stream().anyMatch(g -> g.getGroupId().equals(group.getGroupId()));
         if (!groupExists) {
             groups.add(group);
             saveGroupsToJsonFile(); // Save only when a new group is added
-            System.out.println("Group added successfully.");
-        } else {
-            System.out.println("Group already exists.");
         }
     }
 
     public void removeGroup(String groupId) {
         groups.removeIf(group -> group.getGroupId().equals(groupId));
         saveGroupsToJsonFile();
+    }
+
+    public ArrayList<GroupPost> getAllCommentsForGroupPost(GroupPost post) {
+        //load
+        Group group = new Group();
+        if (group.getGroupPosts() != null) {
+            for (GroupPost groupPost : group.getGroupPosts()) {
+                //if post is found
+                if (Objects.equals(groupPost.getPostId(), post.getPostId())) {
+                    return groupPost.getGroupPostComments();
+                }
+            }
+        }
+        //if not found
+        return new ArrayList<>();
     }
 }

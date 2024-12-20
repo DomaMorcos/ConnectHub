@@ -80,6 +80,8 @@ public class CreateGroup {
             groupDatabase.addGroup(group);
             AlertUtils.showInformationMessage("Post created", "Post Created Successfully!");
             stage.close();
+            GroupPage groupPage = new GroupPage();
+            groupPage.start(userID,group.getGroupId());
         }
     }
 

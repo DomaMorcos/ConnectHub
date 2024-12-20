@@ -3,25 +3,27 @@ package connecthub.NotificationSystem.backend;
 import connecthub.UserAccountManagement.Backend.UserDatabase;
 import org.json.JSONObject;
 
-public class FriendRequestNotification extends Notification {
+public class ChatNotification extends Notification {
     private String senderId;
-    UserDatabase userDatabase = UserDatabase.getInstance();
+    private String message;
 
-    public FriendRequestNotification(String userId, String senderId) {
+    public ChatNotification(String userId, String senderId, String message) {
         UserDatabase userDatabase = UserDatabase.getInstance();
-        super(userId, "You received a friend request from username: " + userDatabase.getUserById(senderId).getUsername());
+        super(userId, "New message from " + userDatabase.getUserById(senderId).getUsername() + ": " + message);
         this.senderId = senderId;
+        this.message = message;
     }
 
     @Override
     public String getType() {
-        return "FriendRequest";
+        return "Chat";
     }
 
     @Override
     public JSONObject toJson() {
         JSONObject obj = super.toJson();
         obj.put("senderId", senderId);
+        obj.put("message", message);
         return obj;
     }
 
@@ -29,7 +31,11 @@ public class FriendRequestNotification extends Notification {
     public String getGroupId() {
         return "";
     }
-    // Getters
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
     public String getSenderId() {
         return senderId;
     }

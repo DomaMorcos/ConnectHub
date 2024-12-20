@@ -11,16 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NotificationDatabase {
-    private static NotificationDatabase instance;
     private static final String NOTIFICATION_FILEPATH = "Notifications.JSON";
     List<NotificationSystem> notifications = new ArrayList<>();
     private static NotificationDatabase notificationDatabase = null;
 
-    private NotificationDatabase() {
+    private NotificationDatabase() {}
 
-    }
-
-    public static NotificationDatabase getInstance() {
+    public static synchronized NotificationDatabase getInstance() {
         if (notificationDatabase == null) {
             notificationDatabase = new NotificationDatabase();
             notificationDatabase.loadNotificationsFromFile();
@@ -28,15 +25,14 @@ public class NotificationDatabase {
         return notificationDatabase;
     }
 
-    // Add a notification to the database
-    public void addNotification(NotificationSystem notification) {
+    public synchronized void addNotification(NotificationSystem notification) {
         notifications.add(notification);
         saveNotificationsToFile();
     }
 
-    // Get notifications for a specific user
-    public List<NotificationSystem> getNotificationsForUser(String userId) {
+    public synchronized List<NotificationSystem> getNotificationsForUser(String userId) {
         List<NotificationSystem> userNotifications = new ArrayList<>();
+        loadNotificationsFromFile();
         for (NotificationSystem notification : notifications) {
             if (notification.getUserId().equals(userId)) {
                 userNotifications.add(notification);
@@ -45,8 +41,7 @@ public class NotificationDatabase {
         return userNotifications;
     }
 
-    // Save notifications to a JSON file
-    private void saveNotificationsToFile() {
+    private synchronized void saveNotificationsToFile() {
         JSONArray jsonArray = new JSONArray();
         for (NotificationSystem notification : notifications) {
             jsonArray.put(notification.toJson());
@@ -58,21 +53,16 @@ public class NotificationDatabase {
         }
     }
 
-    // Load notifications from a JSON file
-     void loadNotificationsFromFile() {
+    public synchronized void loadNotificationsFromFile() {
         try {
-            // Check if the file exists
             if (!Files.exists(Paths.get(NOTIFICATION_FILEPATH))) {
-                // If the file does not exist, create an empty file
                 Files.createFile(Paths.get(NOTIFICATION_FILEPATH));
-                // Optionally, initialize with an empty JSON array
-                try (FileWriter file = new FileWriter(NOTIFICATION_FILEPATH)) {
-                    file.write("[]");
+                try (FileWriter writer = new FileWriter(NOTIFICATION_FILEPATH)) {
+                    writer.write("[]");
                 }
-                System.out.println("Notifications.JSON file was not found and has been created.");
             }
 
-            // Read notification data from the file
+            notifications.clear();
             String jsonString = new String(Files.readAllBytes(Paths.get(NOTIFICATION_FILEPATH)));
             JSONArray jsonArray = new JSONArray(jsonString);
 
@@ -80,7 +70,6 @@ public class NotificationDatabase {
                 JSONObject json = jsonArray.getJSONObject(i);
                 String type = json.getString("type");
 
-                // Load the appropriate subclass based on the type
                 switch (type) {
                     case "FriendRequest":
                         notifications.add(new FriendRequestNotification(
@@ -99,6 +88,20 @@ public class NotificationDatabase {
                         notifications.add(new NewPostNotification(
                                 json.getString("userId"),
                                 json.getString("groupId")
+                        ));
+                        break;
+                    case "Chat":
+                        notifications.add(new ChatNotification(
+                                json.getString("userId"),
+                                json.getString("senderId"),
+                                json.getString("message")
+                        ));
+                        break;
+                    case "Comment":
+                        notifications.add(new CommentNotification(
+                                json.getString("userId"),
+                                json.getString("commenterId"),
+                                json.getString("comment")
                         ));
                         break;
                 }

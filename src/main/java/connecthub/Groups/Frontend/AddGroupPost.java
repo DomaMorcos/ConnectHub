@@ -81,7 +81,7 @@ public class AddGroupPost {
         } else {
             // Create the post content
             String time = LocalDateTime.now().toString();
-            GroupPost groupPost = new GroupPost(userID,postText,imagePath,time);
+            GroupPost groupPost = new GroupPost(userID,postText,imagePath,time,group.getGroupId(),true);
             group.addPost(groupID,groupPost);
             AlertUtils.showInformationMessage("Post created", "Post Created Successfully!");
             stage.close();

@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 public class GroupRequests {
     GroupDatabase groupDatabase = GroupDatabase.getInstance();
     UserDatabase userDatabase = UserDatabase.getInstance();
+    private VBox requestLists;
 
     public void start(String adminID, String groupID) {
         Stage stage = new Stage();
@@ -26,9 +27,17 @@ public class GroupRequests {
     }
 
     public VBox createRequests(String adminID, String groupID, Stage stage) {
-        Group group = groupDatabase.getGroupById(groupID);
-        VBox requestLists = new VBox();
+        requestLists = new VBox();
+        refreshRequests(adminID, groupID, stage);
+        return requestLists;
+    }
 
+    private void refreshRequests(String adminID, String groupID, Stage stage) {
+        // Clear the existing list
+        requestLists.getChildren().clear();
+
+        // Get group information
+        Group group = groupDatabase.getGroupById(groupID);
         for (String requestingUserID : group.getJoinRequests()) {
             HBox singleRequest = new HBox(10);
             User requestingUser = userDatabase.getUserById(requestingUserID);
@@ -53,17 +62,10 @@ public class GroupRequests {
             requestLists.getChildren().add(singleRequest);
         }
 
+        // Show message if there are no join requests
         if (requestLists.getChildren().isEmpty()) {
             Label noRequestsLabel = new Label("No join requests available.");
             requestLists.getChildren().add(noRequestsLabel);
         }
-
-        return requestLists;
-    }
-
-    private void refreshRequests(String adminID, String groupID, Stage stage) {
-        VBox updatedRequests = createRequests(adminID, groupID, stage);
-        Scene scene = new Scene(updatedRequests, 400, 600);
-        stage.setScene(scene);
     }
 }

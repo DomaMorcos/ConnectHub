@@ -19,7 +19,7 @@ public class ContentFactory {
         return contentFactory;
     }
 
-    public void createContent(String type, String authorId, String content, String imagePath) {
+    public Content createContent(String type, String authorId, String content, String imagePath) {
         //make unique id for the content
         GetContent getContent = GetContent.getInstance();
         ContentDatabase contentDatabase = ContentDatabase.getInstance();
@@ -32,6 +32,7 @@ public class ContentFactory {
             //add it in the contents and save
             contentDatabase.getContents().add(post);
             contentDatabase.saveContents();
+            return  post;
         } else if (type.equals("Story")) {
             //make a story
             contentId = "S" + contentId;
@@ -39,6 +40,19 @@ public class ContentFactory {
             //add it in the contents and save
             contentDatabase.getContents().add(story);
             contentDatabase.saveContents();
+            return story;
+        } else if(type.equals("Comment")){
+            contentId = "C" + contentId;
+            Post comment = new Post(contentId, authorId, content, imagePath, time);
+            return comment;
         }
+        return null;
     }
+//    public Post createComment(String authorId, String content, String imagePath){
+//        String time = LocalDateTime.now().toString();
+//        String contentId = generateId(authorId);
+//        contentId = "C" + contentId;
+//        Post comment = new Post(contentId, authorId, content, imagePath, time);
+//        return comment;
+//    }
 }

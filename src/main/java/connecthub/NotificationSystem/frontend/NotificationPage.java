@@ -1,10 +1,12 @@
 package connecthub.NotificationSystem.frontend;
 
 import connecthub.AlertUtils;
+import connecthub.Chatting.Frontend.ChattingPage;
 import connecthub.FriendManagement.Backend.FriendManager;
 import connecthub.FriendManagement.Frontend.FriendsPage;
 import connecthub.Groups.Backend.GroupDatabase;
 import connecthub.Groups.Backend.GroupDatabase;
+import connecthub.Groups.Frontend.GroupPage;
 import connecthub.NotificationSystem.backend.NotificationDatabase;
 import connecthub.NotificationSystem.backend.NotificationSystem;
 import connecthub.NotificationSystem.backend.NotificationManager;
@@ -101,7 +103,7 @@ public class NotificationPage {
         return actionSection;
     }
 
-    private void fetchAndDisplayNotifications(String userId) {
+    public void fetchAndDisplayNotifications(String userId) {
         notificationsList.getChildren().clear();
         actionSection.getChildren().clear();
 
@@ -151,26 +153,48 @@ public class NotificationPage {
             }
         } else if (notification.getType().equals("GroupActivity")) {
             try {
-                FriendsPage friendPage = new FriendsPage();
-                friendPage.start(userId); // Open FriendPage
+                GroupPage groupPage = new GroupPage();
+                groupPage.start(userId, notification.getGroupId()); // Open the group page with the group ID from the notification
                 Stage stage = (Stage) actionSection.getScene().getWindow();
                 stage.close(); // Close NotificationPage
             } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "Failed to load FriendPage: " + ex.getMessage());
+                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
                 ex.printStackTrace();
             }
             
         } else if (notification.getType().equals("NewPost") && notification.getUserId().equals(userId) ) {
             try {
-                FriendsPage friendPage = new FriendsPage();
-                friendPage.start(userId); // Open FriendPage
+                GroupPage groupPage = new GroupPage();
+                groupPage.start(userId, notification.getGroupId()); // Open the group page with the group ID from the notification
                 Stage stage = (Stage) actionSection.getScene().getWindow();
                 stage.close(); // Close NotificationPage
             } catch (Exception ex) {
-                AlertUtils.showErrorMessage("Error", "Failed to load FriendPage: " + ex.getMessage());
+                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
                 ex.printStackTrace();
             }
             
+        }else if (notification.getType().equals("Chat") && notification.getUserId().equals(userId) ) {
+            try {
+                ChattingPage chattingPage = new ChattingPage();
+                chattingPage.start(userId, notification.getSenderId());
+                Stage stage = (Stage) actionSection.getScene().getWindow();
+                stage.close(); // Close NotificationPage
+            } catch (Exception ex) {
+                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+
+        }else if (notification.getType().equals("Comment") && notification.getUserId().equals(userId) ) {
+            try {
+                NewsFeedFront newsFeedFront = new NewsFeedFront();
+                newsFeedFront.start(userId);
+                Stage stage = (Stage) actionSection.getScene().getWindow();
+                stage.close(); // Close NotificationPage
+            } catch (Exception ex) {
+                AlertUtils.showErrorMessage("Error", "Failed to load GroupPage: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+
         }
 
         actionSection.getChildren().add(actionLabel);
